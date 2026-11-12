@@ -5,6 +5,8 @@ from .base import *  # noqa: F403, F405
 
 DEBUG = False
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+# Railway sends health checks from this hostname; keep application hosts explicit.
+ALLOWED_HOSTS = [*base_settings.ALLOWED_HOSTS, "healthcheck.railway.app"]
 if not os.environ.get("DATABASE_URL") or "change-me" in base_settings.DATABASE_URL.lower():
     raise ValueError("Set a production DATABASE_URL with a non-placeholder credential")
 if not base_settings.DATABASE_URL.startswith(

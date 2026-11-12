@@ -97,6 +97,19 @@ As traduções não devem ser declaradas completas até à revisão humana. `Pro
 
 Use `DJANGO_SETTINGS_MODULE=config.settings.production`, PostgreSQL, HTTPS e Gunicorn. Configure `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `DATABASE_URL` e as credenciais SMTP por variáveis de ambiente. Se houver um proxy TLS, ative `DJANGO_TRUST_PROXY_SSL_HEADER=true` apenas quando o proxy confiável definir e filtrar `X-Forwarded-Proto`.
 
+### Deploy no Railway
+
+O repositório inclui `railway.json`: o Railpack instala `requirements.txt`, recolhe os ficheiros estáticos durante o build, executa migrações antes de ativar a versão e verifica `/health`. O processo web usa Gunicorn ligado à porta `$PORT`. Conecte o serviço ao repositório GitHub e configure no Railway, como variáveis protegidas:
+
+- `DJANGO_SETTINGS_MODULE=config.settings.production`
+- `DJANGO_SECRET_KEY`: segredo aleatório forte, exclusivo da produção.
+- `DATABASE_URL`: URL PostgreSQL de produção (não use SQLite nem a URL de exemplo).
+- `DJANGO_ALLOWED_HOSTS`: domínio público atribuído pelo Railway, sem `https://`.
+- `DJANGO_CSRF_TRUSTED_ORIGINS`: origem HTTPS completa do domínio público atribuído pelo Railway.
+- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS=true` e `DEFAULT_FROM_EMAIL`: credenciais SMTP autorizadas; o settings de produção recusa iniciar sem SMTP configurado.
+
+Depois de gerar o domínio público, atualize `DJANGO_ALLOWED_HOSTS` e `DJANGO_CSRF_TRUSTED_ORIGINS` com esse domínio e faça novo deploy. O healthcheck do Railway usa `healthcheck.railway.app`, já permitido explicitamente. A aplicação não provisiona uma base de dados Railway nem migra dados automaticamente entre provedores; a URL deve apontar para uma base PostgreSQL já criada e autorizada.
+
 ```powershell
 $env:DJANGO_SETTINGS_MODULE = "config.settings.production"
 python manage.py migrate
@@ -120,7 +133,7 @@ Não guarde credenciais no comando, no histórico do terminal ou no backup. Util
 ## Limitações conhecidas
 
 - A pasta original estava vazia; este projeto foi criado como uma nova base após a auditoria inicial.
-- A execução e os testes automatizados ainda precisam ser feitos num ambiente com Python e PostgreSQL. O interpretador Python não estava acessível no ambiente em que os ficheiros foram criados.
+- A suite automatizada foi executada localmente com SQLite em memória; uma ligação real ao PostgreSQL de produção ainda precisa de validação.
 - Catálogos gettext ainda sem traduções e sem `.mo`; a interface usa strings-fonte em inglês.
 - Os registos de auditoria são gravados na mesma base e não são invioláveis nem incluem snapshots completos de cada alteração.
 - A interface carrega Bootstrap e HTMX por CDN; uma implantação em rede restrita deve alojar esses ativos localmente.
