@@ -1,4 +1,4 @@
 -r production.txt
-pytest>=8.3,<10
+pytest>=9.2.0,<10
 pytest-django>=4.11,<5
 ruff>=0.11,<1
