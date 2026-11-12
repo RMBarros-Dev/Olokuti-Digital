@@ -53,13 +53,9 @@ class Product(models.Model):
         if not language_code:
             return None
         normalized = language_code.lower()
-        base_lang = normalized.split("-")[0]
         translations = list(self.translations.all())
         for item in translations:
             if item.locale.lower() == normalized:
-                return item
-        for item in translations:
-            if item.locale.lower().split("-")[0] == base_lang:
                 return item
         return None
 

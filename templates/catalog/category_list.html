@@ -22,7 +22,10 @@
             <td>{{ category.description|default:"—" }}</td>
             <td><span class="badge text-bg-light">{{ category.product_count }}</span></td>
             <td class="text-end">
-              {% if perms.catalog.delete_product and category.product_count == 0 %}
+              {% if perms.catalog.change_category %}
+              <a class="btn btn-sm btn-link p-0 me-2" href="{% url 'catalog:category-update' category.pk %}">{% trans "Edit" %}</a>
+              {% endif %}
+              {% if perms.catalog.delete_category and category.product_count == 0 %}
               <form method="post" action="{% url 'catalog:category-delete' category.pk %}" class="d-inline">
                 {% csrf_token %}
                 <button class="btn btn-sm btn-link text-danger p-0" type="submit">{% trans "Delete" %}</button>
@@ -37,11 +40,11 @@
       </table>
     </div>
   </div>
-  {% if perms.catalog.add_product %}
+  {% if perms.catalog.add_category %}
   <div class="col-12 col-lg-5">
     <section class="form-card">
       <h2 class="h5 mb-3">{% trans "Add category" %}</h2>
-      <form method="post" novalidate>
+      <form method="post" action="{% url 'catalog:category-create' %}" novalidate>
         {% csrf_token %}
         {% for field in form %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>{% endfor %}
         <div class="form-actions"><button class="btn btn-primary" type="submit">{% trans "Save category" %}</button></div>

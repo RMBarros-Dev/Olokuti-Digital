@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.audit.services import record_event
 
@@ -236,36 +237,64 @@ def product_delete(request, pk):
     return render(request, "catalog/product_confirm_delete.html", {"product": product})
 
 
-@permission_required("catalog.view_product", raise_exception=True)
+@require_GET
+@permission_required("catalog.view_category", raise_exception=True)
 def category_list(request):
-    if request.method == "POST":
-        if not request.user.has_perm("catalog.add_product"):
-            return HttpResponseNotAllowed(["GET"])
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            category = form.save()
-            record_event(
-                user=request.user,
-                action="created",
-                entity="catalog.Category",
-                entity_id=category.pk,
-            )
-            messages.success(request, _("Category created."))
-            return redirect("catalog:category-list")
-    else:
-        form = CategoryForm()
+    categories = Category.objects.annotate(product_count=Count("products")).order_by("name")
+    return render(request, "catalog/category_list.html", {"categories": categories})
+
+
+@require_POST
+@permission_required("catalog.add_category", raise_exception=True)
+def category_create(request):
+    form = CategoryForm(request.POST)
+    if form.is_valid():
+        category = form.save()
+        record_event(
+            user=request.user,
+            action="created",
+            entity="catalog.Category",
+            entity_id=category.pk,
+        )
+        messages.success(request, _("Category created."))
+        return redirect("catalog:category-list")
     categories = Category.objects.annotate(product_count=Count("products")).order_by("name")
     return render(
         request,
         "catalog/category_list.html",
         {"categories": categories, "form": form},
+        status=400,
     )
 
 
-@permission_required("catalog.delete_product", raise_exception=True)
+@permission_required("catalog.change_category", raise_exception=True)
+def category_update(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    form = CategoryForm(request.POST or None, instance=category)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            record_event(
+                user=request.user,
+                action="updated",
+                entity="catalog.Category",
+                entity_id=category.pk,
+            )
+            messages.success(request, _("Category updated."))
+            return redirect("catalog:category-list")
+    elif request.method != "GET":
+        return HttpResponseNotAllowed(["GET", "POST"])
+    return render(
+        request,
+        "catalog/category_form.html",
+        {"category": category, "form": form},
+        status=400 if request.method == "POST" else 200,
+    )
+
+
+@require_POST
+@permission_required("catalog.delete_category", raise_exception=True)
 def category_delete(request, pk):
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
     category = get_object_or_404(Category, pk=pk)
     try:
         category_id = category.pk

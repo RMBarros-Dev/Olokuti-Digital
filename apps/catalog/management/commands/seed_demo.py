@@ -1,7 +1,8 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
 from apps.accounts.views import ensure_default_role_groups
@@ -11,9 +12,17 @@ from apps.operations.models import OperationalTask
 
 
 class Command(BaseCommand):
-    help = "Populate demo categories, products, translations, tasks, and role groups."
+    help = "Create synthetic demonstration records for local development only."
 
     def handle(self, *args, **options):
+        if not settings.DEBUG:
+            raise CommandError("Demo data can only be created when DEBUG=True.")
+        self.stdout.write(
+            self.style.WARNING(
+                "Synthetic demo data only: no origin, certification, supplier, or sustainability "
+                "claim is verified."
+            )
+        )
         ensure_default_role_groups()
         User = get_user_model()
         admin_user = User.objects.filter(is_superuser=True).first()
@@ -166,12 +175,16 @@ class Command(BaseCommand):
         created_products = []
         for pdata in products_data:
             product, created = Product.objects.get_or_create(
-                name=pdata["name"],
+                name=f"[DEMO] {pdata['name']}",
                 defaults={
                     "category": pdata["category"],
-                    "origin": pdata["origin"],
-                    "description": pdata["description"],
-                    "sustainability_info": pdata["sustainability_info"],
+                    "origin": "Fictional demo location — not a real product origin.",
+                    "description": (
+                        "Synthetic demo record. This is not a real product or verified claim."
+                    ),
+                    "sustainability_info": (
+                        "Placeholder only. No sustainability claim or certification is verified."
+                    ),
                     "created_by": admin_user,
                 },
             )
@@ -182,14 +195,16 @@ class Command(BaseCommand):
                     entity="catalog.Product",
                     entity_id=product.pk,
                 )
-            for locale, (t_name, t_desc, t_sust) in pdata["translations"].items():
+            for locale, (t_name, _t_desc, _t_sust) in pdata["translations"].items():
                 ProductTranslation.objects.update_or_create(
                     product=product,
                     locale=locale,
                     defaults={
-                        "name": t_name,
-                        "description": t_desc,
-                        "sustainability_info": t_sust,
+                        "name": f"[DEMO] {t_name}",
+                        "description": "Synthetic demo record; not a real product description.",
+                        "sustainability_info": (
+                            "Placeholder only; no sustainability claim is verified."
+                        ),
                     },
                 )
             created_products.append(product)
@@ -245,4 +260,3 @@ class Command(BaseCommand):
                 )
 
         self.stdout.write(self.style.SUCCESS("Demo data and default groups seeded successfully."))
-

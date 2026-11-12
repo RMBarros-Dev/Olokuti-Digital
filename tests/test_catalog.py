@@ -54,6 +54,19 @@ def test_product_translation_keeps_original_values(user):
 
 
 @pytest.mark.django_db
+def test_product_translation_does_not_fall_back_between_regional_locales():
+    product = Product.objects.create(name="Sample item")
+    translation = ProductTranslation.objects.create(
+        product=product,
+        locale="pt-pt",
+        name="Amostra",
+    )
+
+    assert product.get_translation("pt-PT") == translation
+    assert product.get_translation("pt-BR") is None
+
+
+@pytest.mark.django_db
 def test_catalog_displays_active_language_translation_and_saves_new_translation(client, user):
     user.user_permissions.add(
         *Permission.objects.filter(codename__in=["view_product", "change_product"])
@@ -82,12 +95,14 @@ def test_category_creation_and_protected_deletion(client, user):
     from apps.catalog.models import Category
 
     user.user_permissions.add(
-        *Permission.objects.filter(codename__in=["view_product", "add_product", "delete_product"])
+        *Permission.objects.filter(
+            codename__in=["view_category", "add_category", "delete_category"]
+        )
     )
     client.force_login(user)
 
     create_resp = client.post(
-        reverse("catalog:category-list"),
+        reverse("catalog:category-create"),
         {"name": "Ceramics", "description": "Handcrafted"},
     )
     assert create_resp.status_code == 302
@@ -102,6 +117,38 @@ def test_category_creation_and_protected_deletion(client, user):
     del_ok = client.post(reverse("catalog:category-delete", args=[category.pk]))
     assert del_ok.status_code == 302
     assert not Category.objects.filter(pk=category.pk).exists()
+
+
+@pytest.mark.django_db
+def test_category_permissions_are_independent_of_product_permissions(client, user):
+    user.user_permissions.add(
+        *Permission.objects.filter(codename__in=["view_product", "add_product", "delete_product"])
+    )
+    client.force_login(user)
+
+    assert client.get(reverse("catalog:category-list")).status_code == 403
+    assert client.post(reverse("catalog:category-create"), {"name": "Ceramics"}).status_code == 403
+
+
+@pytest.mark.django_db
+def test_category_update_requires_category_permission_and_records_audit(client, user):
+    from apps.catalog.models import Category
+
+    category = Category.objects.create(name="Home")
+    user.user_permissions.add(*Permission.objects.filter(codename="change_category"))
+    client.force_login(user)
+
+    response = client.post(
+        reverse("catalog:category-update", args=[category.pk]),
+        {"name": "Home & Living", "description": "Updated description"},
+    )
+
+    assert response.status_code == 302
+    category.refresh_from_db()
+    assert category.name == "Home & Living"
+    assert AuditLog.objects.filter(
+        entity="catalog.Category", entity_id=category.pk, action="updated"
+    ).exists()
 
 
 @pytest.mark.django_db
@@ -121,5 +168,3 @@ def test_product_detail_and_csv_export(client, user):
     csv_resp = client.get(reverse("catalog:product-export-csv"))
     assert csv_resp.status_code == 200
     assert "'=Cork Bottle" in csv_resp.content.decode("utf-8-sig")
-
-

@@ -25,6 +25,7 @@ DEFAULT_ROLE_GROUPS = {
         "view_category",
         "add_category",
         "change_category",
+        "delete_category",
     ],
     "Operations Team": [
         "view_operationaltask",
@@ -49,9 +50,10 @@ DEFAULT_ROLE_GROUPS = {
 
 def ensure_default_role_groups():
     for group_name, codenames in DEFAULT_ROLE_GROUPS.items():
-        group, _ = Group.objects.get_or_create(name=group_name)
+        group, _created = Group.objects.get_or_create(name=group_name)
         perms = Permission.objects.filter(codename__in=codenames)
-        group.permissions.set(perms)
+        # Add defaults without wiping permissions an administrator customized.
+        group.permissions.add(*perms)
 
 
 class AccountLoginView(LoginView):

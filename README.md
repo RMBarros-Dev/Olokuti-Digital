@@ -10,10 +10,10 @@ MVP acadêmico e experimental para organizar registros de catálogo e tarefas op
 - Tarefas com responsável, prioridade, prazo, estado e eventos de auditoria.
 - Relatórios por intervalo de criação e exportação CSV com proteção contra fórmulas de folha de cálculo.
 - Registo de auditoria com utilizador, ação, tipo e identificador do registo, sem duplicar o conteúdo do catálogo ou das tarefas.
-- Prefixos de URL para dez idiomas e estrutura Django gettext. Os catálogos ainda não foram traduzidos nem revistos.
+- Prefixos de URL para dez idiomas e catálogos gettext parciais; traduções de interface ainda precisam de revisão humana.
 - PostgreSQL como banco para execução local e produção. O perfil automatizado de testes usa SQLite em memória para não exigir um servidor PostgreSQL.
 
-Não há pagamentos, vendas, faturação, gestão financeira, integração omnicanal ou sincronização de inventário. Não são carregados dados de demonstração.
+Não há pagamentos, vendas, faturação, gestão financeira, integração omnicanal ou sincronização de inventário. Dados de demonstração só são criados mediante comando explícito em ambiente `DEBUG`; são sintéticos e não contêm informação operacional real.
 
 ## Arquitetura
 
@@ -60,15 +60,16 @@ Abra `http://127.0.0.1:8000/`; a raiz redireciona para o prefixo do idioma escol
 
 ## Utilizadores e permissões
 
-O primeiro superutilizador pode entrar em Django Admin. Crie grupos em **Admin → Authentication and Authorization → Groups** e atribua as permissões necessárias. A página de utilizadores também permite criar contas e associá-las a grupos; a edição de contas existentes é feita no Admin.
+O primeiro superutilizador pode entrar em Django Admin. A página de utilizadores permite listar, pesquisar, criar e editar contas, associá-las a grupos e alterar palavras-passe. Só utilizadores com `is_staff` podem gerir contas. Os grupos predefinidos são adicionados sem apagar permissões que um administrador tenha personalizado.
 
 - Catálogo: `view_product`, `add_product`, `change_product`, `delete_product`.
+- Categorias: `view_category`, `add_category`, `change_category`, `delete_category`; a remoção é bloqueada enquanto existirem produtos associados.
 - Tarefas: `view_operationaltask`, `add_operationaltask`, `change_operationaltask`, `delete_operationaltask`.
 - Auditoria: `view_auditlog`.
 - Relatórios: exigem `catalog.view_product` e `operations.view_operationaltask`.
 - Gestão de contas: utilizadores com `is_staff`.
 
-O dashboard omite métricas para as quais o utilizador não tem permissão. As categorias são geridas no Django Admin e não podem ser apagadas enquanto existirem produtos associados.
+O dashboard omite métricas para as quais o utilizador não tem permissão. As categorias podem ser criadas, editadas e removidas na área do catálogo, conforme as permissões de categoria.
 
 ## Testes e análise estática
 
@@ -81,7 +82,7 @@ Os testes cobrem autenticação, permissões, operações básicas do catálogo 
 
 ## Internacionalização
 
-Os idiomas configurados são `es-419`, `es-ES`, `ca`, `gl`, `eu`, `en-US`, `en-GB`, `en`, `pt-BR` e `pt-PT`. Cada locale tem um catálogo `.po` e um `.mo` compilado apenas com cabeçalho para que os prefixos de idioma sejam reconhecidos; o texto de interface continua em inglês até ser traduzido e revisto por pessoas qualificadas. Estes catálogos não são traduções completas.
+Os idiomas configurados são `es-419`, `es-ES`, `ca`, `gl`, `eu`, `en-US`, `en-GB`, `en`, `pt-BR` e `pt-PT`. Os ficheiros `.po` são a fonte editável e os `.mo` são artefactos compilados versionados para execução. Os catálogos contêm traduções parciais, sem revisão humana completa. O comando `compile_locales` delega no `compilemessages` do Django e não reescreve os ficheiros `.po`.
 
 Depois de instalar GNU gettext:
 
@@ -91,15 +92,17 @@ django-admin makemessages -a
 django-admin compilemessages
 ```
 
-As traduções não devem ser declaradas completas até à revisão humana. `ProductTranslation` guarda o idioma, nome, descrição e informação de sustentabilidade em registos separados; a alteração do idioma da interface não modifica o texto original.
+As traduções não devem ser declaradas completas até à revisão humana. `ProductTranslation` guarda o idioma, nome, descrição e informação de sustentabilidade em registos separados; a alteração do idioma da interface não modifica o texto original. Não há fallback automático entre variantes regionais, como `pt-BR` e `pt-PT`.
 
 ## Produção e operações
 
 Use `DJANGO_SETTINGS_MODULE=config.settings.production`, PostgreSQL, HTTPS e Gunicorn. Configure `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `DATABASE_URL` e as credenciais SMTP por variáveis de ambiente. Se houver um proxy TLS, ative `DJANGO_TRUST_PROXY_SSL_HEADER=true` apenas quando o proxy confiável definir e filtrar `X-Forwarded-Proto`.
 
+As alterações submetidas ao GitHub são verificadas pelo workflow em `.github/workflows/ci.yml` com Ruff e pytest. As instruções para contribuição estão em [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ### Deploy no Railway
 
-O repositório inclui `railway.json`: o Railpack instala `requirements.txt`, recolhe os ficheiros estáticos durante o build, executa migrações antes de ativar a versão e verifica `/health`. O processo web usa Gunicorn ligado à porta `$PORT`. Conecte o serviço ao repositório GitHub e configure no Railway, como variáveis protegidas:
+O repositório inclui `railway.json`: o Railpack instala as dependências de produção, recolhe os ficheiros estáticos durante o build, executa migrações antes de ativar a versão e verifica `/health`. O processo web usa Gunicorn ligado à porta `$PORT`. Conecte o serviço ao repositório GitHub e configure no Railway, como variáveis protegidas:
 
 - `DJANGO_SETTINGS_MODULE=config.settings.production`
 - `DJANGO_SECRET_KEY`: segredo aleatório forte, exclusivo da produção.
@@ -108,7 +111,7 @@ O repositório inclui `railway.json`: o Railpack instala `requirements.txt`, rec
 - `DJANGO_CSRF_TRUSTED_ORIGINS`: origem HTTPS completa do domínio público atribuído pelo Railway.
 - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS=true` e `DEFAULT_FROM_EMAIL`: credenciais SMTP autorizadas; o settings de produção recusa iniciar sem SMTP configurado.
 
-Depois de gerar o domínio público, atualize `DJANGO_ALLOWED_HOSTS` e `DJANGO_CSRF_TRUSTED_ORIGINS` com esse domínio e faça novo deploy. O healthcheck do Railway usa `healthcheck.railway.app`, já permitido explicitamente. A aplicação não provisiona uma base de dados Railway nem migra dados automaticamente entre provedores; a URL deve apontar para uma base PostgreSQL já criada e autorizada.
+Depois de gerar o domínio público, atualize `DJANGO_ALLOWED_HOSTS` e `DJANGO_CSRF_TRUSTED_ORIGINS` com esse domínio e faça novo deploy. O healthcheck do Railway usa `healthcheck.railway.app`, já permitido explicitamente. A aplicação não provisiona uma base de dados Railway nem migra dados automaticamente entre provedores; a URL deve apontar para uma base PostgreSQL já criada e autorizada. A configuração no repositório não prova que exista um serviço Railway ativo; confirme deployment e domínio no painel Railway.
 
 ```powershell
 $env:DJANGO_SETTINGS_MODULE = "config.settings.production"
@@ -134,8 +137,12 @@ Não guarde credenciais no comando, no histórico do terminal ou no backup. Util
 
 - A pasta original estava vazia; este projeto foi criado como uma nova base após a auditoria inicial.
 - A suite automatizada foi executada localmente com SQLite em memória; uma ligação real ao PostgreSQL de produção ainda precisa de validação.
-- Catálogos gettext ainda sem traduções e sem `.mo`; a interface usa strings-fonte em inglês.
+- As traduções gettext são parciais e ainda não tiveram revisão linguística humana completa.
 - Os registos de auditoria são gravados na mesma base e não são invioláveis nem incluem snapshots completos de cada alteração.
 - A interface carrega Bootstrap e HTMX por CDN; uma implantação em rede restrita deve alojar esses ativos localmente.
 - A configuração técnica não valida a identidade visual oficial, processos, dados, permissões ou valor institucional com a Olokuti. Não foi feita revisão independente de segurança.
 - A validação técnica não equivale à validação institucional ou operacional pela Olokuti.
+
+## Licença e direitos de terceiros
+
+O código original e a documentação deste repositório são distribuídos sob a licença MIT disponível em [`LICENSE`](LICENSE). A licença não concede direitos sobre marcas, nomes, logótipos, dados ou materiais de terceiros; o nome Olokuti é usado apenas para identificar o contexto académico e não implica afiliação ou aprovação institucional.
