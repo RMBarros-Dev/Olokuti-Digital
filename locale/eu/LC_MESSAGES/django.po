@@ -1,0 +1,355 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Olokuti Digital MVP\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: eu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Academic and experimental MVP"
+msgstr "MVP akademiko eta esperimentala"
+
+msgid "Access control"
+msgstr "Sarbide-kontrola"
+
+msgid "Account access"
+msgstr "Konturako sarbidea"
+
+msgid "Action"
+msgstr "Ekintza"
+
+msgid "Actions"
+msgstr "Ekintzak"
+
+msgid "Active"
+msgstr "Aktibo"
+
+msgid "Add category"
+msgstr "Gehitu kategoria"
+
+msgid "Add or update translation"
+msgstr "Gehitu edo eguneratu itzulpena"
+
+msgid "Add product"
+msgstr "Gehitu produktua"
+
+msgid "Add task"
+msgstr "Gehitu zeregina"
+
+msgid "Add user"
+msgstr "Gehitu erabiltzailea"
+
+msgid "All actions"
+msgstr "Ekintza guztiak"
+
+msgid "All categories"
+msgstr "Kategoria guztiak"
+
+msgid "All priorities"
+msgstr "Lehentasun guztiak"
+
+msgid "All statuses"
+msgstr "Egoera guztiak"
+
+msgid "Apply dates"
+msgstr "Aplikatu datak"
+
+msgid "Assigned to"
+msgstr "Esleituta"
+
+msgid "Audit log"
+msgstr "ikuskaritza-erregistroa"
+
+msgid "Back to catalogue"
+msgstr "Itzuli katalogora"
+
+msgid "Back to sign in"
+msgstr "Itzuli saio-hasierara"
+
+msgid "By status"
+msgstr "Egoeraren arabera"
+
+msgid "Cancel"
+msgstr "Utzi"
+
+msgid "Cancelled"
+msgstr "Bertan behera"
+
+msgid "Catalogue"
+msgstr "Katalogoa"
+
+msgid "Categories"
+msgstr "Kategoriak"
+
+msgid "Category"
+msgstr "Kategoria"
+
+msgid "Completed tasks"
+msgstr "Osatutako zereginak"
+
+msgid "Create account"
+msgstr "Sortu kontua"
+
+msgid "Created from"
+msgstr "Noiztik sortua"
+
+msgid "Created through"
+msgstr "Noiz arte sortua"
+
+msgid "Date and time"
+msgstr "Data eta ordua"
+
+msgid "Delete"
+msgstr "Ezabatu"
+
+msgid "Delete product"
+msgstr "Ezabatu produktua"
+
+msgid "Delete task"
+msgstr "Ezabatu zeregina"
+
+msgid "Description"
+msgstr "Deskribapena"
+
+msgid "Done"
+msgstr "Eginda"
+
+msgid "Due date"
+msgstr "Epemuga"
+
+msgid "Edit"
+msgstr "Editatu"
+
+msgid "Edit product"
+msgstr "Editatu produktua"
+
+msgid "Edit task"
+msgstr "Editatu zeregina"
+
+msgid "Edit user"
+msgstr "Editatu erabiltzailea"
+
+msgid "Email"
+msgstr "Helbide elektronikoa"
+
+msgid "Export tasks CSV"
+msgstr "Esportatu zereginak CSV"
+
+msgid "Filter"
+msgstr "Iragazi"
+
+msgid "First name"
+msgstr "Izena"
+
+msgid "Forgot your password?"
+msgstr "Pasahitza ahaztu duzu?"
+
+msgid "Groups"
+msgstr "Taldeak"
+
+msgid "High"
+msgstr "Altua"
+
+msgid "In progress"
+msgstr "Abian"
+
+msgid "Inactive"
+msgstr "Inaktibo"
+
+msgid "Information governance"
+msgstr "Informazioaren gobernantza"
+
+msgid "Language"
+msgstr "Hizkuntza"
+
+msgid "Last name"
+msgstr "Abizena"
+
+msgid "Low"
+msgstr "Baxua"
+
+msgid "Manage"
+msgstr "Kudeatu"
+
+msgid "Name"
+msgstr "Izena"
+
+msgid "Next"
+msgstr "Hurrengoa"
+
+msgid "No products found"
+msgstr "Ez da produkturik aurkitu"
+
+msgid "No tasks found"
+msgstr "Ez da zereginik aurkitu"
+
+msgid "Normal"
+msgstr "Arrunta"
+
+msgid "Open admin"
+msgstr "Ireki administrazioa"
+
+msgid "Open audit log"
+msgstr "Ireki ikuskaritza"
+
+msgid "Open catalogue"
+msgstr "Ireki katalogoa"
+
+msgid "Open tasks"
+msgstr "Zeregin irekiak"
+
+msgid "Operational coordination"
+msgstr "Koordinazio operatiboa"
+
+msgid "Operations"
+msgstr "Operazioak"
+
+msgid "Origin"
+msgstr "Jatorria"
+
+msgid "Overdue tasks"
+msgstr "Epez kanpoko zereginak"
+
+msgid "Overview"
+msgstr "Ikuspegi orokorra"
+
+msgid "Page %(current)s of %(total)s"
+msgstr "%(current)s. orrialdea %(total)s(e)tik"
+
+msgid "Password"
+msgstr "Pasahitza"
+
+msgid "Previous"
+msgstr "Aurrekoa"
+
+msgid "Priority"
+msgstr "Lehentasuna"
+
+msgid "Product"
+msgstr "Produktua"
+
+msgid "Products"
+msgstr "Produktuak"
+
+msgid "Products recorded"
+msgstr "Erregistratutako produktuak"
+
+msgid "Recent activity"
+msgstr "Azken jarduera"
+
+msgid "Record ID"
+msgstr "Erregistroaren IDa"
+
+msgid "Record type"
+msgstr "Erregistro mota"
+
+msgid "Reports"
+msgstr "Txostenak"
+
+msgid "Review"
+msgstr "Berrikuspena"
+
+msgid "Save category"
+msgstr "Gorde kategoria"
+
+msgid "Save changes"
+msgstr "Gorde aldaketak"
+
+msgid "Save product"
+msgstr "Gorde produktua"
+
+msgid "Save task"
+msgstr "Gorde zeregina"
+
+msgid "Save translation"
+msgstr "Gorde itzulpena"
+
+msgid "Search products"
+msgstr "Bilatu produktuak"
+
+msgid "Search products, origin, or details"
+msgstr "Bilatu produktuak, jatorria edo xehetasunak"
+
+msgid "Search task titles"
+msgstr "Bilatu zereginen izenburuak"
+
+msgid "Search tasks"
+msgstr "Bilatu zereginak"
+
+msgid "See reports"
+msgstr "Ikusi txostenak"
+
+msgid "Setup default groups"
+msgstr "Konfiguratu talde lehenetsiak"
+
+msgid "Sign in"
+msgstr "Hasi saioa"
+
+msgid "Sign in to continue to Olokuti Digital."
+msgstr "Hasi saioa Olokuti Digital-en jarraitzeko."
+
+msgid "Sign out"
+msgstr "Itxi saioa"
+
+msgid "Status"
+msgstr "Egoera"
+
+msgid "Sustainability information"
+msgstr "Jasangarritasun informazioa"
+
+msgid "Task"
+msgstr "Zeregina"
+
+msgid "Task status"
+msgstr "Zereginen egoera"
+
+msgid "Task summary"
+msgstr "Zereginen laburpena"
+
+msgid "Tasks"
+msgstr "Zereginak"
+
+msgid "Tasks in selected period"
+msgstr "Hautatutako aldiko zereginak"
+
+msgid "Title"
+msgstr "Izenburua"
+
+msgid "To do"
+msgstr "Egiteko"
+
+msgid "Traceability"
+msgstr "Trazabilitatea"
+
+msgid "Translated description"
+msgstr "Itzulitako deskribapena"
+
+msgid "Translated name"
+msgstr "Itzulitako izena"
+
+msgid "Translated sustainability information"
+msgstr "Itzulitako jasangarritasun informazioa"
+
+msgid "Translations"
+msgstr "Itzulpenak"
+
+msgid "Urgent"
+msgstr "Premiazkoa"
+
+msgid "User"
+msgstr "Erabiltzailea"
+
+msgid "Username"
+msgstr "Erabiltzaile-izena"
+
+msgid "Users"
+msgstr "Erabiltzaileak"
+
+msgid "View tasks"
+msgstr "Ikusi zereginak"
+
+msgid "Welcome back"
+msgstr "Ongi etorri berriro"
+
+msgid "Workspace"
+msgstr "Lan-eremua"

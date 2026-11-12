@@ -1,0 +1,106 @@
+{% load i18n static %}
+<!doctype html>
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% trans 'An experimental workspace for sustainable commerce operations.' %}">
+  <title>{% block title %}Olokuti Digital{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-yEPZ7jP9S0QKiUQ0m3jjsO4ProIW7wvR9gXkI7JOGa2XVsw53Yke2bsdkBbjmmiX" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body data-request-error="{% trans 'This list could not be refreshed. Use the filter button to try again.' %}">
+  <a class="skip-link" href="#main-content">{% trans "Skip to content" %}</a>
+  <nav class="navbar navbar-expand-lg navbar-dark app-navbar">
+    <div class="container-fluid app-container">
+      <a class="navbar-brand" href="{% url 'accounts:dashboard' %}">olokuti <span>digital</span></a>
+      {% if user.is_authenticated %}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link{% if request.resolver_match.url_name == 'dashboard' %} active{% endif %}" href="{% url 'accounts:dashboard' %}">{% trans "Overview" %}</a></li>
+          {% if perms.catalog.view_product %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'catalog' %} active{% endif %}" href="{% url 'catalog:product-list' %}">{% trans "Catalogue" %}</a></li>{% endif %}
+          {% if perms.operations.view_operationaltask %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'operations' %} active{% endif %}" href="{% url 'operations:task-list' %}">{% trans "Tasks" %}</a></li>{% endif %}
+          {% if perms.operations.view_operationaltask and perms.catalog.view_product %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'reports' %} active{% endif %}" href="{% url 'reports:summary' %}">{% trans "Reports" %}</a></li>{% endif %}
+          {% if perms.audit.view_auditlog %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'audit' %} active{% endif %}" href="{% url 'audit:list' %}">{% trans "Audit log" %}</a></li>{% endif %}
+          {% if user.is_staff %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.url_name == 'user-list' or request.resolver_match.url_name == 'user-create' or request.resolver_match.url_name == 'user-update' %} active{% endif %}" href="{% url 'accounts:user-list' %}">{% trans "Users" %}</a></li>{% endif %}
+        </ul>
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 app-nav-actions">
+          <form class="language-form" action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <label class="visually-hidden" for="language-select">{% trans "Language" %}</label>
+            <select id="language-select" name="language" class="form-select form-select-sm" aria-label="{% trans 'Language' %}" onchange="this.form.submit()">
+              {% get_current_language as CURRENT_LANGUAGE %}
+              {% get_available_languages as AVAILABLE_LANGUAGES %}
+              {% for code, name in AVAILABLE_LANGUAGES %}
+                <option value="{{ code }}"{% if code == CURRENT_LANGUAGE %} selected{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </form>
+          <span class="nav-user">{{ user.get_username }}</span>
+          <form action="{% url 'accounts:logout' %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-light" type="submit">{% trans "Sign out" %}</button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      <div class="ms-auto d-flex align-items-center">
+        <form class="language-form" action="{% url 'set_language' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <label class="visually-hidden" for="language-select-anon">{% trans "Language" %}</label>
+          <select id="language-select-anon" name="language" class="form-select form-select-sm" aria-label="{% trans 'Language' %}" onchange="this.form.submit()">
+            {% get_current_language as CURRENT_LANGUAGE %}
+            {% get_available_languages as AVAILABLE_LANGUAGES %}
+            {% for code, name in AVAILABLE_LANGUAGES %}
+              <option value="{{ code }}"{% if code == CURRENT_LANGUAGE %} selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </nav>
+
+  {% if user.is_authenticated %}
+    <div class="app-container container-fluid">
+      {% if messages %}
+        <div class="messages-stack" aria-live="polite">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="status">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Dismiss' %}"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <main id="main-content" class="page-main" tabindex="-1">
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="app-footer">
+        <span>{% trans "Academic and experimental MVP" %}</span>
+        <span>{% trans "Operational needs and institutional value remain to be validated in field research." %}</span>
+      </footer>
+    </div>
+  {% else %}
+    <main id="main-content" class="auth-shell" tabindex="-1">
+      {% if messages %}
+        <div class="container pt-3" aria-live="polite">
+          {% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }}" role="status">{{ message }}</div>{% endfor %}
+        </div>
+      {% endif %}
+      {% block auth_content %}{% endblock %}
+    </main>
+  {% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.bundle.min.js" integrity="sha384-WyOxWvTyr1QaMPfiPJSv76iReVthorl5uWlFtZPyK0IEB0hGzo9y5Bp9mYanr8Bu" crossorigin="anonymous"></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

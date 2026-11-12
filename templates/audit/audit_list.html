@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Audit log" %} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header"><div><p class="eyebrow">{% trans "Traceability" %}</p><h1>{% trans "Audit log" %}</h1><p class="text-secondary mb-0">{% trans "Events include actor, action, entity, and time. Event details avoid copying record content." %}</p></div></header>
+<form class="filter-bar" method="get" action="{% url 'audit:list' %}" hx-get="{% url 'audit:list' %}" hx-target="#audit-results" hx-push-url="true" hx-trigger="input changed delay:400ms from:input, change from:select, submit">
+  <div class="filter-search"><label class="visually-hidden" for="audit-entity">{% trans "Filter by record type" %}</label><input id="audit-entity" class="form-control" name="entity" value="{{ entity_query }}" placeholder="{% trans 'Record type' %}"></div>
+  <div><label class="visually-hidden" for="audit-action">{% trans "Action" %}</label><select id="audit-action" class="form-select" name="action"><option value="">{% trans "All actions" %}</option>{% for value in actions %}<option value="{{ value }}"{% if selected_action == value %} selected{% endif %}>{{ value|capfirst }}</option>{% endfor %}</select></div>
+  <button class="btn btn-outline-secondary" type="submit">{% trans "Filter" %}</button>
+</form>
+<div id="audit-results">{% include "audit/_audit_table.html" %}</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Overview" %} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Workspace" %}</p>
+    <h1>{% trans "Overview" %}</h1>
+    <p class="text-secondary mb-0">{% trans "A working view of the records entered in this prototype." %}</p>
+  </div>
+</header>
+<div class="row g-3 metric-grid">
+  {% if can_view_products %}<div class="col-12 col-sm-6 col-xl-3"><article class="metric-card"><span class="metric-label">{% trans "Products" %}</span><strong>{{ product_count }}</strong><a href="{% url 'catalog:product-list' %}">{% trans "Open catalogue" %} <span aria-hidden="true">→</span></a></article></div>{% endif %}
+  {% if can_view_tasks %}
+  <div class="col-12 col-sm-6 col-xl-3"><article class="metric-card"><span class="metric-label">{% trans "Open tasks" %}</span><strong>{{ pending_count }}</strong><a href="{% url 'operations:task-list' %}">{% trans "View tasks" %} <span aria-hidden="true">→</span></a></article></div>
+  <div class="col-12 col-sm-6 col-xl-3"><article class="metric-card"><span class="metric-label">{% trans "Completed tasks" %}</span><strong>{{ completed_count }}</strong><span class="metric-note">{% trans "Marked done in this workspace" %}</span></article></div>
+  <div class="col-12 col-sm-6 col-xl-3"><article class="metric-card metric-card-warm"><span class="metric-label">{% trans "Overdue tasks" %}</span><strong>{{ overdue_count }}</strong><span class="metric-note">{% trans "Open tasks past their due date" %}</span></article></div>
+  {% endif %}
+</div>
+
+{% if can_view_tasks %}
+<section class="content-section">
+  <div class="section-heading"><div><p class="eyebrow">{% trans "Operations" %}</p><h2>{% trans "Task status" %}</h2></div><a class="text-link" href="{% url 'reports:summary' %}">{% trans "See reports" %} <span aria-hidden="true">→</span></a></div>
+  <div class="status-strip">
+    {% for item in task_statuses %}<div class="status-summary"><span>{{ item.label }}</span><strong>{{ item.total }}</strong><div class="status-bar-track"><div class="status-bar-fill" style="width: {{ item.percent }}%"></div></div></div>{% empty %}<p class="empty-note">{% trans "No task records yet. Counts will appear when tasks are added." %}</p>{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if perms.audit.view_auditlog %}
+<section class="content-section">
+  <div class="section-heading"><div><p class="eyebrow">{% trans "Traceability" %}</p><h2>{% trans "Recent activity" %}</h2></div><a class="text-link" href="{% url 'audit:list' %}">{% trans "Open audit log" %} <span aria-hidden="true">→</span></a></div>
+  <div class="surface-card">
+    {% for event in recent_activity %}
+      <div class="activity-row"><span class="activity-mark" aria-hidden="true"></span><div><strong>{{ event.action_label }}</strong><span>{{ event.entity_label }} · {{ event.entity_id|truncatechars:12 }}</span></div><time datetime="{{ event.timestamp|date:'c' }}">{{ event.timestamp|date:"SHORT_DATETIME_FORMAT" }}</time></div>
+    {% empty %}<p class="empty-note mb-0">{% trans "No activity has been recorded yet." %}</p>{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if not can_view_products and not can_view_tasks %}
+  <div class="empty-state"><span class="empty-state-icon" aria-hidden="true">✳</span><h2>{% trans "Your workspace is ready" %}</h2><p>{% trans "Ask an administrator to assign the catalogue or task permissions you need." %}</p></div>
+{% endif %}
+{% endblock %}

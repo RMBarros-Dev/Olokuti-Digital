@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Categories" %} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Information governance" %}</p>
+    <h1>{% trans "Categories" %}</h1>
+    <p class="text-secondary mb-0">{% trans "Organize catalogue products by category. Categories with linked products are protected from deletion." %}</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'catalog:product-list' %}">← {% trans "Back to catalogue" %}</a>
+</header>
+<div class="row g-4">
+  <div class="col-12 col-lg-7">
+    <div class="surface-card table-responsive">
+      <table class="table app-table align-middle mb-0">
+        <thead><tr><th>{% trans "Category" %}</th><th>{% trans "Description" %}</th><th>{% trans "Products" %}</th><th></th></tr></thead>
+        <tbody>
+        {% for category in categories %}
+          <tr>
+            <td class="fw-semibold">{{ category.name }}</td>
+            <td>{{ category.description|default:"—" }}</td>
+            <td><span class="badge text-bg-light">{{ category.product_count }}</span></td>
+            <td class="text-end">
+              {% if perms.catalog.delete_product and category.product_count == 0 %}
+              <form method="post" action="{% url 'catalog:category-delete' category.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-link text-danger p-0" type="submit">{% trans "Delete" %}</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="empty-note">{% trans "No categories created yet." %}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% if perms.catalog.add_product %}
+  <div class="col-12 col-lg-5">
+    <section class="form-card">
+      <h2 class="h5 mb-3">{% trans "Add category" %}</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>{% endfor %}
+        <div class="form-actions"><button class="btn btn-primary" type="submit">{% trans "Save category" %}</button></div>
+      </form>
+    </section>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+

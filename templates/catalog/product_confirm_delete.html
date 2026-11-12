@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Delete product" %} · Olokuti Digital{% endblock %}
+{% block content %}<section class="confirm-card"><p class="eyebrow">{% trans "Catalogue" %}</p><h1>{% trans "Delete this product record?" %}</h1><p class="text-secondary">{% blocktrans with name=product.name %}The record “{{ name }}” will be removed. This cannot be undone.{% endblocktrans %}</p><form method="post">{% csrf_token %}<div class="form-actions"><a class="btn btn-outline-secondary" href="{% url 'catalog:product-list' %}">{% trans "Cancel" %}</a><button class="btn btn-danger" type="submit">{% trans "Delete product" %}</button></div></form></section>{% endblock %}

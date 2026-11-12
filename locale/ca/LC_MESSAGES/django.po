@@ -1,0 +1,634 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Olokuti Digital MVP\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ca\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "A password reset was requested for your Olokuti Digital account."
+msgstr "Se solicitó un restablecimiento de contraseña para su cuenta de Olokuti Digital."
+
+msgid "A simple shared list for work recorded in this prototype."
+msgstr "Una lista compartida sencilla para el trabajo registrado en este prototipo."
+
+msgid "A working view of the records entered in this prototype."
+msgstr "Una vista operativa de los registros introducidos en este prototipo."
+
+msgid "Academic and experimental MVP"
+msgstr "MVP acadèmic i experimental"
+
+msgid "Access control"
+msgstr "Control d'accés"
+
+msgid "Account access"
+msgstr "Accés al compte"
+
+msgid "Action"
+msgstr "Acció"
+
+msgid "Actions"
+msgstr "Accions"
+
+msgid "Active"
+msgstr "Actiu"
+
+msgid "Add category"
+msgstr "Afegir categoria"
+
+msgid "Add or update translation"
+msgstr "Afegir o actualitzar traducció"
+
+msgid "Add product"
+msgstr "Afegir producte"
+
+msgid "Add task"
+msgstr "Afegir tasca"
+
+msgid "Add user"
+msgstr "Afegir usuari"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Aggregates use only records in this prototype."
+msgstr "Las agregaciones usan únicamente los registros de este prototipo."
+
+msgid "All actions"
+msgstr "Totes les accions"
+
+msgid "All categories"
+msgstr "Totes les categories"
+
+msgid "All groups"
+msgstr "Todos los grupos"
+
+msgid "All priorities"
+msgstr "Totes les prioritats"
+
+msgid "All statuses"
+msgstr "Tots els estats"
+
+msgid "All tasks"
+msgstr "Todas las tareas"
+
+msgid "An experimental workspace for sustainable commerce operations."
+msgstr "Un espacio experimental para operaciones de comercio sostenible."
+
+msgid "Apply dates"
+msgstr "Aplicar dates"
+
+msgid "Ask an administrator to assign the catalogue or task permissions you need."
+msgstr "Pida a un administrador que le asigne los permisos de catálogo o tareas que necesita."
+
+msgid "Assigned to"
+msgstr "Assignat a"
+
+msgid "Audit log"
+msgstr "Registre d'auditoria"
+
+msgid "Audit pages"
+msgstr "Páginas de auditoría"
+
+msgid "Back to catalogue"
+msgstr "Tornar al catàleg"
+
+msgid "Back to sign in"
+msgstr "Tornar a l'inici de sessió"
+
+msgid "By status"
+msgstr "Per estat"
+
+msgid "Cancel"
+msgstr "Cancel·lar"
+
+msgid "Cancelled"
+msgstr "Cancel·lada"
+
+msgid "Cannot delete this category while products are still assigned to it."
+msgstr "No se puede eliminar esta categoría mientras tenga productos asignados."
+
+msgid "Catalogue"
+msgstr "Catàleg"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Category"
+msgstr "Categoria"
+
+msgid "Category created."
+msgstr "Categoria creada."
+
+msgid "Category deleted."
+msgstr "Categoria eliminada."
+
+msgid "Category name"
+msgstr "Nom de la categoria"
+
+msgid "Check your email"
+msgstr "Revise su correo electrónico"
+
+msgid "Choose a new password"
+msgstr "Elija una nueva contraseña"
+
+msgid "Completed tasks"
+msgstr "Tasques completades"
+
+msgid "Configured"
+msgstr "Configurado"
+
+msgid "Create account"
+msgstr "Crear compte"
+
+msgid "Created"
+msgstr "Creado"
+
+msgid "Created from"
+msgstr "Creat des de"
+
+msgid "Created through"
+msgstr "Creat fins a"
+
+msgid "Date and time"
+msgstr "Data i hora"
+
+msgid "Default permission groups configured."
+msgstr "Grupos de permisos predeterminados configurados."
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "Delete product"
+msgstr "Eliminar producte"
+
+msgid "Delete task"
+msgstr "Eliminar tasca"
+
+msgid "Delete this product record?"
+msgstr "¿Eliminar este registro de producto?"
+
+msgid "Delete this task?"
+msgstr "¿Eliminar esta tarea?"
+
+msgid "Deleted"
+msgstr "Eliminado"
+
+msgid "Description"
+msgstr "Descripció"
+
+msgid "Dismiss"
+msgstr "Cerrar"
+
+msgid "Done"
+msgstr "Completada"
+
+msgid "Due date"
+msgstr "Data límit"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Edit product"
+msgstr "Editar producte"
+
+msgid "Edit task"
+msgstr "Editar tasca"
+
+msgid "Edit user"
+msgstr "Editar usuari"
+
+msgid "Email"
+msgstr "Correu electrònic"
+
+msgid "Email address"
+msgstr "Dirección de correo electrónico"
+
+msgid "End date must be on or after start date."
+msgstr "La fecha final debe ser igual o posterior a la fecha inicial."
+
+msgid "Enter the email address on your account. If it matches an active account, reset instructions will be sent."
+msgstr "Introduzca el correo de su cuenta. Si coincide con una cuenta activa, se enviarán las instrucciones."
+
+msgid "Events include actor, action, entity, and time. Event details avoid copying record content."
+msgstr "Los eventos incluyen autor, acción, entidad y fecha, sin copiar el contenido del registro."
+
+msgid "Experimental workspace"
+msgstr "Espacio experimental"
+
+msgid "Export CSV"
+msgstr "Exportar CSV"
+
+msgid "Export tasks CSV"
+msgstr "Exportar tasques CSV"
+
+msgid "Filter"
+msgstr "Filtrar"
+
+msgid "Filter by record type"
+msgstr "Filtrar por tipo de registro"
+
+msgid "First 100 shown below"
+msgstr "Primeros 100 mostrados abajo"
+
+msgid "First name"
+msgstr "Nom"
+
+msgid "Forgot your password?"
+msgstr "Heu oblidat la contrasenya?"
+
+msgid "Groups"
+msgstr "Grups"
+
+msgid "High"
+msgstr "Alta"
+
+msgid "If an active account matches that address, password reset instructions are on their way."
+msgstr "Si una cuenta activa coincide con esa dirección, las instrucciones están en camino."
+
+msgid "If you did not request this change, you can ignore this message."
+msgstr "Si no solicitó este cambio, puede ignorar este mensaje."
+
+msgid "In progress"
+msgstr "En curs"
+
+msgid "Inactive"
+msgstr "Inactiu"
+
+msgid "Information governance"
+msgstr "Governança de la informació"
+
+msgid "Keep source information in its original language. Translations are stored separately."
+msgstr "Mantenga la información original en su idioma fuente. Las traducciones se guardan por separado."
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "Last name"
+msgstr "Cognoms"
+
+msgid "Leave blank to keep the current password."
+msgstr "Déjelo en blanco para mantener la contraseña actual."
+
+msgid "Low"
+msgstr "Baixa"
+
+msgid "Manage"
+msgstr "Gestionar"
+
+msgid "Manage accounts for this experimental workspace."
+msgstr "Gestione las cuentas de este espacio experimental."
+
+msgid "Marked done in this workspace"
+msgstr "Marcadas como completadas en este espacio"
+
+msgid "My tasks"
+msgstr "Mis tareas"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "New password (optional)"
+msgstr "Nueva contraseña (opcional)"
+
+msgid "Next"
+msgstr "Següent"
+
+msgid "No activity has been recorded yet."
+msgstr "Aún no se ha registrado actividad."
+
+msgid "No audit events found."
+msgstr "No se encontraron eventos de auditoría."
+
+msgid "No categories created yet."
+msgstr "Aún no se han creado categorías."
+
+msgid "No groups available yet. Use 'Setup default groups' on the Users page."
+msgstr "Aún no hay grupos disponibles. Use 'Configurar grupos predeterminados' en Usuarios."
+
+msgid "No products found"
+msgstr "No s'han trobat productes"
+
+msgid "No task records in this period."
+msgstr "No hay registros de tareas en este período."
+
+msgid "No task records yet. Counts will appear when tasks are added."
+msgstr "Aún no hay tareas. Los conteos aparecerán cuando se añadan tareas."
+
+msgid "No tasks found"
+msgstr "No s'han trobat tasques"
+
+msgid "No tasks match this period."
+msgstr "Ninguna tarea coincide con este período."
+
+msgid "No translations recorded yet for this product."
+msgstr "Aún no hay traducciones registradas para este producto."
+
+msgid "No user accounts found."
+msgstr "No se encontraron cuentas de usuario."
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Open admin"
+msgstr "Obrir administració"
+
+msgid "Open audit log"
+msgstr "Obrir auditoria"
+
+msgid "Open catalogue"
+msgstr "Obrir catàleg"
+
+msgid "Open tasks"
+msgstr "Tasques obertes"
+
+msgid "Open tasks past their due date"
+msgstr "Tareas abiertas fuera de plazo"
+
+msgid "Operational coordination"
+msgstr "Coordinació operativa"
+
+msgid "Operational needs and institutional value remain to be validated in field research."
+msgstr "Las necesidades operativas y el valor institucional siguen pendientes de validación en investigación de campo."
+
+msgid "Operational records"
+msgstr "Registros operativos"
+
+msgid "Operations"
+msgstr "Operacions"
+
+msgid "Organize catalogue products by category. Categories with linked products are protected from deletion."
+msgstr "Organice los productos del catálogo por categoría. Las categorías con productos vinculados están protegidas."
+
+msgid "Origin"
+msgstr "Origen"
+
+msgid "Original name"
+msgstr "Nombre original"
+
+msgid "Overdue"
+msgstr "Vencida"
+
+msgid "Overdue tasks"
+msgstr "Tasques vençudes"
+
+msgid "Overview"
+msgstr "Resum"
+
+msgid "Page %(current)s of %(total)s"
+msgstr "Pàgina %(current)s de %(total)s"
+
+msgid "Password"
+msgstr "Contrasenya"
+
+msgid "Password updated"
+msgstr "Contraseña actualizada"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Priority"
+msgstr "Prioritat"
+
+msgid "Product"
+msgstr "Producte"
+
+msgid "Product added to the catalogue."
+msgstr "Producto añadido al catálogo."
+
+msgid "Product changes saved."
+msgstr "Cambios del producto guardados."
+
+msgid "Product deleted."
+msgstr "Producto eliminado."
+
+msgid "Product pages"
+msgstr "Páginas de productos"
+
+msgid "Product records entered in this prototype."
+msgstr "Registros de productos introducidos en este prototipo."
+
+msgid "Product translation removed."
+msgstr "Traducción del producto eliminada."
+
+msgid "Product translation saved."
+msgstr "Traducción del producto guardada."
+
+msgid "Products"
+msgstr "Productes"
+
+msgid "Products recorded"
+msgstr "Productes registrats"
+
+msgid "Recent activity"
+msgstr "Activitat recent"
+
+msgid "Record ID"
+msgstr "ID del registre"
+
+msgid "Record type"
+msgstr "Tipus de registre"
+
+msgid "Reports"
+msgstr "Informes"
+
+msgid "Request a new password reset link to continue."
+msgstr "Solicite un nuevo enlace de restablecimiento de contraseña para continuar."
+
+msgid "Request another link"
+msgstr "Solicitar otro enlace"
+
+msgid "Reset password"
+msgstr "Restablecer contraseña"
+
+msgid "Reset your password"
+msgstr "Restablezca su contraseña"
+
+msgid "Review"
+msgstr "Revisió"
+
+msgid "Save category"
+msgstr "Desar categoria"
+
+msgid "Save changes"
+msgstr "Desar canvis"
+
+msgid "Save product"
+msgstr "Desar producte"
+
+msgid "Save task"
+msgstr "Desar tasca"
+
+msgid "Save translation"
+msgstr "Desar traducció"
+
+msgid "Search products"
+msgstr "Cercar productes"
+
+msgid "Search products, origin, or details"
+msgstr "Cercar productes, origen o detalls"
+
+msgid "Search task titles"
+msgstr "Cercar títols de tasques"
+
+msgid "Search tasks"
+msgstr "Cercar tasques"
+
+msgid "Search username, name, or email"
+msgstr "Buscar usuario, nombre o correo"
+
+msgid "Search users"
+msgstr "Buscar usuarios"
+
+msgid "See reports"
+msgstr "Veure informes"
+
+msgid "Send reset instructions"
+msgstr "Enviar instrucciones"
+
+msgid "Set password"
+msgstr "Establecer contraseña"
+
+msgid "Setup default groups"
+msgstr "Configurar grups predeterminats"
+
+msgid "Sign in"
+msgstr "Iniciar sessió"
+
+msgid "Sign in to continue to Olokuti Digital."
+msgstr "Inicieu sessió per continuar a Olokuti Digital."
+
+msgid "Sign out"
+msgstr "Tancar sessió"
+
+msgid "Skip to content"
+msgstr "Saltar al contenido"
+
+msgid "Staff"
+msgstr "Personal"
+
+msgid "Staff access (can manage users)"
+msgstr "Acceso de gestión (puede gestionar usuarios)"
+
+msgid "Status"
+msgstr "Estat"
+
+msgid "Status changed"
+msgstr "Estado modificado"
+
+msgid "Sustainability information"
+msgstr "Informació de sostenibilitat"
+
+msgid "Task"
+msgstr "Tasca"
+
+msgid "Task changes saved."
+msgstr "Cambios de la tarea guardados."
+
+msgid "Task created."
+msgstr "Tarea creada."
+
+msgid "Task deleted."
+msgstr "Tarea eliminada."
+
+msgid "Task pages"
+msgstr "Páginas de tareas"
+
+msgid "Task status"
+msgstr "Estat de les tasques"
+
+msgid "Task status updated."
+msgstr "Estado de la tarea actualizado."
+
+msgid "Task summary"
+msgstr "Resum de tasques"
+
+msgid "Tasks"
+msgstr "Tasques"
+
+msgid "Tasks in selected period"
+msgstr "Tasques en el període seleccionat"
+
+msgid "The record “%(name)s” will be removed. This cannot be undone."
+msgstr "El registro “%(name)s” será eliminado. Esta acción no se puede deshacer."
+
+msgid "This list could not be refreshed. Use the filter button to try again."
+msgstr "No se pudo actualizar la lista. Use el botón de filtrar para intentarlo de nuevo."
+
+msgid "This reset link is no longer valid"
+msgstr "Este enlace de restablecimiento ya no es válido"
+
+msgid "Title"
+msgstr "Títol"
+
+msgid "To do"
+msgstr "Pendent"
+
+msgid "Toggle navigation"
+msgstr "Alternar navegación"
+
+msgid "Traceability"
+msgstr "Traçabilitat"
+
+msgid "Translated description"
+msgstr "Descripció traduïda"
+
+msgid "Translated name"
+msgstr "Nom traduït"
+
+msgid "Translated sustainability information"
+msgstr "Informació de sostenibilitat traduïda"
+
+msgid "Translations"
+msgstr "Traduccions"
+
+msgid "Try another filter, or add the first task."
+msgstr "Pruebe otro filtro o añada la primera tarea."
+
+msgid "Try another search, or add the first record."
+msgstr "Pruebe otra búsqueda o añada el primer registro."
+
+msgid "Updated"
+msgstr "Actualizado"
+
+msgid "Urgent"
+msgstr "Urgent"
+
+msgid "Use Django Admin to edit existing accounts and permissions. Group membership controls access to each module."
+msgstr "Use los grupos para controlar el acceso a cada módulo o abra Django Admin para opciones avanzadas."
+
+msgid "User"
+msgstr "Usuari"
+
+msgid "User account created."
+msgstr "Cuenta de usuario creada."
+
+msgid "User account updated."
+msgstr "Cuenta de usuario actualizada."
+
+msgid "Username"
+msgstr "Nom d'usuari"
+
+msgid "Users"
+msgstr "Usuaris"
+
+msgid "View"
+msgstr "Ver"
+
+msgid "View tasks"
+msgstr "Veure tasques"
+
+msgid "Welcome back"
+msgstr "Benvingut de nou"
+
+msgid "Workspace"
+msgstr "Espai de treball"
+
+msgid "Your password has been changed."
+msgstr "Su contraseña ha sido modificada."
+
+msgid "Your workspace is ready"
+msgstr "Su espacio de trabajo está listo"
+
+msgid "“%(title)s” will be removed. This cannot be undone."
+msgstr "“%(title)s” será eliminada. Esta acción no se puede deshacer."

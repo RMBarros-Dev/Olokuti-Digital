@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Catalogue" %} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Information governance" %}</p>
+    <h1>{% trans "Catalogue" %}</h1>
+    <p class="text-secondary mb-0">{% trans "Product records entered in this prototype." %}</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'catalog:product-export-csv' %}?q={{ query|urlencode }}&category={{ selected_category|urlencode }}">{% trans "Export CSV" %}</a>
+    <a class="btn btn-outline-secondary" href="{% url 'catalog:category-list' %}">{% trans "Categories" %}</a>
+    {% if perms.catalog.add_product %}<a class="btn btn-primary" href="{% url 'catalog:product-create' %}"><span aria-hidden="true">＋</span> {% trans "Add product" %}</a>{% endif %}
+  </div>
+</header>
+<form class="filter-bar" method="get" action="{% url 'catalog:product-list' %}" hx-get="{% url 'catalog:product-list' %}" hx-target="#catalog-results" hx-push-url="true" hx-trigger="input changed delay:400ms from:input, change from:select, submit">
+  <div class="filter-search"><label class="visually-hidden" for="product-search">{% trans "Search products" %}</label><input id="product-search" class="form-control" type="search" name="q" value="{{ query }}" placeholder="{% trans 'Search products, origin, or details' %}"></div>
+  <div><label class="visually-hidden" for="category-filter">{% trans "Category" %}</label><select id="category-filter" class="form-select" name="category"><option value="">{% trans "All categories" %}</option>{% for category in categories %}<option value="{{ category.pk }}"{% if selected_category == category.pk|stringformat:"s" %} selected{% endif %}>{{ category.name }}</option>{% endfor %}</select></div>
+  <button class="btn btn-outline-secondary" type="submit">{% trans "Filter" %}</button>
+</form>
+<div id="catalog-results">{% include "catalog/_product_table.html" %}</div>
+{% endblock %}

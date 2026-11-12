@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ heading }} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header"><div><p class="eyebrow">{% trans "Information governance" %}</p><h1>{{ heading }}</h1><p class="text-secondary mb-0">{% trans "Keep source information in its original language. Translations are stored separately." %}</p></div></header>
+<div class="row g-4">
+  <div class="{% if product %}col-12 col-lg-6{% else %}col-12{% endif %}">
+    <section class="form-card w-100"><form method="post" novalidate>{% csrf_token %}
+    {% for field in form %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<div class="form-hint">{{ field.help_text }}</div>{% endif %}{% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>{% endfor %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="form-actions"><a class="btn btn-outline-secondary" href="{% url 'catalog:product-list' %}">{% trans "Cancel" %}</a><button class="btn btn-primary" type="submit">{% trans "Save product" %}</button></div>
+    </form></section>
+  </div>
+  {% if product %}
+  <div class="col-12 col-lg-6">
+    <section class="form-card w-100 mb-4">
+      <h2 class="h5 mb-3">{% trans "Translations" %}</h2>
+      {% if translations %}
+      <div class="table-responsive mb-3">
+        <table class="table table-sm align-middle mb-0">
+          <thead><tr><th>{% trans "Language" %}</th><th>{% trans "Translated name" %}</th><th></th></tr></thead>
+          <tbody>
+          {% for item in translations %}
+            <tr>
+              <td><span class="badge text-bg-light">{{ item.get_locale_display }} ({{ item.locale }})</span></td>
+              <td>
+                <div class="fw-semibold">{{ item.name }}</div>
+                {% if item.description %}<div class="text-secondary small">{{ item.description|truncatechars:60 }}</div>{% endif %}
+              </td>
+              <td class="text-end text-nowrap">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-link p-0 me-2 js-load-translation"
+                  data-locale="{{ item.locale }}"
+                  data-name="{{ item.name }}"
+                  data-description="{{ item.description }}"
+                  data-sustainability="{{ item.sustainability_info }}"
+                >{% trans "Edit" %}</button>
+                <form method="post" action="{% url 'catalog:product-translation-delete' product.pk item.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-link text-danger p-0" type="submit">{% trans "Delete" %}</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-secondary small">{% trans "No translations recorded yet for this product." %}</p>
+      {% endif %}
+      <hr>
+      <h3 class="h6 mb-3">{% trans "Add or update translation" %}</h3>
+      <form id="translation-editor-form" method="post" action="{% url 'catalog:product-translation-save' product.pk %}" novalidate>
+        {% csrf_token %}
+        {% for field in translation_form %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>{% endfor %}
+        <div class="form-actions"><button class="btn btn-outline-primary btn-sm" type="submit">{% trans "Save translation" %}</button></div>
+      </form>
+    </section>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
