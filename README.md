@@ -1,7 +1,8 @@
 <h1 align="center">Olokuti Digital</h1>
 
 <p align="center">
-  MVP acadêmico e experimental para explorar fluxos de catálogo, tarefas e organização operacional.
+  MVP acadêmico e experimental para explorar fluxos de catálogo, tarefas e organização operacional.<br>
+  <strong>Aplicação online:</strong> <a href="https://olokuti-web-production.up.railway.app/">https://olokuti-web-production.up.railway.app/</a>
 </p>
 
 <p align="center">
@@ -222,6 +223,9 @@ python manage.py compile_locales
 
 ## Deploy e operação
 
+- **Ambiente de demonstração online (24/7):** [https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/)
+- **Verificação de saúde e banco (Supabase PostgreSQL):** [https://olokuti-web-production.up.railway.app/health?db=1](https://olokuti-web-production.up.railway.app/health?db=1)
+
 ### Railway
 
 O repositório contém `railway.json` com comandos para coleta de arquivos estáticos, migrações pré-deploy, Gunicorn, healthcheck `/health` e política de reinício. O arquivo não cria um projeto Railway, banco de dados, domínio ou variáveis e não comprova que exista um deployment ativo.
@@ -294,11 +298,13 @@ Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e
 ├── templates/          # templates Django
 ├── tests/              # testes automatizados
 ├── requirements/       # dependências de produção e desenvolvimento
-├── .github/workflows/  # CI
+├── .github/workflows/  # CI e Keep-Alive 24/7
 ├── .env.example
 ├── manage.py
 ├── Procfile
 ├── railway.json        # configuração Railway legada
+├── render.yaml         # Render Blueprint (hospedagem gratuita)
+├── vercel.json         # Vercel Serverless Python WSGI
 └── pyproject.toml      # configuração do pytest e Ruff
 ```
 
