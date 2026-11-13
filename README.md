@@ -175,7 +175,14 @@ As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em pro
 
 ## Contas, grupos e permissões
 
-O superusuário criado com `createsuperuser` acessa o Django Admin. Usuários `is_staff` podem gerenciar contas pela interface em `/en/accounts/users/`. Na própria página, a ação de configurar grupos cria os grupos padrão e acrescenta as permissões-base sem remover permissões personalizadas existentes.
+Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`), recebendo automaticamente os grupos `Catalogue Team` e `Operations Team`.
+
+Para avaliação rápida no ambiente de demonstração online ([https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/)), também está disponível a conta administrativa de demonstração:
+
+- **Usuário:** `admin`
+- **Senha:** `admin123`
+
+O superusuário acessa o Django Admin e a gestão de contas pela interface em `/en/accounts/users/`. Na própria página, a ação de configurar grupos cria os grupos padrão e acrescenta as permissões-base sem remover permissões personalizadas existentes.
 
 | Grupo padrão | Permissões incluídas |
 | --- | --- |
