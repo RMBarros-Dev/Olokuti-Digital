@@ -1,5 +1,6 @@
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
+from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import include, path
 from django.utils.translation import get_language
@@ -10,6 +11,10 @@ def root_redirect(request):
 
 
 def health_check(request):
+    if request.GET.get("db") == "1":
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
     return HttpResponse("ok", content_type="text/plain")
 
 

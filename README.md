@@ -5,9 +5,12 @@
 </p>
 
 <p align="center">
+  <a href="https://olokuti-web-production.up.railway.app/"><img src="https://img.shields.io/badge/Demo%20Online-Railway-0B0D0E?logo=railway&logoColor=white" alt="Aplicação Online no Railway"></a>
   <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml/badge.svg?branch=main" alt="Status da CI"></a>
+  <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml/badge.svg?branch=main" alt="Keep-Alive 24/7"></a>
   <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python 3.12">
   <img src="https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white" alt="Django 5.2">
+  <img src="https://img.shields.io/badge/PostgreSQL-Supabase-3ECF8E?logo=supabase&logoColor=white" alt="PostgreSQL Supabase">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/RMBarros-Dev/Olokuti-Digital" alt="Licença MIT"></a>
 </p>
 
@@ -48,7 +51,7 @@ O princípio de trabalho é separar fatos observados de hipóteses. Integraçõe
 | Auditoria | Eventos mínimos de criação, atualização, mudança de status, exclusão e configuração. |
 | Administração | Listagem, pesquisa, criação e edição de contas por usuários `is_staff`; grupos com permissões do Django. |
 | Idiomas | Prefixos de URL e seletor para dez idiomas; os catálogos de interface são parciais. |
-| Saúde da aplicação | `GET /health` retorna `200 OK` para verificações de disponibilidade. |
+| Saúde da aplicação | `GET /health` retorna `200 OK`; `GET /health?db=1` valida também a conexão SQL ativa com o PostgreSQL. |
 
 ### Fora do escopo
 
@@ -246,6 +249,14 @@ Para configurar os comandos manualmente no painel:
 | Pre-deploy | `python manage.py migrate --noinput` |
 | Start | `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --access-logfile - --error-logfile -` |
 | Healthcheck path | `/health` |
+
+### Render, Vercel e Keep-Alive 24/7 (Supabase)
+
+Além do `railway.json`, o repositório inclui configurações prontas para hospedagem gratuita permanente conectada ao **Supabase PostgreSQL**:
+
+- **`render.yaml` (Render Blueprint):** configura o serviço web Python gratuito (`gunicorn` + `collectstatic` + `migrate`) com healthcheck em `/health`.
+- **`vercel.json` (Vercel Serverless WSGI):** expõe `config/wsgi.py` (`app = application`) para execução serverless sem hibernação de container.
+- **`.github/workflows/keepalive.yml` (Monitoramento & Keep-Alive 24/7):** executa automaticamente a cada 6 horas um `GET /health?db=1` (que realiza `SELECT 1` no PostgreSQL), mantendo o serviço web aquecido e impedindo a pausa automática de 7 dias por inatividade no plano gratuito do Supabase. Para apontar para um novo domínio (como Render ou Vercel), basta definir a variável de repositório `APP_HEALTHCHECK_URL` em *Settings → Secrets and variables → Actions → Variables*.
 
 ### Arquivos estáticos, logs e backups
 

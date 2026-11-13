@@ -7,3 +7,4 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
 application = get_wsgi_application()
+app = application

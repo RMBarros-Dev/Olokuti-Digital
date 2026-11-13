@@ -32,3 +32,10 @@ def test_supabase_transaction_pooler_disables_server_side_cursors():
     assert database["OPTIONS"] == {"sslmode": "require"}
     assert database["CONN_MAX_AGE"] == 0
     assert database["DISABLE_SERVER_SIDE_CURSORS"] is True
+
+
+def test_health_check_with_db_query(client, db):
+    response = client.get("/health?db=1")
+    assert response.status_code == 200
+    assert response.content == b"ok"
+

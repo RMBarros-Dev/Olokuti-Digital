@@ -1,0 +1,21 @@
+name: Keep-Alive (Web & Supabase DB)
+
+on:
+  schedule:
+    # Executa a cada 6 horas para manter o servico web e o PostgreSQL (Supabase) ativos 24/7
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping application health and database connection
+        env:
+          HEALTHCHECK_URL: ${{ vars.APP_HEALTHCHECK_URL || 'https://olokuti-web-production.up.railway.app/health?db=1' }}
+        run: |
+          echo "Checking health endpoint: $HEALTHCHECK_URL"
+          curl --fail --silent --show-error --location --retry 3 --retry-delay 5 --max-time 30 "$HEALTHCHECK_URL"
+          echo ""
+          echo "Health check and database keep-alive succeeded."
