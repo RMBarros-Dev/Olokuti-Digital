@@ -4,6 +4,7 @@ from django.urls import path, reverse_lazy
 from .views import (
     AccountLoginView,
     dashboard,
+    register,
     setup_default_groups,
     user_create,
     user_list,
@@ -15,6 +16,7 @@ app_name = "accounts"
 urlpatterns = [
     path("", dashboard, name="dashboard"),
     path("accounts/login/", AccountLoginView.as_view(), name="login"),
+    path("accounts/register/", register, name="register"),
     path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout"),
     path(
         "accounts/password-reset/",

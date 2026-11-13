@@ -13,6 +13,7 @@
     <div class="mb-3"><label class="form-label" for="id_password">{% trans "Password" %}</label><input class="form-control" id="id_password" type="password" name="password" autocomplete="current-password" required>{% for error in form.password.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>
     <input type="hidden" name="next" value="{{ next }}">
     <button class="btn btn-primary w-100" type="submit">{% trans "Sign in" %}</button>
+    <a class="btn btn-outline-secondary w-100 mt-2" href="{% url 'accounts:register' %}">{% trans "Create account" %}</a>
   </form>
   <p class="auth-footnote"><a href="{% url 'accounts:password_reset' %}">{% trans "Forgot your password?" %}</a></p>
 </section>

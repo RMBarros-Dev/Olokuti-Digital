@@ -6,6 +6,24 @@ from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
 
 
+class PublicRegistrationForm(UserCreationForm):
+    email = forms.EmailField(required=False, label=_("Email"))
+    first_name = forms.CharField(max_length=150, required=False, label=_("First name"))
+    last_name = forms.CharField(max_length=150, required=False, label=_("Last name"))
+
+    class Meta(UserCreationForm.Meta):
+        model = get_user_model()
+        fields = ("username", "email", "first_name", "last_name")
+        labels = {
+            "username": _("Username"),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+
+
 class ManagedUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=False, label=_("Email"))
     first_name = forms.CharField(max_length=150, required=False, label=_("First name"))

@@ -43,7 +43,7 @@ O princípio de trabalho é separar fatos observados de hipóteses. Integraçõe
 
 | Área | O que o MVP oferece |
 | --- | --- |
-| Acesso | Login, logout, sessões e fluxo de redefinição de senha do Django. |
+| Acesso | Login, criação de conta (`/accounts/register/`), logout, sessões e fluxo de redefinição de senha do Django. |
 | Dashboard | Resumo de produtos, tarefas e atividade recente, condicionado às permissões do usuário. |
 | Catálogo | Produtos, categorias, pesquisa, filtros, origem, informações de sustentabilidade e exportação CSV. |
 | Traduções de produtos | Registros localizados separados do texto original, sem substituir os dados-fonte. |

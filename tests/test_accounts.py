@@ -87,3 +87,33 @@ def test_staff_can_setup_default_groups_and_update_user(client, django_user_mode
     assert target.is_staff is True
     assert target.check_password("Updated-safe-password-998!")
     assert list(target.groups.all()) == [cat_group]
+
+
+@pytest.mark.django_db
+def test_public_user_registration_creates_account_and_logs_in(client, django_user_model):
+    login_page = client.get(reverse("accounts:login"))
+    assert login_page.status_code == 200
+    assert reverse("accounts:register") in login_page.content.decode()
+
+    reg_page = client.get(reverse("accounts:register"))
+    assert reg_page.status_code == 200
+
+    response = client.post(
+        reverse("accounts:register"),
+        {
+            "username": "registered-user",
+            "email": "registered@olokuti.local",
+            "first_name": "Renan",
+            "last_name": "Barros",
+            "password1": "A-unique-safe-test-password-771!",
+            "password2": "A-unique-safe-test-password-771!",
+        },
+    )
+    assert response.status_code == 302
+    assert response.url == reverse("accounts:dashboard")
+
+    user = django_user_model.objects.get(username="registered-user")
+    assert user.email == "registered@olokuti.local"
+    assert user.has_perm("catalog.view_product")
+    assert user.has_perm("operations.view_operationaltask")
+

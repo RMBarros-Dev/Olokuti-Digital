@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.views import LoginView
@@ -14,7 +15,7 @@ from apps.audit.models import AuditLog
 from apps.catalog.models import Product
 from apps.operations.models import OperationalTask
 
-from .forms import ManagedUserCreationForm, ManagedUserUpdateForm
+from .forms import ManagedUserCreationForm, ManagedUserUpdateForm, PublicRegistrationForm
 
 DEFAULT_ROLE_GROUPS = {
     "Catalogue Team": [
@@ -59,6 +60,32 @@ def ensure_default_role_groups():
 class AccountLoginView(LoginView):
     template_name = "accounts/login.html"
     redirect_authenticated_user = True
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect("accounts:dashboard")
+    if request.method == "POST":
+        form = PublicRegistrationForm(request.POST)
+        if form.is_valid():
+            ensure_default_role_groups()
+            user = form.save()
+            default_groups = Group.objects.filter(
+                name__in=["Catalogue Team", "Operations Team"]
+            )
+            user.groups.add(*default_groups)
+            AuditLog.objects.create(
+                user=user,
+                action="created",
+                entity="auth.User",
+                entity_id=str(user.pk),
+            )
+            auth_login(request, user)
+            messages.success(request, _("User account created."))
+            return redirect("accounts:dashboard")
+    else:
+        form = PublicRegistrationForm()
+    return render(request, "accounts/register.html", {"form": form})
 
 
 @login_required
