@@ -87,4 +87,3 @@ def test_task_quick_status_and_htmx_filter(client, user):
     assert htmx_resp.status_code == 200
     assert b"Verify supplier certificate" in htmx_resp.content
     assert b"<html" not in htmx_resp.content
-

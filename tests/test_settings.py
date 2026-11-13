@@ -32,5 +32,3 @@ def test_supabase_transaction_pooler_disables_server_side_cursors():
     assert database["OPTIONS"] == {"sslmode": "require"}
     assert database["CONN_MAX_AGE"] == 0
     assert database["DISABLE_SERVER_SIDE_CURSORS"] is True
-
-

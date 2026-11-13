@@ -71,9 +71,7 @@ def database_from_url(database_url: str) -> dict:
     if parsed.scheme in {"postgres", "postgresql", "postgresql+psycopg"}:
         query = parse_qs(parsed.query)
         options = {
-            key: values[-1]
-            for key, values in query.items()
-            if values and key not in {"pgbouncer"}
+            key: values[-1] for key, values in query.items() if values and key not in {"pgbouncer"}
         }
         port = str(parsed.port or "5432")
         is_transaction_pooler = port == "6543" or "pgbouncer" in query
@@ -85,7 +83,9 @@ def database_from_url(database_url: str) -> dict:
             "HOST": parsed.hostname or "localhost",
             "PORT": port,
             "OPTIONS": options,
-            "CONN_MAX_AGE": 0 if is_transaction_pooler else int(os.environ.get("DB_CONN_MAX_AGE", "60")),
+            "CONN_MAX_AGE": 0
+            if is_transaction_pooler
+            else int(os.environ.get("DB_CONN_MAX_AGE", "60")),
             "DISABLE_SERVER_SIDE_CURSORS": is_transaction_pooler,
         }
     if parsed.scheme == "sqlite":

@@ -61,9 +61,7 @@ def test_staff_can_setup_default_groups_and_update_user(client, django_user_mode
     staff = django_user_model.objects.create_user(
         username="admin", password="safe-test-password", is_staff=True
     )
-    target = django_user_model.objects.create_user(
-        username="member", password="safe-test-password"
-    )
+    target = django_user_model.objects.create_user(username="member", password="safe-test-password")
     client.force_login(staff)
 
     setup_resp = client.post(reverse("accounts:setup-groups"))
@@ -89,4 +87,3 @@ def test_staff_can_setup_default_groups_and_update_user(client, django_user_mode
     assert target.is_staff is True
     assert target.check_password("Updated-safe-password-998!")
     assert list(target.groups.all()) == [cat_group]
-
