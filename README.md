@@ -1,148 +1,298 @@
-# Olokuti Digital
+<h1 align="center">Olokuti Digital</h1>
 
-MVP acadêmico e experimental para organizar registros de catálogo e tarefas operacionais. O software não representa sistemas internos confirmados da Olokuti, não se conecta aos sistemas da empresa e não contém dados reais. A hipótese de valor e cada necessidade operacional continuam **a validar mediante investigação de campo**.
+<p align="center">
+  MVP acadêmico e experimental para explorar fluxos de catálogo, tarefas e organização operacional.
+</p>
 
-## O que está incluído
+<p align="center">
+  <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml/badge.svg?branch=main" alt="Status da CI"></a>
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python 3.12">
+  <img src="https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white" alt="Django 5.2">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/RMBarros-Dev/Olokuti-Digital" alt="Licença MIT"></a>
+</p>
 
-- Autenticação Django, redefinição de senha e administração de utilizadores.
-- Dashboard calculado a partir dos registos guardados neste MVP e limitado pelas permissões do utilizador.
-- Catálogo com pesquisa, filtros, categorias, origem, informação de sustentabilidade e traduções opcionais separadas do texto original.
-- Tarefas com responsável, prioridade, prazo, estado e eventos de auditoria.
-- Relatórios por intervalo de criação e exportação CSV com proteção contra fórmulas de folha de cálculo.
-- Registo de auditoria com utilizador, ação, tipo e identificador do registo, sem duplicar o conteúdo do catálogo ou das tarefas.
-- Prefixos de URL para dez idiomas e catálogos gettext parciais; traduções de interface ainda precisam de revisão humana.
-- PostgreSQL como banco para execução local e produção. O perfil automatizado de testes usa SQLite em memória para não exigir um servidor PostgreSQL.
+> **Status: MVP acadêmico e experimental.** Este projeto não é um sistema oficial da Olokuti, não tem afiliação ou aprovação institucional declarada e não se conecta a sistemas da empresa. Necessidades, processos e valor operacional são hipóteses **a validar mediante investigação de campo**.
 
-Não há pagamentos, vendas, faturação, gestão financeira, integração omnicanal ou sincronização de inventário. Dados de demonstração só são criados mediante comando explícito em ambiente `DEBUG`; são sintéticos e não contêm informação operacional real.
+## Índice
+
+- [Contexto e objetivo](#contexto-e-objetivo)
+- [Escopo funcional](#escopo-funcional)
+- [Arquitetura](#arquitetura)
+- [Tecnologias](#tecnologias)
+- [Começar localmente](#começar-localmente)
+- [Configuração](#configuração)
+- [Contas, grupos e permissões](#contas-grupos-e-permissões)
+- [Testes e integração contínua](#testes-e-integração-contínua)
+- [Idiomas e traduções](#idiomas-e-traduções)
+- [Deploy e operação](#deploy-e-operação)
+- [Segurança, dados e limitações](#segurança-dados-e-limitações)
+- [Estrutura do repositório](#estrutura-do-repositório)
+- [Contribuição e licença](#contribuição-e-licença)
+
+## Contexto e objetivo
+
+O projeto foi concebido no contexto da investigação **“Da identidade à inovação: memória, diagnóstico operacional e transformação digital do comércio sustentável em Barcelona — estudo de caso da Olokuti”**. A aplicação oferece um ambiente de prototipagem para avaliar conceitos de catálogo, tarefas e relatórios; ela não pressupõe que a empresa precise dessas funcionalidades.
+
+O princípio de trabalho é separar fatos observados de hipóteses. Integrações, dados, requisitos, processos e identidade institucional só devem ser incorporados após evidência, autorização e validação adequadas.
+
+## Escopo funcional
+
+| Área | O que o MVP oferece |
+| --- | --- |
+| Acesso | Login, logout, sessões e fluxo de redefinição de senha do Django. |
+| Dashboard | Resumo de produtos, tarefas e atividade recente, condicionado às permissões do usuário. |
+| Catálogo | Produtos, categorias, pesquisa, filtros, origem, informações de sustentabilidade e exportação CSV. |
+| Traduções de produtos | Registros localizados separados do texto original, sem substituir os dados-fonte. |
+| Operações | Tarefas com produto opcional, responsável, prioridade, prazo e estados; filtros e atualização rápida de status com HTMX. |
+| Relatórios | Resumo de tarefas por período e status, com exportação CSV protegida contra fórmulas de planilha. |
+| Auditoria | Eventos mínimos de criação, atualização, mudança de status, exclusão e configuração. |
+| Administração | Listagem, pesquisa, criação e edição de contas por usuários `is_staff`; grupos com permissões do Django. |
+| Idiomas | Prefixos de URL e seletor para dez idiomas; os catálogos de interface são parciais. |
+| Saúde da aplicação | `GET /health` retorna `200 OK` para verificações de disponibilidade. |
+
+### Fora do escopo
+
+Este MVP não implementa pagamentos, vendas, faturamento, gestão financeira, sincronização de inventário, integração omnicanal ou conexão com sistemas da Olokuti. Não é uma API pública nem um sistema pronto para uso operacional.
+
+O comando `seed_demo` é opcional, só executa com `DEBUG=True` e cria registros sintéticos identificados como demonstração. Origens, certificações, fornecedores e afirmações de sustentabilidade desses registros não são verificadas.
 
 ## Arquitetura
 
-Aplicação monolítica modular em Python 3.12 e Django 5.2, com Django ORM, Forms, Templates, autenticação nativa e HTMX. Bootstrap 5 fornece componentes visuais; JavaScript nativo cobre mensagens de erro das atualizações HTMX. Não há Docker, Node.js, Redis ou microserviços.
+Aplicação monolítica modular: o navegador acessa rotas Django; os módulos usam o ORM e a mesma base PostgreSQL; templates renderizam a interface e HTMX atualiza partes das listas. WhiteNoise publica os arquivos estáticos recolhidos no build.
+
+```mermaid
+flowchart LR
+    Browser[Navegador<br/>Templates, Bootstrap e HTMX] --> Django[Django<br/>URLs, Forms e autenticação]
+    Django --> Accounts[accounts]
+    Django --> Catalog[catalog]
+    Django --> Operations[operations]
+    Django --> Reports[reports]
+    Django --> Audit[audit]
+    Accounts --> ORM[Django ORM]
+    Catalog --> ORM
+    Operations --> ORM
+    Reports --> ORM
+    Audit --> ORM
+    ORM --> PostgreSQL[(PostgreSQL)]
+    Django --> WhiteNoise[WhiteNoise<br/>arquivos estáticos]
+    WhiteNoise --> Browser
+```
+
+Os módulos têm responsabilidades delimitadas:
 
 | Módulo | Responsabilidade |
 | --- | --- |
-| `apps/accounts` | Sessões, login, recuperação de senha, criação e gestão de utilizadores |
-| `apps/catalog` | Categorias, produtos e traduções separadas |
-| `apps/operations` | Tarefas e respetivo estado |
-| `apps/reports` | Agregações e CSV |
-| `apps/audit` | Eventos de auditoria |
-| `config/settings` | Configuração comum, local, de testes e produção |
+| `apps/accounts` | Dashboard, autenticação, grupos, permissões e administração de usuários. |
+| `apps/catalog` | Categorias, produtos, traduções localizadas e CSV do catálogo. |
+| `apps/operations` | Tarefas, filtros, mudanças de status e eventos operacionais. |
+| `apps/reports` | Agregações e exportação de relatórios de tarefas. |
+| `apps/audit` | Modelo, serviço e visualização dos eventos de auditoria. |
+| `config/settings` | Configurações compartilhadas, local, de testes e produção. |
 
-## Requisitos locais
+## Tecnologias
 
-- Python 3.12.
-- PostgreSQL 14 ou superior.
-- GNU gettext disponível no `PATH` para extrair e compilar traduções.
-- Acesso à rede para carregar Bootstrap e HTMX dos CDNs configurados no layout.
+| Camada | Tecnologia |
+| --- | --- |
+| Linguagem e runtime | Python 3.12 |
+| Backend | Django 5.2, Django ORM, Forms, Templates e autenticação nativa |
+| Banco local e produção | PostgreSQL 14 ou superior; SQLite em memória nos testes |
+| Interface | HTML, CSS, Bootstrap 5.3.9, HTMX 2.0.11 e JavaScript nativo |
+| Arquivos estáticos | WhiteNoise |
+| Servidor WSGI | Gunicorn |
+| Qualidade | pytest, pytest-django e Ruff |
+| Deploy configurado | Railpack/Railway; consulte a seção [Deploy e operação](#deploy-e-operação) sobre o formato atual de configuração |
 
-Não é necessário Docker. Instale PostgreSQL nativamente e crie um utilizador e uma base de dados vazia, por exemplo:
+Django 5.2 requer PostgreSQL 14 ou superior ([notas oficiais da versão 5.2](https://docs.djangoproject.com/en/5.2/releases/5.2/)). Docker, Node.js, Redis e microserviços não são requisitos para desenvolvimento local.
+
+## Começar localmente
+
+### Pré-requisitos
+
+- Python 3.12 e `pip`;
+- PostgreSQL 14 ou superior, com uma base vazia para o projeto;
+- Git;
+- GNU gettext apenas se você for extrair ou recompilar traduções;
+- acesso à internet para os arquivos Bootstrap e HTMX carregados pelos CDNs do layout.
+
+### 1. Criar a base local
+
+No `psql`, com uma conta administrativa do PostgreSQL:
 
 ```sql
-CREATE USER olokuti WITH PASSWORD 'escolha-uma-palavra-passe-local';
+CREATE ROLE olokuti WITH LOGIN PASSWORD 'defina-uma-senha-local';
 CREATE DATABASE olokuti_digital OWNER olokuti;
 ```
 
-No PowerShell, a partir da raiz do projeto:
+### 2. Criar o ambiente Python
+
+No PowerShell, a partir da raiz do repositório:
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
 Copy-Item .env.example .env
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements/development.txt
+```
+
+Se a ativação do ambiente virtual estiver bloqueada pela política local do PowerShell, use diretamente `.\.venv\Scripts\python.exe` no lugar de `python` nos comandos seguintes.
+
+### 3. Configurar e iniciar
+
+Edite `.env` e substitua os valores de exemplo. Use uma senha URL-encoded na `DATABASE_URL` se ela contiver caracteres especiais. O `.env` é ignorado pelo Git; não o adicione ao repositório.
+
+```powershell
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Edite `.env` antes de executar a aplicação: substitua `DJANGO_SECRET_KEY` por um segredo aleatório e `DATABASE_URL` pelas credenciais PostgreSQL locais. Codifique caracteres especiais da palavra-passe como URL-encoding. O ficheiro `.env` é ignorado pelo Git. A aplicação carrega as variáveis deste ficheiro com `python-dotenv`.
+Acesse [http://127.0.0.1:8000/](http://127.0.0.1:8000/). A raiz redireciona para o prefixo do idioma ativo; com a configuração padrão, o login fica em [`/en/accounts/login/`](http://127.0.0.1:8000/en/accounts/login/). O e-mail de redefinição de senha é enviado ao console no ambiente local.
 
-Abra `http://127.0.0.1:8000/`; a raiz redireciona para o prefixo do idioma escolhido. O login inicial é `/en/accounts/login/`. A redefinição de senha local escreve a mensagem no terminal; em produção configure um serviço SMTP autorizado.
+Para criar dados sintéticos para uma demonstração local, execute `python manage.py seed_demo` com `DEBUG=True`. O comando avisa que os registros são fictícios e recusa execução fora do modo de depuração.
 
-## Utilizadores e permissões
+## Configuração
 
-O primeiro superutilizador pode entrar em Django Admin. A página de utilizadores permite listar, pesquisar, criar e editar contas, associá-las a grupos e alterar palavras-passe. Só utilizadores com `is_staff` podem gerir contas. Os grupos predefinidos são adicionados sem apagar permissões que um administrador tenha personalizado.
+As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em produção, defina-as como variáveis protegidas no provedor; não publique segredos no GitHub.
 
-- Catálogo: `view_product`, `add_product`, `change_product`, `delete_product`.
-- Categorias: `view_category`, `add_category`, `change_category`, `delete_category`; a remoção é bloqueada enquanto existirem produtos associados.
-- Tarefas: `view_operationaltask`, `add_operationaltask`, `change_operationaltask`, `delete_operationaltask`.
-- Auditoria: `view_auditlog`.
-- Relatórios: exigem `catalog.view_product` e `operations.view_operationaltask`.
-- Gestão de contas: utilizadores com `is_staff`.
+| Variável | Uso |
+| --- | --- |
+| `DJANGO_SETTINGS_MODULE` | `config.settings.local` localmente; `config.settings.production` em produção. |
+| `DJANGO_SECRET_KEY` | Chave secreta longa e exclusiva por ambiente. O valor de exemplo não deve ser usado em produção. |
+| `DATABASE_URL` | URL PostgreSQL local ou de produção. SQLite é aceito para testes; a configuração de produção exige PostgreSQL. |
+| `DJANGO_ALLOWED_HOSTS` | Lista de hosts permitidos separada por vírgula. Produção recusa `*`. |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | Origens confiáveis completas, incluindo `https://`, separadas por vírgula. Obrigatória em produção. |
+| `DJANGO_EMAIL_BACKEND` | Backend de e-mail. O modo local usa o console; produção usa SMTP por padrão. |
+| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` | Configuração do provedor SMTP autorizado. `EMAIL_HOST` é obrigatório quando o backend de produção é SMTP. |
+| `DEFAULT_FROM_EMAIL` | Endereço remetente usado nas mensagens. |
+| `DJANGO_TRUST_PROXY_SSL_HEADER` | Ative como `true` somente atrás de um proxy confiável que filtre e defina `X-Forwarded-Proto`. |
+| `DJANGO_HSTS_SECONDS` | Duração do HSTS em segundos; o padrão de produção é um ano. |
 
-O dashboard omite métricas para as quais o utilizador não tem permissão. As categorias podem ser criadas, editadas e removidas na área do catálogo, conforme as permissões de categoria.
+`config.settings.production` mantém `DEBUG=False`, exige chave, PostgreSQL, hosts explícitos e origens CSRF confiáveis. HTTPS, cookies seguros e HSTS são configurados nessa camada.
 
-## Testes e análise estática
+## Contas, grupos e permissões
 
-```powershell
-pytest
-ruff check .
-```
+O superusuário criado com `createsuperuser` acessa o Django Admin. Usuários `is_staff` podem gerenciar contas pela interface em `/en/accounts/users/`. Na própria página, a ação de configurar grupos cria os grupos padrão e acrescenta as permissões-base sem remover permissões personalizadas existentes.
 
-Os testes cobrem autenticação, permissões, operações básicas do catálogo e tarefas, preservação do texto original, auditoria, criação de utilizadores e segurança da exportação CSV. O ambiente de testes usa `config.settings.test` e SQLite em memória. Isto não valida a conexão PostgreSQL nem substitui uma verificação com a versão de produção.
+| Grupo padrão | Permissões incluídas |
+| --- | --- |
+| `Catalogue Team` | Visualizar, criar, editar e excluir produtos e categorias. |
+| `Operations Team` | Visualizar produtos e visualizar, criar, editar e excluir tarefas. |
+| `Auditors & Managers` | Visualizar e administrar produtos e tarefas, além de visualizar eventos de auditoria. **Esse grupo não é somente leitura.** |
 
-## Internacionalização
+Permissões usadas pelas áreas:
 
-Os idiomas configurados são `es-419`, `es-ES`, `ca`, `gl`, `eu`, `en-US`, `en-GB`, `en`, `pt-BR` e `pt-PT`. Os ficheiros `.po` são a fonte editável e os `.mo` são artefactos compilados versionados para execução. Os catálogos contêm traduções parciais, sem revisão humana completa. O comando `compile_locales` delega no `compilemessages` do Django e não reescreve os ficheiros `.po`.
+- Produtos: `catalog.view_product`, `catalog.add_product`, `catalog.change_product`, `catalog.delete_product`.
+- Categorias: `catalog.view_category`, `catalog.add_category`, `catalog.change_category`, `catalog.delete_category`.
+- Tarefas: `operations.view_operationaltask`, `operations.add_operationaltask`, `operations.change_operationaltask`, `operations.delete_operationaltask`.
+- Auditoria: `audit.view_auditlog`.
+- Relatórios: requerem visualização de produtos **e** tarefas.
+- Gestão de usuários: requer `is_staff`.
 
-Depois de instalar GNU gettext:
+A exclusão de categorias é bloqueada enquanto houver produtos relacionados. O dashboard oculta métricas sem permissão correspondente.
 
-```powershell
-django-admin makemessages -a
-# Revise cada locale/.../django.po com tradutores qualificados.
-django-admin compilemessages
-```
+## Testes e integração contínua
 
-As traduções não devem ser declaradas completas até à revisão humana. `ProductTranslation` guarda o idioma, nome, descrição e informação de sustentabilidade em registos separados; a alteração do idioma da interface não modifica o texto original. Não há fallback automático entre variantes regionais, como `pt-BR` e `pt-PT`.
-
-## Produção e operações
-
-Use `DJANGO_SETTINGS_MODULE=config.settings.production`, PostgreSQL, HTTPS e Gunicorn. Configure `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `DATABASE_URL` e as credenciais SMTP por variáveis de ambiente. Se houver um proxy TLS, ative `DJANGO_TRUST_PROXY_SSL_HEADER=true` apenas quando o proxy confiável definir e filtrar `X-Forwarded-Proto`.
-
-As alterações submetidas ao GitHub são verificadas pelo workflow em `.github/workflows/ci.yml` com Ruff e pytest. As instruções para contribuição estão em [`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-### Deploy no Railway
-
-O repositório inclui `railway.json`: o Railpack instala as dependências de produção, recolhe os ficheiros estáticos durante o build, executa migrações antes de ativar a versão e verifica `/health`. O processo web usa Gunicorn ligado à porta `$PORT`. Conecte o serviço ao repositório GitHub e configure no Railway, como variáveis protegidas:
-
-- `DJANGO_SETTINGS_MODULE=config.settings.production`
-- `DJANGO_SECRET_KEY`: segredo aleatório forte, exclusivo da produção.
-- `DATABASE_URL`: URL PostgreSQL de produção (não use SQLite nem a URL de exemplo).
-- `DJANGO_ALLOWED_HOSTS`: domínio público atribuído pelo Railway, sem `https://`.
-- `DJANGO_CSRF_TRUSTED_ORIGINS`: origem HTTPS completa do domínio público atribuído pelo Railway.
-- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS=true` e `DEFAULT_FROM_EMAIL`: credenciais SMTP autorizadas; o settings de produção recusa iniciar sem SMTP configurado.
-
-Depois de gerar o domínio público, atualize `DJANGO_ALLOWED_HOSTS` e `DJANGO_CSRF_TRUSTED_ORIGINS` com esse domínio e faça novo deploy. O healthcheck do Railway usa `healthcheck.railway.app`, já permitido explicitamente. A aplicação não provisiona uma base de dados Railway nem migra dados automaticamente entre provedores; a URL deve apontar para uma base PostgreSQL já criada e autorizada. A configuração no repositório não prova que exista um serviço Railway ativo; confirme deployment e domínio no painel Railway.
+Execute os mesmos verificadores usados no workflow do GitHub:
 
 ```powershell
-$env:DJANGO_SETTINGS_MODULE = "config.settings.production"
-python manage.py migrate
-python manage.py collectstatic --noinput
-gunicorn config.wsgi:application
+python -m ruff check .
+python -m pytest -q
 ```
 
-O WhiteNoise serve os ficheiros estáticos recolhidos. Os logs são emitidos como JSON para stdout/stderr; não inclua informação pessoal ou conteúdo de tarefas em mensagens de log. Os cookies de sessão e CSRF são seguros em produção, `DEBUG` fica desativado, HTTPS é obrigatório e HSTS está ativado.
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda Ruff e pytest em Python 3.12 para pushes em `main` e pull requests. O Dependabot verifica semanalmente dependências Python e GitHub Actions.
 
-### Cópia de segurança PostgreSQL
+Os testes usam `config.settings.test` e SQLite em memória. Eles cobrem autenticação, permissões, catálogo, traduções de produtos, tarefas, relatórios, auditoria, contas e segurança da exportação CSV. A suíte não valida conectividade com o PostgreSQL do provedor nem substitui uma verificação do ambiente de produção.
 
-Faça `pg_dump` periódico num destino protegido e encriptado, com credenciais de backup de menor privilégio; retenha cópias conforme a política da organização e teste uma restauração antes de qualquer validação operacional. Exemplo de cópia manual:
+## Idiomas e traduções
+
+Os prefixos configurados são `es-419`, `es-es`, `ca`, `gl`, `eu`, `en-us`, `en-gb`, `en`, `pt-br` e `pt-pt`. Os catálogos contêm traduções parciais e ainda precisam de revisão linguística humana; a interface pode exibir texto em inglês quando não houver tradução.
+
+Os arquivos `.po` são a fonte editável e os `.mo` compilados estão versionados. O comando `python manage.py compile_locales` delega ao `compilemessages` do Django e não reescreve os `.po`. Para extrair novas strings e compilar, instale GNU gettext e execute:
 
 ```powershell
-pg_dump --format=custom --file=olokuti-backup.dump --dbname="postgresql://olokuti:...@localhost:5432/olokuti_digital"
-pg_restore --clean --if-exists --dbname="postgresql://olokuti:...@localhost:5432/olokuti_restore_test" olokuti-backup.dump
+python manage.py makemessages -a
+# Revise os arquivos locale/<idioma>/LC_MESSAGES/django.po.
+python manage.py compile_locales
 ```
 
-Não guarde credenciais no comando, no histórico do terminal ou no backup. Utilize mecanismos de credenciais PostgreSQL apropriados no ambiente real.
+`ProductTranslation` mantém nome, descrição e informação de sustentabilidade separados do produto original. A aplicação só seleciona uma tradução da mesma variante regional; por exemplo, `pt-BR` não usa automaticamente uma tradução `pt-PT`.
 
-## Limitações conhecidas
+## Deploy e operação
 
-- A pasta original estava vazia; este projeto foi criado como uma nova base após a auditoria inicial.
-- A suite automatizada foi executada localmente com SQLite em memória; uma ligação real ao PostgreSQL de produção ainda precisa de validação.
-- As traduções gettext são parciais e ainda não tiveram revisão linguística humana completa.
-- Os registos de auditoria são gravados na mesma base e não são invioláveis nem incluem snapshots completos de cada alteração.
-- A interface carrega Bootstrap e HTMX por CDN; uma implantação em rede restrita deve alojar esses ativos localmente.
-- A configuração técnica não valida a identidade visual oficial, processos, dados, permissões ou valor institucional com a Olokuti. Não foi feita revisão independente de segurança.
-- A validação técnica não equivale à validação institucional ou operacional pela Olokuti.
+### Railway
 
-## Licença e direitos de terceiros
+O repositório contém `railway.json` com comandos para coleta de arquivos estáticos, migrações pré-deploy, Gunicorn, healthcheck `/health` e política de reinício. O arquivo não cria um projeto Railway, banco de dados, domínio ou variáveis e não comprova que exista um deployment ativo.
 
-O código original e a documentação deste repositório são distribuídos sob a licença MIT disponível em [`LICENSE`](LICENSE). A licença não concede direitos sobre marcas, nomes, logótipos, dados ou materiais de terceiros; o nome Olokuti é usado apenas para identificar o contexto académico e não implica afiliação ou aprovação institucional.
+**Atenção ao formato:** em **12 de novembro de 2026**, Railway marca Config as Code (`railway.json`/`railway.toml`) como obsoleto. Arquivos existentes continuam válidos apenas para serviços que já os utilizam, com corte previsto para **1º de dezembro de 2026**; novos serviços não podem optar por esse formato. Consulte a [documentação Railway](https://docs.railway.com/config-as-code) e a [migração para Infrastructure as Code](https://docs.railway.com/infrastructure-as-code) antes de criar ou atualizar o serviço.
+
+Para um serviço existente que ainda usa esse arquivo, o Railpack detecta `requirements.txt`; o comando de build recolhe estáticos, o comando pré-deploy executa `migrate` e o servidor inicia com Gunicorn na porta `$PORT`. Para um serviço novo, configure os comandos nas definições do Railway ou migre a configuração para o mecanismo IaC atual.
+
+Variáveis de produção necessárias no serviço:
+
+1. `DJANGO_SETTINGS_MODULE=config.settings.production`
+2. `DJANGO_SECRET_KEY`: segredo forte, exclusivo de produção.
+3. `DATABASE_URL`: PostgreSQL de produção previamente criado e autorizado.
+4. `DJANGO_ALLOWED_HOSTS`: domínio Railway atribuído, sem protocolo e sem `*`.
+5. `DJANGO_CSRF_TRUSTED_ORIGINS`: origem completa do domínio, por exemplo `https://seu-dominio.up.railway.app`.
+6. `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS=true` e `DEFAULT_FROM_EMAIL` para SMTP.
+
+Depois que o domínio for criado, inclua-o em `DJANGO_ALLOWED_HOSTS` e `DJANGO_CSRF_TRUSTED_ORIGINS` e faça novo deploy. `healthcheck.railway.app` já está permitido para o healthcheck. A configuração não provisiona banco nem migra dados entre provedores.
+
+Para configurar os comandos manualmente no painel:
+
+| Campo do serviço | Comando ou valor |
+| --- | --- |
+| Build | `python manage.py collectstatic --noinput` |
+| Pre-deploy | `python manage.py migrate --noinput` |
+| Start | `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --access-logfile - --error-logfile -` |
+| Healthcheck path | `/health` |
+
+### Arquivos estáticos, logs e backups
+
+WhiteNoise serve os arquivos recolhidos em `STATIC_ROOT`; o build de produção precisa executar `collectstatic`. Os logs são enviados a stdout/stderr em formato JSON. Não inclua dados pessoais ou conteúdo de tarefas em mensagens de log.
+
+Para PostgreSQL, defina backups periódicos em destino protegido e criptografado, com credencial de menor privilégio. Retenha cópias de acordo com a política aplicável e teste uma restauração antes de depender do backup. Não coloque senhas em comandos, histórico do terminal, documentação ou arquivos versionados.
+
+## Segurança, dados e limitações
+
+- Não use dados pessoais ou operacionais reais sem autorização e salvaguardas apropriadas.
+- Não trate exemplos, hipóteses, origens ou certificações como fatos sobre a Olokuti.
+- Não há integração com sistemas da empresa nem validação institucional do produto.
+- Os eventos de auditoria ficam na mesma base da aplicação; não são um registro inviolável nem guardam snapshots completos das alterações.
+- Bootstrap e HTMX são carregados de CDNs. Ambientes restritos precisam disponibilizar esses arquivos localmente.
+- Traduções de interface são parciais e não passaram por revisão humana completa.
+- Os testes não validam uma conexão real de produção com PostgreSQL.
+- `railway.json` está em formato legado e requer migração ou configuração atualizada do serviço para deployments novos/após o período de compatibilidade.
+
+Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e tratamento de dados de demonstração. Não publique credenciais ou detalhes exploráveis em issues públicas.
+
+## Estrutura do repositório
+
+```text
+.
+├── apps/
+│   ├── accounts/       # autenticação, grupos e usuários
+│   ├── audit/          # eventos de auditoria
+│   ├── catalog/        # produtos, categorias e traduções
+│   ├── operations/     # tarefas e status
+│   └── reports/        # resumos e CSV
+├── config/
+│   └── settings/       # base, local, test e production
+├── locale/             # catálogos gettext .po/.mo
+├── static/             # CSS e JavaScript
+├── templates/          # templates Django
+├── tests/              # testes automatizados
+├── requirements/       # dependências de produção e desenvolvimento
+├── .github/workflows/  # CI
+├── .env.example
+├── manage.py
+├── Procfile
+├── railway.json        # configuração Railway legada
+└── pyproject.toml      # configuração do pytest e Ruff
+```
+
+## Contribuição e licença
+
+Leia [`CONTRIBUTING.md`](CONTRIBUTING.md) antes de enviar alterações. Toda contribuição deve manter explícita a natureza experimental do MVP e evitar dados ou afirmações não verificadas.
+
+O código original e a documentação deste repositório estão sob a [licença MIT](LICENSE). Ela não concede direitos sobre marcas, nomes, logotipos, dados ou materiais de terceiros. O nome “Olokuti” identifica o contexto acadêmico e não implica afiliação ou aprovação institucional.
