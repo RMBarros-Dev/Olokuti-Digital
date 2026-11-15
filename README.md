@@ -37,6 +37,8 @@
 - [Idiomas e traduções](#idiomas-e-traduções)
 - [Deploy e operação](#deploy-e-operação)
 - [Segurança, dados e limitações](#segurança-dados-e-limitações)
+- [Documentação do projeto](#documentação-do-projeto)
+- [Princípios de engenharia](#princípios-de-engenharia)
 - [Estrutura do repositório](#estrutura-do-repositório)
 - [Contribuição e licença](#contribuição-e-licença)
 ## Contexto e objetivo
@@ -281,6 +283,20 @@ Além do `railway.json`, o repositório inclui configurações prontas para hosp
 WhiteNoise serve os arquivos recolhidos em `STATIC_ROOT`; o build de produção precisa executar `collectstatic`. Os logs são enviados a stdout/stderr em formato JSON. Não inclua dados pessoais ou conteúdo de tarefas em mensagens de log.
 
 Para PostgreSQL, defina backups periódicos em destino protegido e criptografado, com credencial de menor privilégio. Retenha cópias de acordo com a política aplicável e teste uma restauração antes de depender do backup. Não coloque senhas em comandos, histórico do terminal, documentação ou arquivos versionados.
+
+## Documentação do projeto
+
+- [Guia de contribuição](CONTRIBUTING.md).
+- [Organização dos diretórios](docs/project-structure.md).
+- [Identidade visual](docs/brand/README.md).
+- [Configuração de exemplo](.env.example), sem segredos reais.
+- [Configuração de qualidade](pyproject.toml).
+- [Guia de traduções](locale/README.md).
+- [Workflow de integração contínua](.github/workflows/ci.yml).
+
+## Princípios de engenharia
+
+O projeto procura manter separação por domínio, permissões explícitas, configurações distintas por ambiente, testes automatizados e documentação que diferencia dados sintéticos de informações observadas. A auditoria registrada pela aplicação não deve ser interpretada como trilha imutável ou certificação independente.
 
 ## Segurança, dados e limitações
 
