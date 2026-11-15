@@ -114,6 +114,10 @@ def test_public_user_registration_creates_account_and_logs_in(client, django_use
 
     user = django_user_model.objects.get(username="registered-user")
     assert user.email == "registered@olokuti.local"
-    assert user.has_perm("catalog.view_product")
-    assert user.has_perm("operations.view_operationaltask")
+    assert user.is_active is True
+    assert user.is_staff is False
+    assert user.is_superuser is False
+    assert user.groups.count() == 0
+    assert user.has_perm("catalog.view_product") is False
+    assert user.has_perm("operations.view_operationaltask") is False
 
