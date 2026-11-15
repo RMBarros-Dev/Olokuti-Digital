@@ -175,7 +175,7 @@ As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em pro
 
 ## Contas, grupos e permissões
 
-Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`), recebendo automaticamente os grupos `Catalogue Team` e `Operations Team`.
+Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`). Seguindo o princípio do menor privilégio, o cadastro público cria uma conta básica: o usuário não recebe grupos automaticamente e não recebe permissões operacionais ou administrativas automaticamente; a atribuição de grupos e permissões é feita por administradores autorizados.
 
 Para avaliação rápida, consulte o ambiente de demonstração online ([https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/)). **Não são publicadas credenciais administrativas neste repositório.** O acesso administrativo deve ser provisionado pelo responsável pelo ambiente, por canal seguro e com credenciais exclusivas; não reutilize credenciais de demonstração.
 
