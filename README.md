@@ -26,6 +26,7 @@
 ## Índice
 
 - [Contexto e objetivo](#contexto-e-objetivo)
+- [Área de aplicação e metodologia](#área-de-aplicação-e-metodologia-de-desenvolvimento)
 - [Escopo funcional](#escopo-funcional)
 - [Arquitetura](#arquitetura)
 - [Tecnologias](#tecnologias)
@@ -38,7 +39,6 @@
 - [Segurança, dados e limitações](#segurança-dados-e-limitações)
 - [Estrutura do repositório](#estrutura-do-repositório)
 - [Contribuição e licença](#contribuição-e-licença)
-
 ## Contexto e objetivo
 
 O projeto foi concebido no contexto da investigação **“Da identidade à inovação: memória, diagnóstico operacional e transformação digital do comércio sustentável em Barcelona — estudo de caso da Olokuti”**. A aplicação oferece um ambiente de prototipagem para avaliar conceitos de catálogo, tarefas e relatórios; ela não pressupõe que a empresa precise dessas funcionalidades.
@@ -65,6 +65,10 @@ O princípio de trabalho é separar fatos observados de hipóteses. Integraçõe
 Este MVP não implementa pagamentos, vendas, faturamento, gestão financeira, sincronização de inventário, integração omnicanal ou conexão com sistemas da Olokuti. Não é uma API pública nem um sistema pronto para uso operacional.
 
 O comando `seed_demo` é opcional, só executa com `DEBUG=True` e cria registros sintéticos identificados como demonstração. Origens, certificações, fornecedores e afirmações de sustentabilidade desses registros não são verificadas.
+
+## Área de aplicação e metodologia de desenvolvimento
+
+O MVP explora fluxos de informação de catálogo e coordenação de tarefas para um contexto de operação comercial. O desenvolvimento é incremental e acadêmico: requisitos e hipóteses são documentados, implementações são divididas por módulos Django e comportamentos relevantes são cobertos por testes automatizados. O valor operacional e a adequação dos fluxos dependem de validação de campo; o protótipo não declara representar processos reais da empresa citada.
 
 ## Arquitetura
 
@@ -183,10 +187,7 @@ As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em pro
 
 Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`), recebendo automaticamente os grupos `Catalogue Team` e `Operations Team`.
 
-Para avaliação rápida no ambiente de demonstração online ([https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/)), também está disponível a conta administrativa de demonstração:
-
-- **Usuário:** `admin`
-- **Senha:** `admin123`
+O acesso administrativo é reservado a usuários autorizados com `is_staff`. Não publique usuários, senhas ou credenciais de demonstração neste README. Para avaliação do ambiente online, solicite um acesso temporário por canal privado e revogue-o após o uso.
 
 O superusuário acessa o Django Admin e a gestão de contas pela interface em `/en/accounts/users/`. Na própria página, a ação de configurar grupos cria os grupos padrão e acrescenta as permissões-base sem remover permissões personalizadas existentes.
 
