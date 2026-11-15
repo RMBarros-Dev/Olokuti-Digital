@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/brand/project-mark.svg" alt="OLOKUTI — identidade visual do projeto" width="100%" />
+</p>
+
 <h1 align="center">Olokuti Digital</h1>
 
 <p align="center">
