@@ -1,21 +1,25 @@
-# Identidade visual — Olokuti Digital
+# Diretrizes de identidade visual — Olokuti Digital
 
 ## Conceito
 
-MVP acadêmico de catálogo, tarefas e organização operacional com Django e PostgreSQL.
+Identidade eco-tech para uma solução de organização operacional, unindo folha, circuito e gestão em uma linguagem tecnológica e sustentável.
 
-## Paleta oficial
+## Paleta aplicada
 
-| Token | Cor | Uso |
+| Token | HEX | Aplicação |
 | --- | --- | --- |
-| Base | `#092B2A` | Fundo e superfícies escuras |
-| Primária | `#0F766E` | Elementos de marca e gráficos |
-| Destaque | `#A3E635` | Ênfase, links e chamadas |
+| Verde-floresta | `#08271F` | Fundo principal |
+| Verde profundo | `#0D382D` | Superfícies e profundidade |
+| Areia | `#E5D9BB` | Moldura, linhas e texto de apoio |
+| Turquesa | `#00BFA5` | Circuitos e destaques |
+| Verde-folha | `#9EDB69` | Símbolo e elementos naturais |
 
-## Ativos
+## Ativos oficiais
 
-- `logo.svg`: símbolo principal.
-- `banner.svg`: banner horizontal para README e apresentações.
-- `project-mark.svg`: ativo legado preservado para compatibilidade.
+- `assets/brand/logo.svg`: emblema vetorial de folha conectada a circuitos.
+- `assets/brand/banner.svg`: banner horizontal editorial para README e apresentações.
+- `assets/brand/project-mark.svg`: marca anterior preservada para compatibilidade.
 
-Use os arquivos vetoriais sem alterar proporções ou cores. Mantenha contraste suficiente e área de respiro.
+## Aplicação
+
+Preservar proporções, contraste e área de respiro. Utilizar os SVGs locais do repositório e manter a paleta da aplicação documentada separadamente de sua identidade de apresentação.
