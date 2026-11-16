@@ -68,12 +68,9 @@ def register(request):
     if request.method == "POST":
         form = PublicRegistrationForm(request.POST)
         if form.is_valid():
-            ensure_default_role_groups()
+            # Public registration creates an unprivileged account. Role assignment
+            # is an explicit administrative action performed after account review.
             user = form.save()
-            default_groups = Group.objects.filter(
-                name__in=["Catalogue Team", "Operations Team"]
-            )
-            user.groups.add(*default_groups)
             AuditLog.objects.create(
                 user=user,
                 action="created",
