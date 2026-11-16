@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
@@ -61,13 +62,14 @@ def task_create(request):
             task = form.save(commit=False)
             task.created_by = request.user
             task.updated_by = request.user
-            task.save()
-            record_event(
-                user=request.user,
-                action="created",
-                entity="operations.OperationalTask",
-                entity_id=task.pk,
-            )
+            with transaction.atomic():
+                task.save()
+                record_event(
+                    user=request.user,
+                    action="created",
+                    entity="operations.OperationalTask",
+                    entity_id=task.pk,
+                )
             messages.success(request, _("Task created."))
             return redirect("operations:task-list")
     else:
@@ -84,14 +86,15 @@ def task_update(request, pk):
         if form.is_valid():
             task = form.save(commit=False)
             task.updated_by = request.user
-            task.save()
             action = "status_changed" if previous_status != task.status else "updated"
-            record_event(
-                user=request.user,
-                action=action,
-                entity="operations.OperationalTask",
-                entity_id=task.pk,
-            )
+            with transaction.atomic():
+                task.save()
+                record_event(
+                    user=request.user,
+                    action=action,
+                    entity="operations.OperationalTask",
+                    entity_id=task.pk,
+                )
             messages.success(request, _("Task changes saved."))
             return redirect("operations:task-list")
     else:
