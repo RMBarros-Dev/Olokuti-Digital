@@ -213,7 +213,13 @@ Product translations are stored separately from original product data. Regional 
 
 ## 14 · Deployment and Operations
 
-The repository includes Railway configuration and references to Render/Vercel deployment options. Configuration files do not create hosting projects, databases, domains, secrets or prove that a deployment is currently active.
+The repository includes deployment configuration for Railway and references to Render and Vercel:
+
+- `render.yaml` describes a Render Blueprint web service using Gunicorn, static collection, migrations and the `/health` endpoint.
+- `vercel.json` configures a serverless WSGI entry point through `config/wsgi.py`. Serverless deployment does not eliminate cold starts or prove operational suitability without provider testing.
+- `.github/workflows/keepalive.yml` sends `GET /health?db=1` every six hours; this endpoint checks PostgreSQL with `SELECT 1`. The target can be changed through the `APP_HEALTHCHECK_URL` Actions variable. A successful request confirms connectivity at that moment; it does not guarantee continuous availability or prevent a provider from suspending a service.
+
+Configuration files do not create hosting projects, databases, domains or secrets, and do not prove that a deployment is currently active.
 
 **Railway configuration notice:** the repository's `railway.json` is a legacy Config-as-Code configuration. Check the current [Railway documentation](https://docs.railway.com/config-as-code) before creating or changing a service; do not assume this legacy file is suitable for a new service. The configured runtime uses Gunicorn, static collection, migrations and the `/health` endpoint.
 
