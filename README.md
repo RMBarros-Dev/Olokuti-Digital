@@ -187,7 +187,7 @@ As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em pro
 
 ## Contas, grupos e permissões
 
-Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`), recebendo automaticamente os grupos `Catalogue Team` e `Operations Team`.
+Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`). Seguindo o princípio do menor privilégio, o cadastro público cria uma conta básica, sem grupos ou permissões operacionais automáticos. A atribuição de grupos e permissões é uma ação administrativa explícita, realizada após análise da conta.
 
 O acesso administrativo é reservado a usuários autorizados com `is_staff`. Não publique usuários, senhas ou credenciais de demonstração neste README. Para avaliação do ambiente online, solicite um acesso temporário por canal privado e revogue-o após o uso.
 
