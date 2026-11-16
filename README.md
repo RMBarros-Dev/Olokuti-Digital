@@ -277,8 +277,8 @@ Para configurar os comandos manualmente no painel:
 Além do `railway.json`, o repositório inclui configurações prontas para hospedagem gratuita permanente conectada ao **Supabase PostgreSQL**:
 
 - **`render.yaml` (Render Blueprint):** configura o serviço web Python gratuito (`gunicorn` + `collectstatic` + `migrate`) com healthcheck em `/health`.
-- **`vercel.json` (Vercel Serverless WSGI):** expõe `config/wsgi.py` (`app = application`) para execução serverless sem hibernação de container.
-- **`.github/workflows/keepalive.yml` (Monitoramento & Keep-Alive 24/7):** executa automaticamente a cada 6 horas um `GET /health?db=1` (que realiza `SELECT 1` no PostgreSQL), mantendo o serviço web aquecido e impedindo a pausa automática de 7 dias por inatividade no plano gratuito do Supabase. Para apontar para um novo domínio (como Render ou Vercel), basta definir a variável de repositório `APP_HEALTHCHECK_URL` em *Settings → Secrets and variables → Actions → Variables*.
+- **`vercel.json` (Vercel Serverless WSGI):** configura a entrada WSGI `config/wsgi.py` (`app = application`) para uma implantação baseada em funções serverless. Isso não elimina cold starts nem comprova adequação operacional sem testes no provedor.
+- **`.github/workflows/keepalive.yml` (verificação periódica):** executa a cada 6 horas um `GET /health?db=1`, que valida a conexão PostgreSQL com `SELECT 1`. A URL pode ser alterada pela variável `APP_HEALTHCHECK_URL` em *Settings → Secrets and variables → Actions → Variables*. Essa chamada confirma conectividade no momento da execução; não deve ser tratada como garantia de disponibilidade contínua nem como garantia de que um provedor não suspenderá um serviço.
 
 ### Arquivos estáticos, logs e backups
 
