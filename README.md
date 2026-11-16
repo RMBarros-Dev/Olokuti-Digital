@@ -121,7 +121,7 @@ Os módulos têm responsabilidades delimitadas:
 | Arquivos estáticos | WhiteNoise |
 | Servidor WSGI | Gunicorn |
 | Qualidade | pytest, pytest-django e Ruff |
-| Deploy configurado | Railpack/Railway; consulte a seção [Deploy e operação](#deploy-e-operação) sobre o formato atual de configuração |
+| Deploy configurado | Railpack/Railway; consulte a seção [Deploy e operação](#12--deploy-e-operação) sobre o formato atual de configuração |
 
 Django 5.2 requer PostgreSQL 14 ou superior ([notas oficiais da versão 5.2](https://docs.djangoproject.com/en/5.2/releases/5.2/)). Docker, Node.js, Redis e microserviços não são requisitos para desenvolvimento local.
 
