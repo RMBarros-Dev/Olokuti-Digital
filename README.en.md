@@ -14,6 +14,27 @@
 
 > **Project status:** academic and experimental MVP. This repository is not an official Olokuti system, has no declared institutional affiliation or approval, and does not connect to company systems. Operational needs and value hypotheses require field validation.
 
+## Contents
+
+- [01 · Overview](#01--overview)
+- [02 · Context and Purpose](#02--contextandprpose)
+- [03 · Scope](#03--scope)
+- [04 · Functional Areas](#04--nctionalareas)
+- [05 · Architecture](#05--architectre)
+- [06 · Technology Stack](#06--technologystack)
+- [07 · Requirements](#07--reqirements)
+- [08 · Local Installation](#08--localinstallation)
+- [09 · Environment Configuration](#09--environmentconigration)
+- [10 · Run the Application](#10--rntheapplication)
+- [11 · Accounts, Groups and Permissions](#11--accontsgropsandpermissions)
+- [12 · Tests and Continuous Integration](#12--testsandcontinosintegration)
+- [13 · Languages and Localization](#13--langagesandlocalization)
+- [14 · Deployment and Operations](#14--deploymentandoperations)
+- [15 · Security, Data and Known Limitations](#15--secritydataandknownlimitations)
+- [16 · Repository Structure](#16--repositorystrctre)
+- [17 · Documentation and Contribution](#17--docmentationandcontribtion)
+- [18 · License and Attribution](#18--licenseandattribtion)
+
 ## 01 · Overview
 
 Olokuti Digital is a Django application prototype for exploring product catalogue information, operational tasks, reports and audit events. It is intended for learning and validation, not as a production-ready business system.
@@ -114,7 +135,7 @@ Create and activate a Python environment (PowerShell):
 ```powershell
 py -3.12 -m venv .venv
 Copy-Item .env.example .env
-.\\.venv\\Scripts\\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements/development.txt
 ```
 
