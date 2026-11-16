@@ -115,13 +115,14 @@ def task_quick_status(request, pk):
     if new_status in OperationalTask.Status.values and new_status != task.status:
         task.status = new_status
         task.updated_by = request.user
-        task.save(update_fields=["status", "updated_by", "updated_at"])
-        record_event(
-            user=request.user,
-            action="status_changed",
-            entity="operations.OperationalTask",
-            entity_id=task.pk,
-        )
+        with transaction.atomic():
+            task.save(update_fields=["status", "updated_by", "updated_at"])
+            record_event(
+                user=request.user,
+                action="status_changed",
+                entity="operations.OperationalTask",
+                entity_id=task.pk,
+            )
         messages.success(request, _("Task status updated."))
     return redirect("operations:task-list")
 
@@ -131,13 +132,14 @@ def task_delete(request, pk):
     task = get_object_or_404(OperationalTask, pk=pk)
     if request.method == "POST":
         task_id = task.pk
-        task.delete()
-        record_event(
-            user=request.user,
-            action="deleted",
-            entity="operations.OperationalTask",
-            entity_id=task_id,
-        )
+        with transaction.atomic():
+            task.delete()
+            record_event(
+                user=request.user,
+                action="deleted",
+                entity="operations.OperationalTask",
+                entity_id=task_id,
+            )
         messages.success(request, _("Task deleted."))
         return redirect("operations:task-list")
     if request.method != "GET":
