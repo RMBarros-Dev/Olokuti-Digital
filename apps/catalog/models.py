@@ -52,12 +52,7 @@ class Product(models.Model):
         """Return matching ProductTranslation for language_code without mutating original fields."""
         if not language_code:
             return None
-        normalized = language_code.lower()
-        translations = list(self.translations.all())
-        for item in translations:
-            if item.locale.lower() == normalized:
-                return item
-        return None
+        return self.translations.filter(locale__iexact=language_code).first()
 
 
 class ProductTranslation(models.Model):
