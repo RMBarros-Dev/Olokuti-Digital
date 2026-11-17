@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">Olokuti Digital — símbolo modular</title>
+<desc id="desc">Forma aberta em O com três módulos horizontais, representando organização de catálogo e fluxos.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F7F2E8"/><stop offset="1" stop-color="#EDE3D2"/></linearGradient><linearGradient id="terra" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#D17A57"/><stop offset="1" stop-color="#A94F35"/></linearGradient></defs>
+<rect width="512" height="512" rx="104" fill="url(#bg)"/>
+<path d="M304 82C193 48 91 122 76 230C61 339 130 423 242 426C351 429 421 356 424 260" fill="none" stroke="#344A35" stroke-width="34" stroke-linecap="round"/>
+<path d="M304 82C362 85 409 120 429 169" fill="none" stroke="url(#terra)" stroke-width="34" stroke-linecap="round"/>
+<rect x="160" y="174" width="178" height="34" rx="17" fill="#D17A57"/>
+<rect x="160" y="238" width="132" height="34" rx="17" fill="#344A35"/>
+<rect x="160" y="302" width="158" height="34" rx="17" fill="#C7A66D"/>
+<circle cx="360" cy="315" r="13" fill="#D17A57"/>
+</svg>
