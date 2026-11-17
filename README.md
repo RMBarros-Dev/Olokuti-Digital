@@ -26,6 +26,7 @@
 - [Começar localmente](#começar-localmente)
 - [Configuração](#configuração)
 - [Contas, grupos e permissões](#contas-grupos-e-permissões)
+- [Acessibilidade (Alto Contraste)](#acessibilidade-alto-contraste)
 - [Testes e integração contínua](#testes-e-integração-contínua)
 - [Idiomas e traduções](#idiomas-e-traduções)
 - [Deploy e operação](#deploy-e-operação)
@@ -52,6 +53,7 @@ O princípio de trabalho é separar fatos observados de hipóteses. Integraçõe
 | Auditoria | Eventos mínimos de criação, atualização, mudança de status, exclusão e configuração. |
 | Administração | Listagem, pesquisa, criação e edição de contas por usuários `is_staff`; grupos com permissões do Django. |
 | Idiomas | Prefixos de URL e seletor para dez idiomas; os catálogos de interface são parciais. |
+| Acessibilidade | Controle de alto contraste (`Acessibilidade: Alto contraste`) com persistência em `localStorage`, navegação por teclado, atributos ARIA e suporte a `prefers-reduced-motion`. |
 | Saúde da aplicação | `GET /health` retorna `200 OK`; `GET /health?db=1` valida também a conexão SQL ativa com o PostgreSQL. |
 
 ### Fora do escopo
@@ -197,6 +199,23 @@ Permissões usadas pelas áreas:
 - Gestão de usuários: requer `is_staff`.
 
 A exclusão de categorias é bloqueada enquanto houver produtos relacionados. O dashboard oculta métricas sem permissão correspondente.
+
+## Acessibilidade (Alto Contraste)
+
+A aplicação inclui um recurso nativo de acessibilidade visual que permite alternar entre o **tema padrão** (identidade orgânica do Olokuti Digital) e o **modo de alto contraste** em todas as páginas que estendem `templates/base.html` (públicas e autenticadas).
+
+- **Objetivo:** Garantir legibilidade elevada e distinção visual clara para pessoas com baixa visão, sensibilidade a baixo contraste ou preferência por esquemas de alto contraste.
+- **Como ativar e desativar:**
+  - **Mouse / toque:** Clique no botão **`Acessibilidade: Alto contraste`** localizado na barra superior (`#high-contrast-toggle`).
+  - **Teclado:** Utilize `Tab` até focar o botão (anel de foco `:focus-visible` de alta visibilidade) e pressione `Enter` ou `Espaço`.
+  - **Indicador de estado não dependente apenas de cor:** O botão exibe um selo textual explícito (`OFF` quando desativado e `✓ ON` quando ativado), além de atualizar `aria-pressed="true"`/`"false"` e anunciar a mudança em região `aria-live="polite"` (`#a11y-contrast-status`).
+- **Persistência:** A preferência é armazenada localmente no navegador via `window.localStorage` sob a chave `olokuti_high_contrast` (`"true"` ou `"false"`). Um script inline no `<head>` aplica `data-contrast="high"` no elemento `<html>` antes da primeira pintura (evitando *Flash of Unstyled Content* — FOUC) e sincroniza alterações entre abas pelo evento `storage`. Quando nenhuma preferência está salva, o tema padrão é exibido.
+- **Critérios de acessibilidade seguidos:**
+  - Conformidade com **WCAG 2.2 AA/AAA** para contraste de texto normal (≥ 4.5:1, atingindo > 15:1 com texto `#ffffff` e destaque `#ffff00`/`#7ce7ff` sobre fundo `#000000`/`#0a0a0a`) e componentes de interface/texto grande (≥ 3:1).
+  - Paleta dedicada via variáveis CSS (`:root[data-contrast="high"]`) aplicada a textos, títulos, botões, links sublinhados, campos de formulário, tabelas, menus, alertas e indicadores de estado (*state pills*), sem uso de `filter: invert(1)`.
+  - Suporte a `@media (prefers-reduced-motion: reduce)` para desativar animações e transições quando solicitado pelo sistema operacional.
+- **Arquivos relacionados:** `templates/base.html`, `static/css/app.css`, `static/js/app.js` e testes em `tests/test_dashboard_and_lists.py`.
+- **Limitações conhecidas:** A preferência de alto contraste é persistida por navegador/dispositivo (`localStorage`) e não é sincronizada no perfil de banco de dados do usuário; páginas do Django Admin nativo (`/admin/`) utilizam o sistema de temas próprio do Django.
 
 ## Testes e integração contínua
 

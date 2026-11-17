@@ -1,5 +1,5 @@
-{% load i18n static %}
 <!doctype html>
+{% load i18n static %}
 <html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
 <head>
   <meta charset="utf-8">
@@ -7,6 +7,13 @@
   <meta name="description" content="{% trans 'An experimental workspace for sustainable commerce operations.' %}">
   <title>{% block title %}Olokuti Digital{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-yEPZ7jP9S0QKiUQ0m3jjsO4ProIW7wvR9gXkI7JOGa2XVsw53Yke2bsdkBbjmmiX" crossorigin="anonymous">
+  <script>
+    try {
+      if (window.localStorage && localStorage.getItem("olokuti_high_contrast") === "true") {
+        document.documentElement.setAttribute("data-contrast", "high");
+      }
+    } catch (e) {}
+  </script>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
   {% block extra_head %}{% endblock %}
@@ -30,15 +37,20 @@
           {% if user.is_staff %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.url_name == 'user-list' or request.resolver_match.url_name == 'user-create' or request.resolver_match.url_name == 'user-update' %} active{% endif %}" href="{% url 'accounts:user-list' %}">{% trans "Users" %}</a></li>{% endif %}
         </ul>
         <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 app-nav-actions">
+          <button type="button" id="high-contrast-toggle" class="btn btn-sm contrast-toggle" data-contrast-toggle aria-pressed="false" aria-label="Acessibilidade: Alto contraste">
+            <span class="contrast-toggle-icon" aria-hidden="true">◐</span>
+            <span class="contrast-toggle-label">Acessibilidade: Alto contraste</span>
+            <span class="contrast-toggle-state" data-contrast-state aria-hidden="true">OFF</span>
+          </button>
           <form class="language-form" action="{% url 'set_language' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.get_full_path }}">
             <label class="visually-hidden" for="language-select">{% trans "Language" %}</label>
-            <select id="language-select" name="language" class="form-select form-select-sm" aria-label="{% trans 'Language' %}" onchange="this.form.submit()">
+            <select id="language-select" name="language" class="form-select form-select-sm" aria-label="{% trans 'Language' %}" data-auto-submit="true">
               {% get_current_language as CURRENT_LANGUAGE %}
               {% get_available_languages as AVAILABLE_LANGUAGES %}
               {% for code, name in AVAILABLE_LANGUAGES %}
-                <option value="{{ code }}"{% if code == CURRENT_LANGUAGE %} selected{% endif %}>{{ name }}</option>
+                <option value="{{ code }}" {% if code == CURRENT_LANGUAGE %}selected{% endif %}>{{ name }}</option>
               {% endfor %}
             </select>
           </form>
@@ -50,53 +62,63 @@
         </div>
       </div>
       {% else %}
-      <div class="ms-auto d-flex align-items-center">
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <button type="button" id="high-contrast-toggle-anon" class="btn btn-sm contrast-toggle" data-contrast-toggle aria-pressed="false" aria-label="Acessibilidade: Alto contraste">
+          <span class="contrast-toggle-icon" aria-hidden="true">◐</span>
+          <span class="contrast-toggle-label">Acessibilidade: Alto contraste</span>
+          <span class="contrast-toggle-state" data-contrast-state aria-hidden="true">OFF</span>
+        </button>
         <form class="language-form" action="{% url 'set_language' %}" method="post">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <label class="visually-hidden" for="language-select-anon">{% trans "Language" %}</label>
-          <select id="language-select-anon" name="language" class="form-select form-select-sm" aria-label="{% trans 'Language' %}" onchange="this.form.submit()">
+          <select id="language-select-anon" name="language" class="form-select form-select-sm" aria-label="{% trans 'Language' %}" data-auto-submit="true">
             {% get_current_language as CURRENT_LANGUAGE %}
             {% get_available_languages as AVAILABLE_LANGUAGES %}
             {% for code, name in AVAILABLE_LANGUAGES %}
-              <option value="{{ code }}"{% if code == CURRENT_LANGUAGE %} selected{% endif %}>{{ name }}</option>
+              <option value="{{ code }}" {% if code == CURRENT_LANGUAGE %}selected{% endif %}>{{ name }}</option>
             {% endfor %}
           </select>
         </form>
       </div>
       {% endif %}
+      <span id="a11y-contrast-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-msg-on="Modo de alto contraste ativado." data-msg-off="Modo de alto contraste desativado."></span>
     </div>
   </nav>
 
-  {% if user.is_authenticated %}
+  {% if user.is_authenticated and messages %}
     <div class="app-container container-fluid">
-      {% if messages %}
-        <div class="messages-stack" aria-live="polite">
-          {% for message in messages %}
-            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="status">
-              {{ message }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Dismiss' %}"></button>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-      <main id="main-content" class="page-main" tabindex="-1">
-        {% block content %}{% endblock %}
-      </main>
-      <footer class="app-footer">
-        <span>{% trans "Academic and experimental MVP" %}</span>
-        <span>{% trans "Operational needs and institutional value remain to be validated in field research." %}</span>
-      </footer>
+      <div class="messages-stack" aria-live="polite">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="status">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Dismiss' %}"></button>
+          </div>
+        {% endfor %}
+      </div>
     </div>
-  {% else %}
-    <main id="main-content" class="auth-shell" tabindex="-1">
+  {% endif %}
+
+  <main id="main-content" class="{% if user.is_authenticated %}app-container container-fluid page-main{% else %}auth-shell{% endif %}" tabindex="-1">
+    {% if user.is_authenticated %}
+      {% block content %}{% endblock %}
+    {% else %}
       {% if messages %}
         <div class="container pt-3" aria-live="polite">
           {% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }}" role="status">{{ message }}</div>{% endfor %}
         </div>
       {% endif %}
       {% block auth_content %}{% endblock %}
-    </main>
+    {% endif %}
+  </main>
+
+  {% if user.is_authenticated %}
+    <div class="app-container container-fluid">
+      <footer class="app-footer">
+        <span>{% trans "Academic and experimental MVP" %}</span>
+        <span>{% trans "Operational needs and institutional value remain to be validated in field research." %}</span>
+      </footer>
+    </div>
   {% endif %}
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.bundle.min.js" integrity="sha384-WyOxWvTyr1QaMPfiPJSv76iReVthorl5uWlFtZPyK0IEB0hGzo9y5Bp9mYanr8Bu" crossorigin="anonymous"></script>
