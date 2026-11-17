@@ -27,32 +27,43 @@
 
 ## Índice
 
-- [01 · Contexto e objetivo](#01--contexto-e-objetivo)
-- [02 · Escopo funcional](#02--escopo-funcional)
-- [03 · Fora do escopo](#03--fora-do-escopo)
-- [04 · Área de aplicação e metodologia de desenvolvimento](#04--área-de-aplicação-e-metodologia-de-desenvolvimento)
-- [05 · Arquitetura](#05--arquitetura)
-- [06 · Tecnologias](#06--tecnologias)
-- [07 · Começar localmente](#07--começar-localmente)
-- [08 · Configuração](#08--configuração)
-- [09 · Contas, grupos e permissões](#09--contas-grupos-e-permissões)
-- [10 · Testes e integração contínua](#10--testes-e-integração-contínua)
-- [11 · Idiomas e traduções](#11--idiomas-e-traduções)
-- [12 · Deploy e operação](#12--deploy-e-operação)
-- [13 · Arquivos estáticos, logs e backups](#13--arquivos-estáticos-logs-e-backups)
-- [14 · Documentação do projeto](#14--documentação-do-projeto)
-- [15 · Princípios de engenharia](#15--princípios-de-engenharia)
-- [16 · Segurança, dados e limitações](#16--segurança-dados-e-limitações)
-- [17 · Estrutura do repositório](#17--estrutura-do-repositório)
-- [18 · Contribuição e licença](#18--contribuição-e-licença)
+- [01 · Contexto e posicionamento](#01--contexto-e-posicionamento)
+- [02 · Demonstração real e referências visuais](#02--demonstracao-real-e-referencias-visuais)
+- [03 · Funcionalidades e estado de implementação](#03--funcionalidades-e-estado-de-implementacao)
+- [04 · Arquitetura geral](#04--arquitetura-geral)
+- [05 · Stack tecnológica](#05--stack-tecnologica)
+- [06 · Estrutura de diretórios](#06--estrutura-de-diretorios)
+- [07 · Pré-requisitos e instalação](#07--pre-requisitos-e-instalacao)
+- [08 · Configuração de ambiente e dados](#08--configuracao-de-ambiente-e-dados)
+- [09 · Guia de utilização](#09--guia-de-utilizacao)
+- [10 · Testes e qualidade](#10--testes-e-qualidade)
+- [11 · Internacionalização e localização](#11--internacionalizacao-e-localizacao)
+- [12 · Deploy e infraestrutura](#12--deploy-e-infraestrutura)
+- [13 · Segurança e limitações](#13--seguranca-e-limitacoes)
+- [14 · Documentação complementar](#14--documentacao-complementar)
+- [15 · Contribuição, licença e créditos](#15--contribuicao-licenca-e-creditos)
 
-## 01 · Contexto e objetivo
+## 01 · Contexto e posicionamento
+
+### Contexto e objetivo
 
 O projeto foi concebido no contexto da investigação **“Da identidade à inovação: memória, diagnóstico operacional e transformação digital do comércio sustentável em Barcelona — estudo de caso da Olokuti”**. A aplicação oferece um ambiente de prototipagem para avaliar conceitos de catálogo, tarefas e relatórios; ela não pressupõe que a empresa precise dessas funcionalidades.
 
 O princípio de trabalho é separar fatos observados de hipóteses. Integrações, dados, requisitos, processos e identidade institucional só devem ser incorporados após evidência, autorização e validação adequadas.
 
-## 02 · Escopo funcional
+### Área de aplicação e metodologia de desenvolvimento
+
+O MVP explora fluxos de informação de catálogo e coordenação de tarefas para um contexto de operação comercial. O desenvolvimento é incremental e acadêmico: requisitos e hipóteses são documentados, implementações são divididas por módulos Django e comportamentos relevantes são cobertos por testes automatizados. O valor operacional e a adequação dos fluxos dependem de validação de campo; o protótipo não declara representar processos reais da empresa citada.
+
+## 02 · Demonstração real e referências visuais
+
+Ambiente de demonstração publicado: [Railway](https://olokuti-web-production.up.railway.app/). A disponibilidade atual deve ser confirmada no provedor antes de uma apresentação. A rota [health com verificação do banco](https://olokuti-web-production.up.railway.app/health?db=1) informa a conectividade no momento da consulta, não a disponibilidade contínua.
+
+## 03 · Funcionalidades e estado de implementação
+
+O estado apresentado nesta seção corresponde ao escopo descrito no README e no material referenciado pelo repositório. Não equivale, por si só, a homologação operacional ou validação independente.
+
+### Escopo funcional
 
 | Área | O que o MVP oferece |
 | --- | --- |
@@ -67,17 +78,15 @@ O princípio de trabalho é separar fatos observados de hipóteses. Integraçõe
 | Idiomas | Prefixos de URL e seletor para dez idiomas; os catálogos de interface são parciais. |
 | Saúde da aplicação | `GET /health` retorna `200 OK`; `GET /health?db=1` valida também a conexão SQL ativa com o PostgreSQL. |
 
-## 03 · Fora do escopo
+### Fora do escopo
 
 Este MVP não implementa pagamentos, vendas, faturamento, gestão financeira, sincronização de inventário, integração omnicanal ou conexão com sistemas da Olokuti. Não é uma API pública nem um sistema pronto para uso operacional.
 
 O comando `seed_demo` é opcional, só executa com `DEBUG=True` e cria registros sintéticos identificados como demonstração. Origens, certificações, fornecedores e afirmações de sustentabilidade desses registros não são verificadas.
 
-## 04 · Área de aplicação e metodologia de desenvolvimento
+## 04 · Arquitetura geral
 
-O MVP explora fluxos de informação de catálogo e coordenação de tarefas para um contexto de operação comercial. O desenvolvimento é incremental e acadêmico: requisitos e hipóteses são documentados, implementações são divididas por módulos Django e comportamentos relevantes são cobertos por testes automatizados. O valor operacional e a adequação dos fluxos dependem de validação de campo; o protótipo não declara representar processos reais da empresa citada.
-
-## 05 · Arquitetura
+### Arquitetura
 
 Aplicação monolítica modular: o navegador acessa rotas Django; os módulos usam o ORM e a mesma base PostgreSQL; templates renderizam a interface e HTMX atualiza partes das listas. WhiteNoise publica os arquivos estáticos recolhidos no build.
 
@@ -110,7 +119,9 @@ Os módulos têm responsabilidades delimitadas:
 | `apps/audit` | Modelo, serviço e visualização dos eventos de auditoria. |
 | `config/settings` | Configurações compartilhadas, local, de testes e produção. |
 
-## 06 · Tecnologias
+## 05 · Stack tecnológica
+
+### Tecnologias
 
 | Camada | Tecnologia |
 | --- | --- |
@@ -125,7 +136,38 @@ Os módulos têm responsabilidades delimitadas:
 
 Django 5.2 requer PostgreSQL 14 ou superior ([notas oficiais da versão 5.2](https://docs.djangoproject.com/en/5.2/releases/5.2/)). Docker, Node.js, Redis e microserviços não são requisitos para desenvolvimento local.
 
-## 07 · Começar localmente
+## 06 · Estrutura de diretórios
+
+### Estrutura do repositório
+
+```text
+.
+├── apps/
+│   ├── accounts/       # autenticação, grupos e usuários
+│   ├── audit/          # eventos de auditoria
+│   ├── catalog/        # produtos, categorias e traduções
+│   ├── operations/     # tarefas e status
+│   └── reports/        # resumos e CSV
+├── config/
+│   └── settings/       # base, local, test e production
+├── locale/             # catálogos gettext .po/.mo
+├── static/             # CSS e JavaScript
+├── templates/          # templates Django
+├── tests/              # testes automatizados
+├── requirements/       # dependências de produção e desenvolvimento
+├── .github/workflows/  # CI e Health Check
+├── .env.example
+├── manage.py
+├── Procfile
+├── railway.json        # configuração Railway legada
+├── render.yaml         # Render Blueprint (hospedagem gratuita)
+├── vercel.json         # Vercel Serverless Python WSGI
+└── pyproject.toml      # configuração do pytest e Ruff
+```
+
+## 07 · Pré-requisitos e instalação
+
+### Começar localmente
 
 ### Pré-requisitos
 
@@ -171,7 +213,11 @@ Acesse [http://127.0.0.1:8000/](http://127.0.0.1:8000/). A raiz redireciona para
 
 Para criar dados sintéticos para uma demonstração local, execute `python manage.py seed_demo` com `DEBUG=True`. O comando avisa que os registros são fictícios e recusa execução fora do modo de depuração.
 
-## 08 · Configuração
+## 08 · Configuração de ambiente e dados
+
+Esta seção reúne as informações documentadas sobre configuração e armazenamento. Variáveis sensíveis devem ser fornecidas pelo ambiente de execução, nunca commitadas.
+
+### Configuração
 
 As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em produção, defina-as como variáveis protegidas no provedor; não publique segredos no GitHub.
 
@@ -190,7 +236,9 @@ As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em pro
 
 `config.settings.production` mantém `DEBUG=False`, exige chave, PostgreSQL, hosts explícitos e origens CSRF confiáveis. HTTPS, cookies seguros e HSTS são configurados nessa camada.
 
-## 09 · Contas, grupos e permissões
+## 09 · Guia de utilização
+
+### Contas, grupos e permissões
 
 Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`). Seguindo o princípio do menor privilégio, o cadastro público cria uma conta básica, sem grupos ou permissões operacionais automáticos. A atribuição de grupos e permissões é uma ação administrativa explícita, realizada após análise da conta.
 
@@ -215,7 +263,9 @@ Permissões usadas pelas áreas:
 
 A exclusão de categorias é bloqueada enquanto houver produtos relacionados. O dashboard oculta métricas sem permissão correspondente.
 
-## 10 · Testes e integração contínua
+## 10 · Testes e qualidade
+
+### Testes e integração contínua
 
 Execute os mesmos verificadores usados no workflow do GitHub:
 
@@ -230,7 +280,9 @@ O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) executa Ruff, 
 
 Os testes usam `config.settings.test` e SQLite em memória. Eles cobrem autenticação, permissões, catálogo, traduções de produtos, tarefas, relatórios, auditoria, contas e segurança da exportação CSV. A suíte não valida conectividade com o PostgreSQL do provedor nem substitui uma verificação do ambiente de produção.
 
-## 11 · Idiomas e traduções
+## 11 · Internacionalização e localização
+
+### Idiomas e traduções
 
 Os prefixos configurados são `es-419`, `es-es`, `ca`, `gl`, `eu`, `en-us`, `en-gb`, `en`, `pt-br` e `pt-pt`. Os catálogos contêm traduções parciais e ainda precisam de revisão linguística humana; a interface pode exibir texto em inglês quando não houver tradução.
 
@@ -244,7 +296,9 @@ python manage.py compile_locales
 
 `ProductTranslation` mantém nome, descrição e informação de sustentabilidade separados do produto original. A aplicação só seleciona uma tradução da mesma variante regional; por exemplo, `pt-BR` não usa automaticamente uma tradução `pt-PT`.
 
-## 12 · Deploy e operação
+## 12 · Deploy e infraestrutura
+
+### Deploy e operação
 
 - **URL publicada do ambiente de demonstração:** [https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/). A disponibilidade atual deve ser confirmada no provedor.
 - **Verificação de saúde e banco (Supabase PostgreSQL):** [https://olokuti-web-production.up.railway.app/health?db=1](https://olokuti-web-production.up.railway.app/health?db=1)
@@ -285,13 +339,30 @@ Além do `railway.json`, o repositório inclui configurações prontas para hosp
 - **`vercel.json` (Vercel Serverless WSGI):** configura a entrada WSGI `config/wsgi.py` (`app = application`) para uma implantação baseada em funções serverless. Isso não elimina cold starts nem comprova adequação operacional sem testes no provedor.
 - **`.github/workflows/keepalive.yml` (verificação periódica):** executa a cada 6 horas um `GET /health?db=1`, que valida a conexão PostgreSQL com `SELECT 1`. A URL pode ser alterada pela variável `APP_HEALTHCHECK_URL` em *Settings → Secrets and variables → Actions → Variables*. Essa chamada confirma conectividade no momento da execução; não deve ser tratada como garantia de disponibilidade contínua nem como garantia de que um provedor não suspenderá um serviço.
 
-## 13 · Arquivos estáticos, logs e backups
+### Arquivos estáticos, logs e backups
 
 WhiteNoise serve os arquivos recolhidos em `STATIC_ROOT`; o build de produção precisa executar `collectstatic`. Os logs são enviados a stdout/stderr em formato JSON. Não inclua dados pessoais ou conteúdo de tarefas em mensagens de log.
 
 Para PostgreSQL, defina backups periódicos em destino protegido e criptografado, com credencial de menor privilégio. Retenha cópias de acordo com a política aplicável e teste uma restauração antes de depender do backup. Não coloque senhas em comandos, histórico do terminal, documentação ou arquivos versionados.
 
-## 14 · Documentação do projeto
+## 13 · Segurança e limitações
+
+### Segurança, dados e limitações
+
+- Não use dados pessoais ou operacionais reais sem autorização e salvaguardas apropriadas.
+- Não trate exemplos, hipóteses, origens ou certificações como fatos sobre a Olokuti.
+- Não há integração com sistemas da empresa nem validação institucional do produto.
+- Os eventos de auditoria ficam na mesma base da aplicação; não são um registro inviolável nem guardam snapshots completos das alterações.
+- Bootstrap e HTMX são carregados de CDNs. Ambientes restritos precisam disponibilizar esses arquivos localmente.
+- Traduções de interface são parciais e não passaram por revisão humana completa.
+- Os testes não validam uma conexão real de produção com PostgreSQL.
+- `railway.json` está em formato legado e requer migração ou configuração atualizada do serviço para deployments novos/após o período de compatibilidade.
+
+Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e tratamento de dados de demonstração. Não publique credenciais ou detalhes exploráveis em issues públicas.
+
+## 14 · Documentação complementar
+
+### Documentação do projeto
 
 - [Índice da documentação técnica](docs/README.md).
 - [Arquitetura técnica](docs/architecture/README.md).
@@ -309,51 +380,15 @@ Para PostgreSQL, defina backups periódicos em destino protegido e criptografado
 - [Guia de traduções](locale/README.md).
 - [Workflow de integração contínua](.github/workflows/ci.yml).
 
-## 15 · Princípios de engenharia
+### Princípios de engenharia
 
 O projeto procura manter separação por domínio, permissões explícitas, configurações distintas por ambiente, testes automatizados e documentação que diferencia dados sintéticos de informações observadas. A auditoria registrada pela aplicação não deve ser interpretada como trilha imutável ou certificação independente.
 
-## 16 · Segurança, dados e limitações
+## 15 · Contribuição, licença e créditos
 
-- Não use dados pessoais ou operacionais reais sem autorização e salvaguardas apropriadas.
-- Não trate exemplos, hipóteses, origens ou certificações como fatos sobre a Olokuti.
-- Não há integração com sistemas da empresa nem validação institucional do produto.
-- Os eventos de auditoria ficam na mesma base da aplicação; não são um registro inviolável nem guardam snapshots completos das alterações.
-- Bootstrap e HTMX são carregados de CDNs. Ambientes restritos precisam disponibilizar esses arquivos localmente.
-- Traduções de interface são parciais e não passaram por revisão humana completa.
-- Os testes não validam uma conexão real de produção com PostgreSQL.
-- `railway.json` está em formato legado e requer migração ou configuração atualizada do serviço para deployments novos/após o período de compatibilidade.
+Ao propor alterações, descreva o objetivo, os arquivos afetados e a validação realizada. Prefira mudanças pequenas e revisáveis; inclua testes quando alterar comportamento e nunca envie credenciais, tokens ou dados pessoais.
 
-Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e tratamento de dados de demonstração. Não publique credenciais ou detalhes exploráveis em issues públicas.
-
-## 17 · Estrutura do repositório
-
-```text
-.
-├── apps/
-│   ├── accounts/       # autenticação, grupos e usuários
-│   ├── audit/          # eventos de auditoria
-│   ├── catalog/        # produtos, categorias e traduções
-│   ├── operations/     # tarefas e status
-│   └── reports/        # resumos e CSV
-├── config/
-│   └── settings/       # base, local, test e production
-├── locale/             # catálogos gettext .po/.mo
-├── static/             # CSS e JavaScript
-├── templates/          # templates Django
-├── tests/              # testes automatizados
-├── requirements/       # dependências de produção e desenvolvimento
-├── .github/workflows/  # CI e Health Check
-├── .env.example
-├── manage.py
-├── Procfile
-├── railway.json        # configuração Railway legada
-├── render.yaml         # Render Blueprint (hospedagem gratuita)
-├── vercel.json         # Vercel Serverless Python WSGI
-└── pyproject.toml      # configuração do pytest e Ruff
-```
-
-## 18 · Contribuição e licença
+### Contribuição e licença
 
 Leia [`CONTRIBUTING.md`](CONTRIBUTING.md) antes de enviar alterações. Toda contribuição deve manter explícita a natureza experimental do MVP e evitar dados ou afirmações não verificadas.
 
