@@ -2,7 +2,7 @@
 
 ## Visão geral
 
-Desenvolvo o Olokuti Digital como MVP acadêmico e experimental em Django. Organizo o backend em aplicações por domínio, utilizo templates e recursos estáticos e mantenho o acesso ao banco configurado por `DATABASE_URL`.
+O Olokuti Digital é um MVP acadêmico e experimental implementado como monólito modular Django. O backend é organizado em aplicações por domínio; os módulos compartilham processo, configuração e banco de dados. Templates Django renderizam a interface e HTMX atualiza fragmentos selecionados.
 
 ## Componentes observados
 
@@ -44,6 +44,10 @@ Utilizo `LocaleMiddleware`, URLs localizadas e catálogos em `locale/`. Mantenho
 ## Qualidade e segurança
 
 O workflow executa Ruff e pytest. Mantenho testes para parsing de URLs de banco, autenticação, catálogo, operações, relatórios e permissões. Nos exemplos e contribuições, utilizo dados sintéticos e não versiono credenciais reais.
+
+## Hospedagem e configuração
+
+O repositório contém `railway.json`, `render.yaml` e `vercel.json`, mas arquivos versionados não comprovam serviços ativos. Em novembro de 2026, Railway informa que Config as Code está descontinuado: serviços existentes podem utilizar `railway.json`/`railway.toml` somente até 1º de dezembro de 2026; novos serviços não podem adotar esse formato. A migração recomendada é Infrastructure as Code (`.railway/railway.ts`). Verifique o serviço ativo antes de alterar a configuração. Consulte a [documentação oficial da Railway](https://docs.railway.com/config-as-code).
 
 ## Referências
 
