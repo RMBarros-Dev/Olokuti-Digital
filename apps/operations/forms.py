@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
+from config.forms import apply_bootstrap_classes
+
 from .models import OperationalTask
 
 
@@ -36,7 +38,4 @@ class OperationalTaskForm(forms.ModelForm):
         self.fields["assigned_to"].queryset = (
             get_user_model().objects.filter(is_active=True).order_by("username")
         )
-        for field in self.fields.values():
-            field.widget.attrs["class"] = (
-                "form-select" if isinstance(field.widget, forms.Select) else "form-control"
-            )
+        apply_bootstrap_classes(self.fields)

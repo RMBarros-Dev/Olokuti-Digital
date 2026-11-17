@@ -1,57 +1,30 @@
-import csv
-
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.db.models.deletion import ProtectedError
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET, require_POST
 
 from apps.audit.services import record_event
+from config.csv import build_csv_response
 
 from .forms import CategoryForm, ProductForm, ProductTranslationForm
 from .models import Category, Product, ProductTranslation
-
-
-def _filtered_products(request):
-    products = Product.objects.select_related("category", "created_by").prefetch_related(
-        "translations"
-    )
-    query = request.GET.get("q", "").strip()
-    category_id = request.GET.get("category", "").strip()
-    if query:
-        products = products.filter(
-            Q(name__icontains=query)
-            | Q(description__icontains=query)
-            | Q(origin__icontains=query)
-            | Q(sustainability_info__icontains=query)
-            | Q(translations__name__icontains=query)
-            | Q(translations__description__icontains=query)
-        ).distinct()
-    if category_id.isdigit():
-        products = products.filter(category_id=category_id)
-    return products, query, category_id
-
-
-def _csv_safe(value):
-    text = str(value)
-    if text[:1] in {"\t", "\r"} or text.lstrip(" \t\r\n").startswith(("=", "+", "-", "@")):
-        return "'" + text
-    return text
+from .selectors import attach_active_translations, filter_products, iter_products_for_csv
 
 
 @permission_required("catalog.view_product", raise_exception=True)
 def product_list(request):
-    products, query, category_id = _filtered_products(request)
+    query = request.GET.get("q", "").strip()
+    category_id = request.GET.get("category", "").strip()
+    products = filter_products(query=query, category_id=category_id)
     page = Paginator(products, 12).get_page(request.GET.get("page"))
-    active_lang = get_language()
-    for item in page.object_list:
-        item.active_translation = item.get_translation(active_lang)
+    attach_active_translations(page.object_list, get_language())
     template = (
         "catalog/_product_table.html"
         if request.headers.get("HX-Request") == "true"
@@ -71,36 +44,22 @@ def product_list(request):
 
 @permission_required("catalog.view_product", raise_exception=True)
 def export_products_csv(request):
-    products, _query, _category_id = _filtered_products(request)
-    active_lang = get_language()
-    response = HttpResponse(content_type="text/csv; charset=utf-8")
-    response["Content-Disposition"] = 'attachment; filename="olokuti-catalogue.csv"'
-    response.write("\ufeff")
-    writer = csv.writer(response)
-    writer.writerow(
-        [
-            _("Name"),
-            _("Translated name"),
-            _("Category"),
-            _("Origin"),
-            _("Description"),
-            _("Sustainability information"),
-        ]
+    query = request.GET.get("q", "").strip()
+    category_id = request.GET.get("category", "").strip()
+    headers = [
+        _("Name"),
+        _("Translated name"),
+        _("Category"),
+        _("Origin"),
+        _("Description"),
+        _("Sustainability information"),
+    ]
+    rows = iter_products_for_csv(
+        query=query,
+        category_id=category_id,
+        language_code=get_language(),
     )
-    for product in products:
-        trans = product.get_translation(active_lang)
-        row = [
-            product.name,
-            trans.name if trans else "",
-            product.category.name if product.category else "",
-            product.origin,
-            trans.description if (trans and trans.description) else product.description,
-            trans.sustainability_info
-            if (trans and trans.sustainability_info)
-            else product.sustainability_info,
-        ]
-        writer.writerow([_csv_safe(val) for val in row])
-    return response
+    return build_csv_response("olokuti-catalogue.csv", headers, rows)
 
 
 @permission_required("catalog.view_product", raise_exception=True)

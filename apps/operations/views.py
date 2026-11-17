@@ -2,37 +2,30 @@ from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from apps.audit.services import record_event
 
 from .forms import OperationalTaskForm
 from .models import OperationalTask
+from .selectors import filter_operational_tasks
 
 
 @permission_required("operations.view_operationaltask", raise_exception=True)
 def task_list(request):
-    tasks = OperationalTask.objects.select_related("assigned_to", "product")
     status = request.GET.get("status", "")
     priority = request.GET.get("priority", "")
     scope = request.GET.get("scope", "")
     query = request.GET.get("q", "").strip()
-    if status in OperationalTask.Status.values:
-        tasks = tasks.filter(status=status)
-    if priority in OperationalTask.Priority.values:
-        tasks = tasks.filter(priority=priority)
-    if scope == "mine":
-        tasks = tasks.filter(assigned_to=request.user)
-    elif scope == "overdue":
-        tasks = tasks.filter(due_date__lt=timezone.localdate()).exclude(
-            status__in=[OperationalTask.Status.DONE, OperationalTask.Status.CANCELLED]
-        )
-    if query:
-        tasks = tasks.filter(Q(title__icontains=query) | Q(description__icontains=query))
+    tasks = filter_operational_tasks(
+        request.user,
+        status=status,
+        priority=priority,
+        scope=scope,
+        query=query,
+    )
     page = Paginator(tasks, 15).get_page(request.GET.get("page"))
     template = (
         "operations/_task_table.html"

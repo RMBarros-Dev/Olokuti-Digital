@@ -8,6 +8,19 @@ from django.utils.translation import gettext_lazy as _
 from apps.catalog.models import Product
 
 
+class OperationalTaskQuerySet(models.QuerySet):
+    """Reusable domain queries for open and overdue operational tasks."""
+
+    def open(self):
+        return self.exclude(
+            status__in=[OperationalTask.Status.DONE, OperationalTask.Status.CANCELLED]
+        )
+
+    def overdue(self, reference_date=None):
+        today = reference_date or timezone.localdate()
+        return self.filter(due_date__lt=today).open()
+
+
 class OperationalTask(models.Model):
     class Status(models.TextChoices):
         TODO = "todo", _("To do")
@@ -57,6 +70,8 @@ class OperationalTask(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = OperationalTaskQuerySet.as_manager()
 
     class Meta:
         ordering = ["due_date", "-created_at"]

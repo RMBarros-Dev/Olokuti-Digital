@@ -2,20 +2,16 @@ from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 from django.shortcuts import render
 
-from .models import AuditLog
+from .selectors import filter_audit_events, get_distinct_audit_actions
 
 
 @permission_required("audit.view_auditlog", raise_exception=True)
 def audit_list(request):
-    events = AuditLog.objects.select_related("user").all()
     entity = request.GET.get("entity", "").strip()
     action = request.GET.get("action", "").strip()
-    if entity:
-        events = events.filter(entity__icontains=entity)
-    if action:
-        events = events.filter(action=action)
+    events = filter_audit_events(entity=entity, action=action)
     page = Paginator(events, 25).get_page(request.GET.get("page"))
-    actions = AuditLog.objects.order_by().values_list("action", flat=True).distinct()
+    actions = get_distinct_audit_actions()
     template = (
         "audit/_audit_table.html"
         if request.headers.get("HX-Request") == "true"

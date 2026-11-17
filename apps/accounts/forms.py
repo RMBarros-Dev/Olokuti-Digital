@@ -6,13 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-
-def _assign_bootstrap_classes(fields):
-    for field in fields.values():
-        if isinstance(field.widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)):
-            field.widget.attrs["class"] = "form-check-input"
-        else:
-            field.widget.attrs["class"] = "form-control"
+from config.forms import apply_bootstrap_classes
 
 
 def _validate_privileged_groups(acting_user, selected_groups):
@@ -37,7 +31,7 @@ class PublicRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        _assign_bootstrap_classes(self.fields)
+        apply_bootstrap_classes(self.fields)
 
 
 class ManagedUserCreationForm(UserCreationForm):
@@ -69,7 +63,7 @@ class ManagedUserCreationForm(UserCreationForm):
             self.fields["groups"].queryset = Group.objects.exclude(
                 permissions__codename="view_auditlog"
             ).order_by("name")
-        _assign_bootstrap_classes(self.fields)
+        apply_bootstrap_classes(self.fields)
 
     def clean_groups(self):
         groups = self.cleaned_data.get("groups")
@@ -131,7 +125,7 @@ class ManagedUserUpdateForm(forms.ModelForm):
             self.fields["groups"].queryset = Group.objects.exclude(
                 permissions__codename="view_auditlog"
             ).order_by("name")
-        _assign_bootstrap_classes(self.fields)
+        apply_bootstrap_classes(self.fields)
 
     def clean_new_password(self):
         password = self.cleaned_data.get("new_password", "")

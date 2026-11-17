@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from config.forms import apply_bootstrap_classes
+
 from .models import Category, Product, ProductTranslation
 
 
@@ -22,10 +24,7 @@ class ProductForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs["class"] = (
-                "form-select" if isinstance(field.widget, forms.Select) else "form-control"
-            )
+        apply_bootstrap_classes(self.fields)
 
 
 class ProductTranslationForm(forms.ModelForm):
@@ -45,10 +44,7 @@ class ProductTranslationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs["class"] = (
-                "form-select" if isinstance(field.widget, forms.Select) else "form-control"
-            )
+        apply_bootstrap_classes(self.fields)
 
 
 class CategoryForm(forms.ModelForm):
@@ -65,5 +61,4 @@ class CategoryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs["class"] = "form-control"
+        apply_bootstrap_classes(self.fields)
