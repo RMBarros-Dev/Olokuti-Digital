@@ -10,6 +10,11 @@ ACTION_LABELS = {
     "status_changed": _("Status changed"),
     "deleted": _("Deleted"),
     "configured": _("Configured"),
+    "login_succeeded": _("Signed in"),
+    "login_failed": _("Failed sign-in"),
+    "password_reset_requested": _("Password reset requested"),
+    "password_reset_completed": _("Password reset completed"),
+    "rate_limited": _("Rate limit triggered"),
 }
 
 ENTITY_LABELS = {
@@ -19,6 +24,7 @@ ENTITY_LABELS = {
     "operations.OperationalTask": _("Task"),
     "auth.User": _("User"),
     "auth.Group": _("Groups"),
+    "security.RateLimit": _("Rate limit"),
 }
 
 

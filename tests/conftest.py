@@ -1,12 +1,15 @@
 import pytest
 from django.contrib.auth.models import Permission
+from django.core.cache import cache
 from django.utils import translation
 
 
 @pytest.fixture(autouse=True)
-def reset_language():
+def reset_language_and_cache():
+    cache.clear()
     translation.activate("en")
     yield
+    cache.clear()
     translation.activate("en")
 
 

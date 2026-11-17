@@ -3,6 +3,8 @@ from django.urls import path, reverse_lazy
 
 from .views import (
     AccountLoginView,
+    AccountPasswordResetConfirmView,
+    AccountPasswordResetView,
     dashboard,
     register,
     setup_default_groups,
@@ -20,7 +22,7 @@ urlpatterns = [
     path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout"),
     path(
         "accounts/password-reset/",
-        auth_views.PasswordResetView.as_view(
+        AccountPasswordResetView.as_view(
             template_name="accounts/password_reset.html",
             email_template_name="accounts/password_reset_email.html",
             success_url=reverse_lazy("accounts:password_reset_done"),
@@ -34,7 +36,7 @@ urlpatterns = [
     ),
     path(
         "accounts/reset/<uidb64>/<token>/",
-        auth_views.PasswordResetConfirmView.as_view(
+        AccountPasswordResetConfirmView.as_view(
             template_name="accounts/password_reset_confirm.html",
             success_url=reverse_lazy("accounts:password_reset_complete"),
         ),

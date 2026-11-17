@@ -23,15 +23,6 @@ def _resolve_supabase_pooler(env_file: Path) -> None:
                 "aws-1-eu-west-1.pooler.supabase.com",
             )
             os.environ["DATABASE_URL"] = alt_url
-            if env_file.exists():
-                text = env_file.read_text(encoding="utf-8")
-                env_file.write_text(
-                    text.replace(
-                        "aws-0-eu-west-1.pooler.supabase.com",
-                        "aws-1-eu-west-1.pooler.supabase.com",
-                    ),
-                    encoding="utf-8",
-                )
 
 
 if __name__ == "__main__":

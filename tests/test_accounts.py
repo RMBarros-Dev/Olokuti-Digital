@@ -120,4 +120,3 @@ def test_public_user_registration_creates_account_and_logs_in(client, django_use
     assert user.groups.count() == 0
     assert user.has_perm("catalog.view_product") is False
     assert user.has_perm("operations.view_operationaltask") is False
-

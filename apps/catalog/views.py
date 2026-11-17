@@ -3,6 +3,7 @@ import csv
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Count, Q
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponse, HttpResponseNotAllowed
@@ -130,12 +131,17 @@ def product_create(request):
     if request.method == "POST":
         form = ProductForm(request.POST)
         if form.is_valid():
-            product = form.save(commit=False)
-            product.created_by = request.user
-            product.save()
-            record_event(
-                user=request.user, action="created", entity="catalog.Product", entity_id=product.pk
-            )
+            with transaction.atomic():
+                product = form.save(commit=False)
+                product.created_by = request.user
+                product.save()
+                record_event(
+                    user=request.user,
+                    action="created",
+                    entity="catalog.Product",
+                    entity_id=product.pk,
+                    details={"category_id": product.category_id},
+                )
             messages.success(request, _("Product added to the catalogue."))
             return redirect("catalog:product-list")
     else:
@@ -149,10 +155,15 @@ def product_update(request, pk):
     if request.method == "POST":
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
-            form.save()
-            record_event(
-                user=request.user, action="updated", entity="catalog.Product", entity_id=product.pk
-            )
+            with transaction.atomic():
+                form.save()
+                record_event(
+                    user=request.user,
+                    action="updated",
+                    entity="catalog.Product",
+                    entity_id=product.pk,
+                    details={"changed_fields": form.changed_data},
+                )
             messages.success(request, _("Product changes saved."))
             return redirect("catalog:product-list")
     else:
@@ -180,15 +191,17 @@ def product_translation_save(request, pk):
     existing = ProductTranslation.objects.filter(product=product, locale=locale_value).first()
     form = ProductTranslationForm(request.POST, instance=existing)
     if form.is_valid():
-        translation = form.save(commit=False)
-        translation.product = product
-        translation.save()
-        record_event(
-            user=request.user,
-            action="updated" if existing else "created",
-            entity="catalog.ProductTranslation",
-            entity_id=translation.pk,
-        )
+        with transaction.atomic():
+            translation = form.save(commit=False)
+            translation.product = product
+            translation.save()
+            record_event(
+                user=request.user,
+                action="updated" if existing else "created",
+                entity="catalog.ProductTranslation",
+                entity_id=translation.pk,
+                details={"product_id": str(product.pk), "locale": translation.locale},
+            )
         messages.success(request, _("Product translation saved."))
         return redirect("catalog:product-update", pk=product.pk)
     return render(
@@ -210,13 +223,16 @@ def product_translation_delete(request, pk, translation_id):
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
     translation = get_object_or_404(ProductTranslation, pk=translation_id, product=product)
-    translation.delete()
-    record_event(
-        user=request.user,
-        action="deleted",
-        entity="catalog.ProductTranslation",
-        entity_id=translation_id,
-    )
+    with transaction.atomic():
+        locale = translation.locale
+        translation.delete()
+        record_event(
+            user=request.user,
+            action="deleted",
+            entity="catalog.ProductTranslation",
+            entity_id=translation_id,
+            details={"product_id": str(product.pk), "locale": locale},
+        )
     messages.success(request, _("Product translation removed."))
     return redirect("catalog:product-update", pk=product.pk)
 
@@ -225,11 +241,15 @@ def product_translation_delete(request, pk, translation_id):
 def product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
-        product_id = product.pk
-        product.delete()
-        record_event(
-            user=request.user, action="deleted", entity="catalog.Product", entity_id=product_id
-        )
+        with transaction.atomic():
+            product_id = product.pk
+            product.delete()
+            record_event(
+                user=request.user,
+                action="deleted",
+                entity="catalog.Product",
+                entity_id=product_id,
+            )
         messages.success(request, _("Product deleted."))
         return redirect("catalog:product-list")
     if request.method != "GET":
@@ -249,13 +269,14 @@ def category_list(request):
 def category_create(request):
     form = CategoryForm(request.POST)
     if form.is_valid():
-        category = form.save()
-        record_event(
-            user=request.user,
-            action="created",
-            entity="catalog.Category",
-            entity_id=category.pk,
-        )
+        with transaction.atomic():
+            category = form.save()
+            record_event(
+                user=request.user,
+                action="created",
+                entity="catalog.Category",
+                entity_id=category.pk,
+            )
         messages.success(request, _("Category created."))
         return redirect("catalog:category-list")
     categories = Category.objects.annotate(product_count=Count("products")).order_by("name")
@@ -273,13 +294,15 @@ def category_update(request, pk):
     form = CategoryForm(request.POST or None, instance=category)
     if request.method == "POST":
         if form.is_valid():
-            form.save()
-            record_event(
-                user=request.user,
-                action="updated",
-                entity="catalog.Category",
-                entity_id=category.pk,
-            )
+            with transaction.atomic():
+                form.save()
+                record_event(
+                    user=request.user,
+                    action="updated",
+                    entity="catalog.Category",
+                    entity_id=category.pk,
+                    details={"changed_fields": form.changed_data},
+                )
             messages.success(request, _("Category updated."))
             return redirect("catalog:category-list")
     elif request.method != "GET":
@@ -297,14 +320,15 @@ def category_update(request, pk):
 def category_delete(request, pk):
     category = get_object_or_404(Category, pk=pk)
     try:
-        category_id = category.pk
-        category.delete()
-        record_event(
-            user=request.user,
-            action="deleted",
-            entity="catalog.Category",
-            entity_id=category_id,
-        )
+        with transaction.atomic():
+            category_id = category.pk
+            category.delete()
+            record_event(
+                user=request.user,
+                action="deleted",
+                entity="catalog.Category",
+                entity_id=category_id,
+            )
         messages.success(request, _("Category deleted."))
     except ProtectedError:
         messages.error(

@@ -25,3 +25,10 @@ document.addEventListener("click", (event) => {
   if (descField) descField.value = button.dataset.description || "";
   if (sustField) sustField.value = button.dataset.sustainability || "";
 });
+
+document.addEventListener("change", (event) => {
+  const select = event.target.closest("[data-auto-submit='true']");
+  if (select && select.form) {
+    select.form.submit();
+  }
+});

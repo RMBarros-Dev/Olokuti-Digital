@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
@@ -58,16 +59,18 @@ def task_create(request):
     if request.method == "POST":
         form = OperationalTaskForm(request.POST)
         if form.is_valid():
-            task = form.save(commit=False)
-            task.created_by = request.user
-            task.updated_by = request.user
-            task.save()
-            record_event(
-                user=request.user,
-                action="created",
-                entity="operations.OperationalTask",
-                entity_id=task.pk,
-            )
+            with transaction.atomic():
+                task = form.save(commit=False)
+                task.created_by = request.user
+                task.updated_by = request.user
+                task.save()
+                record_event(
+                    user=request.user,
+                    action="created",
+                    entity="operations.OperationalTask",
+                    entity_id=task.pk,
+                    details={"status": task.status, "priority": task.priority},
+                )
             messages.success(request, _("Task created."))
             return redirect("operations:task-list")
     else:
@@ -82,16 +85,22 @@ def task_update(request, pk):
     if request.method == "POST":
         form = OperationalTaskForm(request.POST, instance=task)
         if form.is_valid():
-            task = form.save(commit=False)
-            task.updated_by = request.user
-            task.save()
-            action = "status_changed" if previous_status != task.status else "updated"
-            record_event(
-                user=request.user,
-                action=action,
-                entity="operations.OperationalTask",
-                entity_id=task.pk,
-            )
+            with transaction.atomic():
+                task = form.save(commit=False)
+                task.updated_by = request.user
+                task.save()
+                action = "status_changed" if previous_status != task.status else "updated"
+                record_event(
+                    user=request.user,
+                    action=action,
+                    entity="operations.OperationalTask",
+                    entity_id=task.pk,
+                    details={
+                        "changed_fields": form.changed_data,
+                        "previous_status": previous_status,
+                        "new_status": task.status,
+                    },
+                )
             messages.success(request, _("Task changes saved."))
             return redirect("operations:task-list")
     else:
@@ -108,17 +117,20 @@ def task_quick_status(request, pk):
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
     task = get_object_or_404(OperationalTask, pk=pk)
+    previous_status = task.status
     new_status = request.POST.get("status", "")
-    if new_status in OperationalTask.Status.values and new_status != task.status:
-        task.status = new_status
-        task.updated_by = request.user
-        task.save(update_fields=["status", "updated_by", "updated_at"])
-        record_event(
-            user=request.user,
-            action="status_changed",
-            entity="operations.OperationalTask",
-            entity_id=task.pk,
-        )
+    if new_status in OperationalTask.Status.values and new_status != previous_status:
+        with transaction.atomic():
+            task.status = new_status
+            task.updated_by = request.user
+            task.save(update_fields=["status", "updated_by", "updated_at"])
+            record_event(
+                user=request.user,
+                action="status_changed",
+                entity="operations.OperationalTask",
+                entity_id=task.pk,
+                details={"previous_status": previous_status, "new_status": new_status},
+            )
         messages.success(request, _("Task status updated."))
     return redirect("operations:task-list")
 
@@ -127,14 +139,15 @@ def task_quick_status(request, pk):
 def task_delete(request, pk):
     task = get_object_or_404(OperationalTask, pk=pk)
     if request.method == "POST":
-        task_id = task.pk
-        task.delete()
-        record_event(
-            user=request.user,
-            action="deleted",
-            entity="operations.OperationalTask",
-            entity_id=task_id,
-        )
+        with transaction.atomic():
+            task_id = task.pk
+            task.delete()
+            record_event(
+                user=request.user,
+                action="deleted",
+                entity="operations.OperationalTask",
+                entity_id=task_id,
+            )
         messages.success(request, _("Task deleted."))
         return redirect("operations:task-list")
     if request.method != "GET":

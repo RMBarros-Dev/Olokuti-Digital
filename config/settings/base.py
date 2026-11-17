@@ -33,12 +33,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "config.middleware.SecurityHeadersMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "config.middleware.ActiveUserRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -56,6 +58,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "config.context_processors.csp_nonce",
             ],
         },
     },
@@ -145,7 +148,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "accounts:dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"
-PASSWORD_RESET_TIMEOUT = 60 * 60 * 24
+PASSWORD_RESET_TIMEOUT = int(os.environ.get("PASSWORD_RESET_TIMEOUT", "3600"))
 EMAIL_BACKEND = os.environ.get(
     "DJANGO_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
@@ -155,14 +158,32 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "true").lower() == "true"
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "false").lower() == "true"
+EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "10"))
+if EMAIL_USE_TLS and EMAIL_USE_SSL:
+    raise ValueError("EMAIL_USE_TLS and EMAIL_USE_SSL cannot both be True.")
 
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_AGE = int(os.environ.get("SESSION_COOKIE_AGE", "28800"))
 CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = "Lax"
 X_FRAME_OPTIONS = "DENY"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2_621_440
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2_621_440
+
+TRUST_X_FORWARDED_FOR = os.environ.get("DJANGO_TRUST_PROXY_IP_HEADER", "false").lower() == "true"
+TRUSTED_PROXY_HOPS = int(os.environ.get("DJANGO_TRUSTED_PROXY_HOPS", "1"))
+RATE_LIMIT_LOGIN_MAX = int(os.environ.get("RATE_LIMIT_LOGIN_MAX", "10"))
+RATE_LIMIT_LOGIN_WINDOW = int(os.environ.get("RATE_LIMIT_LOGIN_WINDOW", "300"))
+RATE_LIMIT_REGISTER_MAX = int(os.environ.get("RATE_LIMIT_REGISTER_MAX", "5"))
+RATE_LIMIT_REGISTER_WINDOW = int(os.environ.get("RATE_LIMIT_REGISTER_WINDOW", "300"))
+RATE_LIMIT_PASSWORD_RESET_MAX = int(os.environ.get("RATE_LIMIT_PASSWORD_RESET_MAX", "5"))
+RATE_LIMIT_PASSWORD_RESET_WINDOW = int(os.environ.get("RATE_LIMIT_PASSWORD_RESET_WINDOW", "300"))
+RATE_LIMIT_HEALTH_DB_MAX = int(os.environ.get("RATE_LIMIT_HEALTH_DB_MAX", "30"))
+RATE_LIMIT_HEALTH_DB_WINDOW = int(os.environ.get("RATE_LIMIT_HEALTH_DB_WINDOW", "60"))
 
 LOGGING = {
     "version": 1,

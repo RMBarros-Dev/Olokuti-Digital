@@ -3,7 +3,24 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+
+
+def _assign_bootstrap_classes(fields):
+    for field in fields.values():
+        if isinstance(field.widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)):
+            field.widget.attrs["class"] = "form-check-input"
+        else:
+            field.widget.attrs["class"] = "form-control"
+
+
+def _validate_privileged_groups(acting_user, selected_groups):
+    """Prevent non-superusers from assigning audit/manager privilege groups."""
+    if getattr(acting_user, "is_superuser", False):
+        return
+    if selected_groups and selected_groups.filter(permissions__codename="view_auditlog").exists():
+        raise ValidationError(_("Only superusers can assign audit or manager privilege groups."))
 
 
 class PublicRegistrationForm(UserCreationForm):
@@ -20,8 +37,7 @@ class PublicRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs["class"] = "form-control"
+        _assign_bootstrap_classes(self.fields)
 
 
 class ManagedUserCreationForm(UserCreationForm):
@@ -46,19 +62,25 @@ class ManagedUserCreationForm(UserCreationForm):
             "username": _("Username"),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, acting_user=None, **kwargs):
+        self.acting_user = acting_user
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            if isinstance(field.widget, forms.CheckboxInput):
-                field.widget.attrs["class"] = "form-check-input"
-            elif isinstance(field.widget, forms.CheckboxSelectMultiple):
-                field.widget.attrs["class"] = "form-check-input"
-            else:
-                field.widget.attrs["class"] = "form-control"
+        if acting_user is not None and not getattr(acting_user, "is_superuser", False):
+            self.fields["groups"].queryset = Group.objects.exclude(
+                permissions__codename="view_auditlog"
+            ).order_by("name")
+        _assign_bootstrap_classes(self.fields)
+
+    def clean_groups(self):
+        groups = self.cleaned_data.get("groups")
+        if self.acting_user is not None:
+            _validate_privileged_groups(self.acting_user, groups)
+        return groups
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_staff = self.cleaned_data.get("is_staff", False)
+        user.is_superuser = False
         if commit:
             user.save()
             user.groups.set(self.cleaned_data["groups"])
@@ -102,19 +124,35 @@ class ManagedUserUpdateForm(forms.ModelForm):
             "is_active": _("Active"),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, acting_user=None, **kwargs):
+        self.acting_user = acting_user
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            if isinstance(field.widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)):
-                field.widget.attrs["class"] = "form-check-input"
-            else:
-                field.widget.attrs["class"] = "form-control"
+        if acting_user is not None and not getattr(acting_user, "is_superuser", False):
+            self.fields["groups"].queryset = Group.objects.exclude(
+                permissions__codename="view_auditlog"
+            ).order_by("name")
+        _assign_bootstrap_classes(self.fields)
 
     def clean_new_password(self):
         password = self.cleaned_data.get("new_password", "")
         if password:
             validate_password(password, self.instance)
         return password
+
+    def clean_groups(self):
+        groups = self.cleaned_data.get("groups")
+        if self.acting_user is not None:
+            _validate_privileged_groups(self.acting_user, groups)
+        return groups
+
+    def clean(self):
+        cleaned = super().clean()
+        if self.acting_user is not None and self.instance.pk == self.acting_user.pk:
+            if not cleaned.get("is_active", True):
+                self.add_error("is_active", _("You cannot deactivate your own account."))
+            if not cleaned.get("is_staff", False) and not self.acting_user.is_superuser:
+                self.add_error("is_staff", _("You cannot remove your own staff access."))
+        return cleaned
 
     def save(self, commit=True):
         user = super().save(commit=False)
