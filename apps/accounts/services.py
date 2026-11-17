@@ -12,6 +12,8 @@ DEFAULT_ROLE_GROUPS = {
         "add_category",
         "change_category",
         "delete_category",
+        "view_stocklocation",
+        "view_stockitem",
     ],
     "Operations Team": [
         "view_operationaltask",
@@ -19,6 +21,10 @@ DEFAULT_ROLE_GROUPS = {
         "change_operationaltask",
         "delete_operationaltask",
         "view_product",
+        "view_stocklocation",
+        "view_stockitem",
+        "view_stockmovement",
+        "add_stockmovement",
     ],
     "Auditors & Managers": [
         "view_product",
@@ -29,6 +35,13 @@ DEFAULT_ROLE_GROUPS = {
         "add_operationaltask",
         "change_operationaltask",
         "delete_operationaltask",
+        "view_stocklocation",
+        "add_stocklocation",
+        "change_stocklocation",
+        "view_stockitem",
+        "change_stockitem",
+        "view_stockmovement",
+        "add_stockmovement",
         "view_auditlog",
     ],
 }

@@ -8,6 +8,8 @@ from django.utils import timezone
 from apps.accounts.views import ensure_default_role_groups
 from apps.audit.services import record_event
 from apps.catalog.models import Category, Product, ProductTranslation
+from apps.inventory.models import StockItem, StockLocation, StockMovement
+from apps.inventory.services import record_stock_movement
 from apps.operations.models import OperationalTask
 
 
@@ -271,6 +273,31 @@ class Command(BaseCommand):
                     action="created",
                     entity="operations.OperationalTask",
                     entity_id=task.pk,
+                )
+
+        main_location, _ = StockLocation.objects.get_or_create(
+            code="MAIN",
+            defaults={
+                "name": "Main Store Warehouse",
+                "description": "Primary demonstration warehouse location.",
+            },
+        )
+        demo_stock_seed = [
+            (created_products[0], 28, 10),
+            (created_products[1], 6, 10),
+            (created_products[2], 15, 5),
+        ]
+        for prod, qty, min_qty in demo_stock_seed:
+            if not StockItem.objects.filter(product=prod, location=main_location).exists():
+                record_stock_movement(
+                    product=prod,
+                    location=main_location,
+                    movement_type=StockMovement.MovementType.INBOUND,
+                    quantity=qty,
+                    minimum_stock=min_qty,
+                    reference="DEMO-INIT",
+                    reason="Initial synthetic demonstration stock balance",
+                    user=admin_user,
                 )
 
         self.stdout.write(self.style.SUCCESS("Demo data and default groups seeded successfully."))

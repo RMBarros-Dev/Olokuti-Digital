@@ -110,6 +110,38 @@
   </div>
 
   <div class="col-12 col-lg-5">
+    {% if can_view_stock %}
+    <section class="form-card w-100 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">{% trans "Inventory levels" %}</h2>
+        {% if perms.inventory.add_stockmovement %}
+          <a class="text-link small" href="{% url 'inventory:movement-create' %}?product={{ product.pk }}">+ {% trans "Record movement" %}</a>
+        {% endif %}
+      </div>
+      {% if stock_items %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <thead><tr><th>{% trans "Location" %}</th><th class="text-end">{% trans "On hand" %}</th><th class="text-end">{% trans "Min" %}</th></tr></thead>
+          <tbody>
+          {% for item in stock_items %}
+            <tr>
+              <td>{{ item.location.name }} <code>{{ item.location.code }}</code></td>
+              <td class="text-end fw-semibold">
+                {{ item.quantity }}
+                {% if item.is_low_stock %}<span class="state-pill state-todo ms-1">{% trans "Low" %}</span>{% endif %}
+              </td>
+              <td class="text-end text-secondary">{{ item.minimum_stock }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-secondary small mb-0">{% trans "No stock recorded yet for this product." %}</p>
+      {% endif %}
+    </section>
+    {% endif %}
+
     <section class="form-card w-100 mb-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h5 mb-0">{% trans "Translations" %}</h2>

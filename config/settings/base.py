@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.accounts.apps.AccountsConfig",
     "apps.catalog.apps.CatalogConfig",
+    "apps.inventory.apps.InventoryConfig",
     "apps.operations.apps.OperationsConfig",
     "apps.reports.apps.ReportsConfig",
     "apps.audit.apps.AuditConfig",

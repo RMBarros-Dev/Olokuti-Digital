@@ -86,7 +86,13 @@ def product_detail(request, pk):
     )
     product.active_translation = product.get_translation(get_language())
     can_view_tasks = request.user.has_perm("operations.view_operationaltask")
+    can_view_stock = request.user.has_perm("inventory.view_stockitem")
     tasks = product.operational_tasks.all() if can_view_tasks else []
+    stock_items = (
+        product.stock_items.select_related("location").order_by("location__name")
+        if can_view_stock
+        else []
+    )
     history = get_product_history(product) if request.user.has_perm("audit.view_auditlog") else []
     return render(
         request,
@@ -96,6 +102,8 @@ def product_detail(request, pk):
             "translations": product.translations.all(),
             "tasks": tasks,
             "can_view_tasks": can_view_tasks,
+            "stock_items": stock_items,
+            "can_view_stock": can_view_stock,
             "history": history,
         },
     )

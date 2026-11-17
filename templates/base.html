@@ -24,6 +24,7 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link{% if request.resolver_match.url_name == 'dashboard' %} active{% endif %}" href="{% url 'accounts:dashboard' %}">{% trans "Overview" %}</a></li>
           {% if perms.catalog.view_product %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'catalog' %} active{% endif %}" href="{% url 'catalog:product-list' %}">{% trans "Catalogue" %}</a></li>{% endif %}
+          {% if perms.inventory.view_stockitem %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'inventory' %} active{% endif %}" href="{% url 'inventory:stock-list' %}">{% trans "Inventory" %}</a></li>{% endif %}
           {% if perms.operations.view_operationaltask %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'operations' %} active{% endif %}" href="{% url 'operations:task-list' %}">{% trans "Tasks" %}</a></li>{% endif %}
           {% if perms.operations.view_operationaltask and perms.catalog.view_product %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'reports' %} active{% endif %}" href="{% url 'reports:summary' %}">{% trans "Reports" %}</a></li>{% endif %}
           {% if perms.audit.view_auditlog %}<li class="nav-item"><a class="nav-link{% if request.resolver_match.app_name == 'audit' %} active{% endif %}" href="{% url 'audit:list' %}">{% trans "Audit log" %}</a></li>{% endif %}

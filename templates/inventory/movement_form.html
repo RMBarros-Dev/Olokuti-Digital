@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ heading }} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Stock control" %}</p>
+    <h1>{{ heading }}</h1>
+    <p class="text-secondary mb-0">{% trans "Every movement updates balances atomically and writes an immutable ledger entry." %}</p>
+  </div>
+</header>
+
+{% if not has_active_locations %}
+  <div class="alert alert-info">
+    {% trans "No active stock locations exist yet. Create a location first before recording movements." %}
+  </div>
+{% endif %}
+
+<section class="form-card">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+    {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="form-hint">{{ field.help_text }}</div>{% endif %}
+        {% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+      </div>
+    {% endfor %}
+    <div class="form-actions">
+      <a class="btn btn-outline-secondary" href="{% url 'inventory:stock-list' %}">{% trans "Cancel" %}</a>
+      <button class="btn btn-primary" type="submit">{% trans "Save movement" %}</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

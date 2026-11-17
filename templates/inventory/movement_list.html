@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Stock movements" %} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Stock ledger" %}</p>
+    <h1>{% trans "Stock movements" %}</h1>
+    <p class="text-secondary mb-0">{% trans "Append-only record of inventory receipts, dispatches, and physical adjustments." %}</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'inventory:stock-list' %}">← {% trans "Inventory" %}</a>
+    {% if perms.inventory.add_stockmovement %}
+      <a class="btn btn-primary" href="{% url 'inventory:movement-create' %}"><span aria-hidden="true">＋</span> {% trans "Record movement" %}</a>
+    {% endif %}
+  </div>
+</header>
+
+<form class="filter-bar" method="get" action="{% url 'inventory:movement-list' %}" hx-get="{% url 'inventory:movement-list' %}" hx-target="#movement-results" hx-push-url="true" hx-indicator="#movement-loading" hx-trigger="input changed delay:400ms from:input, change from:select, submit">
+  <div class="filter-search">
+    <label class="visually-hidden" for="movement-search">{% trans "Search movements" %}</label>
+    <input id="movement-search" class="form-control" type="search" name="q" value="{{ query }}" placeholder="{% trans 'Search product, SKU, reference, or reason' %}">
+  </div>
+  <div>
+    <label class="visually-hidden" for="movement-location-filter">{% trans "Location" %}</label>
+    <select id="movement-location-filter" class="form-select" name="location">
+      <option value="">{% trans "All locations" %}</option>
+      {% for loc in locations %}
+        <option value="{{ loc.pk }}" {% if selected_location == loc.pk|stringformat:"s" %}selected{% endif %}>{{ loc.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="visually-hidden" for="movement-type-filter">{% trans "Type" %}</label>
+    <select id="movement-type-filter" class="form-select" name="movement_type">
+      <option value="">{% trans "All types" %}</option>
+      {% for code, label in movement_types %}
+        <option value="{{ code }}" {% if selected_type == code %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button class="btn btn-outline-secondary" type="submit">{% trans "Filter" %}</button>
+  <span id="movement-loading" class="htmx-indicator text-secondary small" aria-live="polite">{% trans "Updating…" %}</span>
+</form>
+
+<div id="movement-results">{% include "inventory/_movement_table.html" %}</div>
+{% endblock %}

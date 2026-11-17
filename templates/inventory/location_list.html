@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Stock locations" %} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Stock control" %}</p>
+    <h1>{% trans "Stock locations" %}</h1>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'inventory:stock-list' %}">← {% trans "Inventory" %}</a>
+    {% if perms.inventory.add_stocklocation %}
+      <a class="btn btn-primary" href="{% url 'inventory:location-create' %}"><span aria-hidden="true">＋</span> {% trans "Add location" %}</a>
+    {% endif %}
+  </div>
+</header>
+
+<div class="surface-card table-responsive">
+  <table class="table app-table align-middle mb-0">
+    <thead>
+      <tr>
+        <th>{% trans "Code" %}</th>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Status" %}</th>
+        <th>{% trans "Description" %}</th>
+        <th><span class="visually-hidden">{% trans "Actions" %}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for loc in locations %}
+      <tr>
+        <td><code>{{ loc.code }}</code></td>
+        <td class="fw-semibold">{{ loc.name }}</td>
+        <td>
+          {% if loc.is_active %}
+            <span class="state-pill state-done">{% trans "Active" %}</span>
+          {% else %}
+            <span class="state-pill state-muted">{% trans "Inactive" %}</span>
+          {% endif %}
+        </td>
+        <td>{{ loc.description|default:"—" }}</td>
+        <td class="text-nowrap">
+          {% if perms.inventory.change_stocklocation %}
+            <a class="table-action" href="{% url 'inventory:location-update' loc.pk %}">{% trans "Edit" %}</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="5">
+          <div class="empty-table">
+            <strong>{% trans "No locations created yet" %}</strong>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

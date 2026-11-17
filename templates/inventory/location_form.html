@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ heading }} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Stock control" %}</p>
+    <h1>{{ heading }}</h1>
+  </div>
+</header>
+
+<section class="form-card">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+    {% for field in form %}
+      {% if field.field.widget.input_type == "checkbox" %}
+        <div class="form-check mb-3">
+          {{ field }}
+          <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        </div>
+      {% else %}
+        <div class="mb-3">
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+    <div class="form-actions">
+      <a class="btn btn-outline-secondary" href="{% url 'inventory:location-list' %}">{% trans "Cancel" %}</a>
+      <button class="btn btn-primary" type="submit">{% trans "Save location" %}</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

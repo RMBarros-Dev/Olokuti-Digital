@@ -1,0 +1,58 @@
+{% load i18n %}
+<div class="surface-card table-responsive">
+  <table class="table app-table align-middle">
+    <thead>
+      <tr>
+        <th>{% trans "Timestamp" %}</th>
+        <th>{% trans "Product" %}</th>
+        <th>{% trans "Location" %}</th>
+        <th>{% trans "Type" %}</th>
+        <th class="text-end">{% trans "Delta" %}</th>
+        <th class="text-end">{% trans "Balance" %}</th>
+        <th>{% trans "Reason" %}</th>
+        <th>{% trans "User" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for move in movements %}
+      <tr>
+        <td class="text-nowrap">{{ move.created_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+        <td>
+          <a class="fw-semibold text-decoration-none" href="{% url 'catalog:product-detail' move.stock_item.product.pk %}">{{ move.stock_item.product.name }}</a>
+          {% if move.reference %}<span class="table-subtext">{{ move.reference }}</span>{% endif %}
+        </td>
+        <td>{{ move.stock_item.location.code }}</td>
+        <td><span class="state-pill state-muted">{{ move.get_movement_type_display }}</span></td>
+        <td class="text-end fw-semibold">
+          {% if move.quantity_delta > 0 %}+{% endif %}{{ move.quantity_delta }}
+        </td>
+        <td class="text-end">{{ move.balance_after }}</td>
+        <td>{{ move.reason }}</td>
+        <td>{{ move.performed_by.get_username|default:"—" }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="8">
+          <div class="empty-table">
+            <strong>{% trans "No stock movements recorded yet" %}</strong>
+            <span>{% trans "Movements appear here whenever inventory increases, decreases, or is adjusted." %}</span>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if movements.has_other_pages %}
+<nav class="pagination-row" aria-label="{% trans 'Movement pages' %}">
+  <span>{% blocktrans with current=movements.number total=movements.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span>
+  <div>
+    {% if movements.has_previous %}
+      <a class="btn btn-sm btn-outline-secondary" href="?q={{ query|urlencode }}&location={{ selected_location|urlencode }}&movement_type={{ selected_type|urlencode }}&page={{ movements.previous_page_number }}" hx-get="?q={{ query|urlencode }}&location={{ selected_location|urlencode }}&movement_type={{ selected_type|urlencode }}&page={{ movements.previous_page_number }}" hx-target="#movement-results" hx-push-url="true">{% trans "Previous" %}</a>
+    {% endif %}
+    {% if movements.has_next %}
+      <a class="btn btn-sm btn-outline-secondary" href="?q={{ query|urlencode }}&location={{ selected_location|urlencode }}&movement_type={{ selected_type|urlencode }}&page={{ movements.next_page_number }}" hx-get="?q={{ query|urlencode }}&location={{ selected_location|urlencode }}&movement_type={{ selected_type|urlencode }}&page={{ movements.next_page_number }}" hx-target="#movement-results" hx-push-url="true">{% trans "Next" %}</a>
+    {% endif %}
+  </div>
+</nav>
+{% endif %}

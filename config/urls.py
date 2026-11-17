@@ -46,6 +46,7 @@ urlpatterns += i18n_patterns(
     path("admin/", admin.site.urls),
     path("", include("apps.accounts.urls")),
     path("catalog/", include("apps.catalog.urls")),
+    path("inventory/", include("apps.inventory.urls")),
     path("operations/", include("apps.operations.urls")),
     path("reports/", include("apps.reports.urls")),
     path("audit/", include("apps.audit.urls")),
