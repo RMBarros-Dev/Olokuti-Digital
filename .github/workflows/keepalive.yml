@@ -1,22 +1,28 @@
-name: Keep-Alive (Web & Supabase DB)
+name: Scheduled Health Check (Web & PostgreSQL)
 
 on:
   schedule:
-    # Executa a cada 6 horas para manter o servico web e o PostgreSQL (Supabase) ativos 24/7
+    # Verifica periodicamente a resposta HTTP e a conectividade com o PostgreSQL.
     - cron: "0 */6 * * *"
   workflow_dispatch:
 
+permissions: {}
+
+concurrency:
+  group: scheduled-health-check
+  cancel-in-progress: false
+
 jobs:
-  ping:
+  health-check:
+    name: HTTP and PostgreSQL connectivity
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Ping application health and database connection
+      - name: Check application health and database connection
         env:
           HEALTHCHECK_URL: ${{ vars.APP_HEALTHCHECK_URL || 'https://olokuti-web-production.up.railway.app/health?db=1' }}
+        shell: bash
         run: |
-          echo "Checking health endpoint: $HEALTHCHECK_URL"
+          set -euo pipefail
           curl --fail --silent --show-error --location --retry 3 --retry-delay 5 --max-time 30 "$HEALTHCHECK_URL"
-          echo ""
-          echo "Health check and database keep-alive succeeded."
-
+          printf "\nHealth check passed.\n"

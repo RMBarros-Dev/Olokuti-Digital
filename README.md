@@ -10,11 +10,11 @@
 
 <p align="center">
   MVP acadêmico e experimental para explorar fluxos de catálogo, tarefas e organização operacional.<br>
-  <strong>Aplicação online:</strong> <a href="https://olokuti-web-production.up.railway.app/">https://olokuti-web-production.up.railway.app/</a>
+  <strong>URL do ambiente de demonstração:</strong> <a href="https://olokuti-web-production.up.railway.app/">https://olokuti-web-production.up.railway.app/</a>
 </p>
 
 <p align="center">
-  <a href="https://olokuti-web-production.up.railway.app/"><img src="https://img.shields.io/badge/Demo%20Online-Railway-0B0D0E?logo=railway&logoColor=white" alt="Aplicação Online no Railway"></a>
+  <a href="https://olokuti-web-production.up.railway.app/"><img src="https://img.shields.io/badge/Demo%20URL-Railway-0B0D0E?logo=railway&logoColor=white" alt="URL do ambiente de demonstração no Railway"></a>
   <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml/badge.svg?branch=main" alt="Status da CI"></a>
   <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml/badge.svg?branch=main" alt="Health Check"></a>
   <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python 3.12">
@@ -221,10 +221,12 @@ Execute os mesmos verificadores usados no workflow do GitHub:
 
 ```powershell
 python -m ruff check .
+python manage.py check --settings=config.settings.test
+python manage.py makemigrations --check --dry-run --settings=config.settings.test
 python -m pytest -q
 ```
 
-O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda Ruff e pytest em Python 3.12 para pushes em `main` e pull requests. O Dependabot verifica semanalmente dependências Python e GitHub Actions.
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) executa Ruff, verificações do Django, detecção de migrações pendentes e pytest em Python 3.12 para pushes em `main` e pull requests. O Dependabot verifica semanalmente dependências Python e GitHub Actions.
 
 Os testes usam `config.settings.test` e SQLite em memória. Eles cobrem autenticação, permissões, catálogo, traduções de produtos, tarefas, relatórios, auditoria, contas e segurança da exportação CSV. A suíte não valida conectividade com o PostgreSQL do provedor nem substitui uma verificação do ambiente de produção.
 
@@ -244,7 +246,7 @@ python manage.py compile_locales
 
 ## 12 · Deploy e operação
 
-- **Ambiente de demonstração online (24/7):** [https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/)
+- **URL publicada do ambiente de demonstração:** [https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/). A disponibilidade atual deve ser confirmada no provedor.
 - **Verificação de saúde e banco (Supabase PostgreSQL):** [https://olokuti-web-production.up.railway.app/health?db=1](https://olokuti-web-production.up.railway.app/health?db=1)
 
 ### Railway

@@ -14,8 +14,9 @@ concurrency:
 
 jobs:
   quality:
-    name: Ruff and pytest
+    name: Lint, Django checks and tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -29,5 +30,9 @@ jobs:
         run: python -m pip install -r requirements/development.txt
       - name: Lint
         run: python -m ruff check .
+      - name: Django system checks
+        run: python manage.py check --settings=config.settings.test
+      - name: Check for missing migrations
+        run: python manage.py makemigrations --check --dry-run --settings=config.settings.test
       - name: Test
         run: python -m pytest -q

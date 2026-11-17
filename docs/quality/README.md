@@ -4,8 +4,10 @@
 
 O repositório configura:
 - **Ruff:** análise estática e convenções Python;
+- **Django system checks:** validações do projeto com `manage.py check` no perfil de teste;
+- **Migration drift check:** falha se houver mudanças de modelos sem migrações versionadas;
 - **pytest + pytest-django:** execução dos testes automatizados;
-- **GitHub Actions CI:** execução do Ruff e pytest em Python 3.12;
+- **GitHub Actions CI:** execução dessas verificações em Python 3.12;
 - **CodeQL:** análise estática de segurança para Python;
 - **Dependabot:** verificação de atualizações de dependências Python e GitHub Actions.
 
@@ -18,6 +20,8 @@ Na raiz do repositório, com o ambiente virtual ativo:
 ```powershell
 python -m pip install -r requirements/development.txt
 python -m ruff check .
+python manage.py check --settings=config.settings.test
+python manage.py makemigrations --check --dry-run --settings=config.settings.test
 python -m pytest -q
 ```
 
@@ -62,5 +66,5 @@ Não publicar valores até que exista fonte automatizada, janela temporal e mét
 - [ ] Incluir testes de integração PostgreSQL em workflow separado, se necessário.
 - [ ] Adotar `ruff format --check .` no CI se a equipe decidir exigir formatação automatizada.
 - [ ] Definir política de revisão de dependências e atualizações.
-- [ ] Avaliar proteção de branch e exigência de CI antes do merge.
+- [ ] Configurar proteção de `main` ou ruleset exigindo PR e verificações obrigatórias antes do merge; essa configuração precisa ser feita nas configurações do GitHub.
 - [ ] Registrar evidência de cada melhoria concluída.
