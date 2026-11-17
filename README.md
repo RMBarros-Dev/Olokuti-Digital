@@ -291,9 +291,16 @@ Para PostgreSQL, defina backups periódicos em destino protegido e criptografado
 
 ## 14 · Documentação do projeto
 
-- [Guia de contribuição](CONTRIBUTING.md).
-- [Organização dos diretórios](docs/project-structure.md).
+- [Índice da documentação técnica](docs/README.md).
+- [Arquitetura técnica](docs/architecture/README.md).
+- [Estrutura dos diretórios](docs/project-structure.md).
+- [Tecnologias e linguagens](docs/technology-stack.md).
+- [Metodologia de desenvolvimento](docs/development-methodology.md).
+- [Qualidade, testes e badges](docs/quality/README.md).
+- [Roadmap de evolução](docs/roadmap.md).
 - [Identidade visual](docs/brand/README.md).
+- [Guia de contribuição](CONTRIBUTING.md).
+- [Política de segurança](SECURITY.md).
 - [Configuração de exemplo](.env.example), sem segredos reais.
 - [Configuração de qualidade](pyproject.toml).
 - [Guia de traduções](locale/README.md).
