@@ -35,7 +35,7 @@ Este documento descreve a estrutura efetivamente adotada pelo repositório. A ap
 ├── manage.py
 ├── pyproject.toml              # pytest e Ruff
 ├── Procfile                    # comando WSGI
-├── railway.json                # configuração legada; verificar compatibilidade
+├── railway.json                # Config as Code; corte de suporte em 2026-12-01
 ├── render.yaml                 # Blueprint Render
 ├── vercel.json                 # configuração serverless experimental
 └── README.md / README.en.md

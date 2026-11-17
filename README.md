@@ -16,7 +16,7 @@
 <p align="center">
   <a href="https://olokuti-web-production.up.railway.app/"><img src="https://img.shields.io/badge/Demo%20Online-Railway-0B0D0E?logo=railway&logoColor=white" alt="Aplicação Online no Railway"></a>
   <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml/badge.svg?branch=main" alt="Status da CI"></a>
-  <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml/badge.svg?branch=main" alt="Keep-Alive 24/7"></a>
+  <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml/badge.svg?branch=main" alt="Health Check"></a>
   <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python 3.12">
   <img src="https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white" alt="Django 5.2">
   <img src="https://img.shields.io/badge/PostgreSQL-Supabase-3ECF8E?logo=supabase&logoColor=white" alt="PostgreSQL Supabase">
@@ -275,7 +275,7 @@ Para configurar os comandos manualmente no painel:
 | Start | `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --access-logfile - --error-logfile -` |
 | Healthcheck path | `/health` |
 
-### Render, Vercel e Keep-Alive 24/7 (Supabase)
+### Render, Vercel e Health Check (Supabase)
 
 Além do `railway.json`, o repositório inclui configurações prontas para hospedagem gratuita permanente conectada ao **Supabase PostgreSQL**:
 
@@ -291,9 +291,17 @@ Para PostgreSQL, defina backups periódicos em destino protegido e criptografado
 
 ## 14 · Documentação do projeto
 
-- [Guia de contribuição](CONTRIBUTING.md).
-- [Organização dos diretórios](docs/project-structure.md).
+- [Índice da documentação técnica](docs/README.md).
+- [Arquitetura técnica](docs/architecture/README.md).
+- [Estrutura dos diretórios](docs/project-structure.md).
+- [Tecnologias e linguagens](docs/technology-stack.md).
+- [Metodologia de desenvolvimento](docs/development-methodology.md).
+- [Qualidade, testes e badges](docs/quality/README.md).
+- [Roadmap de evolução](docs/roadmap.md).
+- [Repositórios de referência](docs/reference-projects.md).
 - [Identidade visual](docs/brand/README.md).
+- [Guia de contribuição](CONTRIBUTING.md).
+- [Política de segurança](SECURITY.md).
 - [Configuração de exemplo](.env.example), sem segredos reais.
 - [Configuração de qualidade](pyproject.toml).
 - [Guia de traduções](locale/README.md).
@@ -333,7 +341,7 @@ Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e
 ├── templates/          # templates Django
 ├── tests/              # testes automatizados
 ├── requirements/       # dependências de produção e desenvolvimento
-├── .github/workflows/  # CI e Keep-Alive 24/7
+├── .github/workflows/  # CI e Health Check
 ├── .env.example
 ├── manage.py
 ├── Procfile
