@@ -264,6 +264,12 @@ pyproject.toml
 
 - [Contribution guide](CONTRIBUTING.md).
 - [Project structure](docs/project-structure.md).
+- [Technology stack](docs/technology-stack.md).
+- [Development methodology](docs/development-methodology.md).
+- [Quality and testing](docs/quality/README.md).
+- [Evolution roadmap](docs/roadmap.md).
+- [Reference projects](docs/reference-projects.md).
+- [Architecture](docs/architecture/README.md).
 - [Brand guide](docs/brand/README.md).
 - [Environment example](.env.example).
 - [CI workflow](.github/workflows/ci.yml).
