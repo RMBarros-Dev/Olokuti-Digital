@@ -2,10 +2,130 @@
 {% load i18n %}
 {% block title %}{% trans "Reports" %} · Olokuti Digital{% endblock %}
 {% block content %}
-<header class="page-header"><div><p class="eyebrow">{% trans "Review" %}</p><h1>{% trans "Reports" %}</h1><p class="text-secondary mb-0">{% trans "Aggregates use only records in this prototype." %}</p></div></header>
-<form class="filter-bar report-filter" method="get"><div><label class="form-label" for="id_start_date">{% trans "Created from" %}</label>{{ form.start_date }}</div><div><label class="form-label" for="id_end_date">{% trans "Created through" %}</label>{{ form.end_date }}</div><button class="btn btn-outline-secondary align-self-end" type="submit">{% trans "Apply dates" %}</button><a class="btn btn-primary align-self-end" href="{% url 'reports:tasks-csv' %}?start_date={{ request.GET.start_date|urlencode }}&end_date={{ request.GET.end_date|urlencode }}">{% trans "Export tasks CSV" %}</a></form>
-{% if form.non_field_errors or form.errors %}<div class="alert alert-danger">{% for field in form %}{% for error in field.errors %}<p class="mb-0">{{ error }}</p>{% endfor %}{% endfor %}{{ form.non_field_errors }}</div>{% endif %}
-<div class="row g-3 metric-grid report-metrics"><div class="col-12 col-sm-6"><article class="metric-card"><span class="metric-label">{% trans "Products recorded" %}</span><strong>{{ product_count }}</strong></article></div><div class="col-12 col-sm-6"><article class="metric-card"><span class="metric-label">{% trans "Tasks in selected period" %}</span><strong>{{ task_total }}{% if task_total > 100 %}<span class="metric-total-note">{% trans "First 100 shown below" %}</span>{% endif %}</strong></article></div></div>
-<section class="content-section"><div class="section-heading"><div><p class="eyebrow">{% trans "By status" %}</p><h2>{% trans "Task summary" %}</h2></div></div><div class="status-strip">{% for value,label,count in task_counts %}<div class="status-summary"><span>{{ label }}</span><strong>{{ count }}</strong></div>{% empty %}<p class="empty-note">{% trans "No task records in this period." %}</p>{% endfor %}</div></section>
-<section class="content-section"><div class="section-heading"><div><p class="eyebrow">{% trans "Operational records" %}</p><h2>{% trans "Tasks" %}</h2></div></div><div class="surface-card table-responsive"><table class="table app-table align-middle"><thead><tr><th>{% trans "Task" %}</th><th>{% trans "Status" %}</th><th>{% trans "Priority" %}</th><th>{% trans "Due date" %}</th></tr></thead><tbody>{% for task in tasks %}<tr><td>{{ task.title }}</td><td>{{ task.get_status_display }}</td><td>{{ task.get_priority_display }}</td><td>{{ task.due_date|date:"SHORT_DATE_FORMAT"|default:"—" }}</td></tr>{% empty %}<tr><td colspan="4" class="empty-note">{% trans "No tasks match this period." %}</td></tr>{% endfor %}</tbody></table></div></section>
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Review" %}</p>
+    <h1>{% trans "Reports" %}</h1>
+    <p class="text-secondary mb-0">{% trans "Aggregates across catalogue, operational tasks, collaborator workload, and inventory." %}</p>
+  </div>
+</header>
+
+<form class="filter-bar report-filter" method="get">
+  <div><label class="form-label" for="id_start_date">{% trans "Created from" %}</label>{{ form.start_date }}</div>
+  <div><label class="form-label" for="id_end_date">{% trans "Created through" %}</label>{{ form.end_date }}</div>
+  <button class="btn btn-outline-secondary align-self-end" type="submit">{% trans "Apply dates" %}</button>
+  <a class="btn btn-primary align-self-end" href="{% url 'reports:tasks-csv' %}?start_date={{ request.GET.start_date|urlencode }}&end_date={{ request.GET.end_date|urlencode }}">{% trans "Export tasks CSV" %}</a>
+  <a class="btn btn-outline-secondary align-self-end" href="{% url 'reports:summary-pdf' %}?start_date={{ request.GET.start_date|urlencode }}&end_date={{ request.GET.end_date|urlencode }}">{% trans "Export PDF" %}</a>
+  {% if can_view_stock %}
+    <a class="btn btn-outline-secondary align-self-end" href="{% url 'reports:inventory-csv' %}">{% trans "Export inventory CSV" %}</a>
+  {% endif %}
+</form>
+
+{% if form.non_field_errors or form.errors %}
+<div class="alert alert-danger">{% for field in form %}{% for error in field.errors %}<p class="mb-0">{{ error }}</p>{% endfor %}{% endfor %}{{ form.non_field_errors }}</div>
+{% endif %}
+
+<div class="row g-3 metric-grid report-metrics">
+  <div class="col-12 col-sm-6 col-xl-3">
+    <article class="metric-card">
+      <span class="metric-label">{% trans "Products recorded" %}</span>
+      <strong>{{ product_count }}</strong>
+      <span class="metric-note">{% blocktrans with active=active_product_count %}{{ active }} active{% endblocktrans %}</span>
+    </article>
+  </div>
+  <div class="col-12 col-sm-6 col-xl-3">
+    <article class="metric-card">
+      <span class="metric-label">{% trans "Tasks in selected period" %}</span>
+      <strong>{{ task_total }}{% if task_total > 100 %}<span class="metric-total-note">{% trans "First 100 shown below" %}</span>{% endif %}</strong>
+    </article>
+  </div>
+  {% if can_view_stock and inventory_summary %}
+  <div class="col-12 col-sm-6 col-xl-3">
+    <article class="metric-card">
+      <span class="metric-label">{% trans "Units on hand" %}</span>
+      <strong>{{ inventory_summary.total_units }}</strong>
+      <span class="metric-note">{% blocktrans with lines=inventory_summary.item_count locs=inventory_summary.location_count %}{{ lines }} lines in {{ locs }} locations{% endblocktrans %}</span>
+    </article>
+  </div>
+  <div class="col-12 col-sm-6 col-xl-3">
+    <article class="metric-card {% if inventory_summary.low_stock_count %}metric-card-warm{% endif %}">
+      <span class="metric-label">{% trans "Low-stock alerts" %}</span>
+      <strong>{{ inventory_summary.low_stock_count }}</strong>
+      <a href="{% url 'inventory:stock-list' %}?low_stock=1">{% trans "Inspect alerts" %} <span aria-hidden="true">→</span></a>
+    </article>
+  </div>
+  {% endif %}
+</div>
+
+<section class="content-section">
+  <div class="section-heading"><div><p class="eyebrow">{% trans "By status" %}</p><h2>{% trans "Task summary" %}</h2></div></div>
+  <div class="status-strip">{% for value,label,count in task_counts %}<div class="status-summary"><span>{{ label }}</span><strong>{{ count }}</strong></div>{% empty %}<p class="empty-note">{% trans "No task records in this period." %}</p>{% endfor %}</div>
+</section>
+
+{% if can_view_stock and inventory_summary and inventory_summary.by_location %}
+<section class="content-section">
+  <div class="section-heading"><div><p class="eyebrow">{% trans "By warehouse" %}</p><h2>{% trans "Inventory by location" %}</h2></div></div>
+  <div class="surface-card table-responsive">
+    <table class="table app-table align-middle mb-0">
+      <thead><tr><th>{% trans "Location" %}</th><th>{% trans "Code" %}</th><th class="text-end">{% trans "Stock lines" %}</th><th class="text-end">{% trans "Units on hand" %}</th><th class="text-end">{% trans "Low stock" %}</th></tr></thead>
+      <tbody>
+      {% for loc in inventory_summary.by_location %}
+        <tr>
+          <td class="fw-semibold">{{ loc.location__name }}</td>
+          <td><code>{{ loc.location__code }}</code></td>
+          <td class="text-end">{{ loc.item_count }}</td>
+          <td class="text-end">{{ loc.total_units|default:0 }}</td>
+          <td class="text-end">{{ loc.low_stock_count }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<section class="content-section">
+  <div class="section-heading"><div><p class="eyebrow">{% trans "Team workload" %}</p><h2>{% trans "Collaborator activity" %}</h2></div></div>
+  <div class="surface-card table-responsive">
+    <table class="table app-table align-middle mb-0">
+      <thead><tr><th>{% trans "Collaborator" %}</th><th class="text-end">{% trans "Total" %}</th><th class="text-end">{% trans "Completed" %}</th><th class="text-end">{% trans "Open" %}</th><th class="text-end">{% trans "Overdue" %}</th></tr></thead>
+      <tbody>
+      {% for row in collaborator_metrics %}
+        <tr>
+          <td class="fw-semibold">{{ row.username }}</td>
+          <td class="text-end">{{ row.total }}</td>
+          <td class="text-end">{{ row.done }}</td>
+          <td class="text-end">{{ row.open_count }}</td>
+          <td class="text-end">{{ row.overdue }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty-note">{% trans "No tasks assigned in this period." %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading"><div><p class="eyebrow">{% trans "Operational records" %}</p><h2>{% trans "Tasks" %}</h2></div></div>
+  <div class="surface-card table-responsive">
+    <table class="table app-table align-middle mb-0">
+      <thead><tr><th>{% trans "Task" %}</th><th>{% trans "Category" %}</th><th>{% trans "Status" %}</th><th>{% trans "Priority" %}</th><th>{% trans "Assigned to" %}</th><th>{% trans "Due date" %}</th></tr></thead>
+      <tbody>
+      {% for task in tasks %}
+        <tr>
+          <td><a class="fw-semibold text-decoration-none" href="{% url 'operations:task-detail' task.pk %}">{{ task.title }}</a></td>
+          <td><span class="badge text-bg-light">{{ task.get_category_display }}</span></td>
+          <td>{{ task.get_status_display }}</td>
+          <td>{{ task.get_priority_display }}</td>
+          <td>{{ task.assigned_to.get_username|default:"—" }}</td>
+          <td>{{ task.due_date|date:"SHORT_DATE_FORMAT"|default:"—" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty-note">{% trans "No tasks match this period." %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

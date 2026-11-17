@@ -11,12 +11,35 @@
 </header>
 <div class="row g-3 metric-grid">
   {% if can_view_products %}<div class="col-12 col-sm-6 col-xl-3"><article class="metric-card"><span class="metric-label">{% trans "Products" %}</span><strong>{{ product_count }}</strong><a href="{% url 'catalog:product-list' %}">{% trans "Open catalogue" %} <span aria-hidden="true">→</span></a></article></div>{% endif %}
+  {% if can_view_stock %}<div class="col-12 col-sm-6 col-xl-3"><article class="metric-card {% if low_stock_count %}metric-card-warm{% endif %}"><span class="metric-label">{% trans "Low-stock alerts" %}</span><strong>{{ low_stock_count }}</strong><a href="{% url 'inventory:stock-list' %}?low_stock=1">{% trans "Inspect inventory" %} ({{ stock_item_count }}) <span aria-hidden="true">→</span></a></article></div>{% endif %}
   {% if can_view_tasks %}
   <div class="col-12 col-sm-6 col-xl-3"><article class="metric-card"><span class="metric-label">{% trans "Open tasks" %}</span><strong>{{ pending_count }}</strong><a href="{% url 'operations:task-list' %}">{% trans "View tasks" %} <span aria-hidden="true">→</span></a></article></div>
   <div class="col-12 col-sm-6 col-xl-3"><article class="metric-card"><span class="metric-label">{% trans "Completed tasks" %}</span><strong>{{ completed_count }}</strong><span class="metric-note">{% trans "Marked done in this workspace" %}</span></article></div>
   <div class="col-12 col-sm-6 col-xl-3"><article class="metric-card metric-card-warm"><span class="metric-label">{% trans "Overdue tasks" %}</span><strong>{{ overdue_count }}</strong><span class="metric-note">{% trans "Open tasks past their due date" %}</span></article></div>
   {% endif %}
 </div>
+
+{% if can_view_stock and low_stock_items %}
+<section class="content-section">
+  <div class="section-heading"><div><p class="eyebrow">{% trans "Inventory" %}</p><h2>{% trans "Low-stock watchlist" %}</h2></div><a class="text-link" href="{% url 'inventory:stock-list' %}?low_stock=1">{% trans "Open inventory" %} <span aria-hidden="true">→</span></a></div>
+  <div class="surface-card table-responsive">
+    <table class="table app-table align-middle mb-0">
+      <thead><tr><th>{% trans "Product" %}</th><th>{% trans "Location" %}</th><th class="text-end">{% trans "On hand" %}</th><th class="text-end">{% trans "Min" %}</th><th></th></tr></thead>
+      <tbody>
+      {% for item in low_stock_items %}
+        <tr>
+          <td class="fw-semibold">{{ item.product.name }}</td>
+          <td>{{ item.location.name }} <code>{{ item.location.code }}</code></td>
+          <td class="text-end fw-semibold">{{ item.quantity }}</td>
+          <td class="text-end text-secondary">{{ item.minimum_stock }}</td>
+          <td class="text-end">{% if perms.inventory.add_stockmovement %}<a class="table-action" href="{% url 'inventory:movement-create' %}?product={{ item.product.pk }}&location={{ item.location.pk }}">{% trans "Restock" %}</a>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
 
 {% if can_view_tasks %}
 <section class="content-section">
@@ -38,7 +61,7 @@
 </section>
 {% endif %}
 
-{% if not can_view_products and not can_view_tasks %}
+{% if not can_view_products and not can_view_tasks and not can_view_stock %}
   <div class="empty-state"><span class="empty-state-icon" aria-hidden="true">✳</span><h2>{% trans "Your workspace is ready" %}</h2><p>{% trans "Ask an administrator to assign the catalogue or task permissions you need." %}</p></div>
 {% endif %}
 {% endblock %}

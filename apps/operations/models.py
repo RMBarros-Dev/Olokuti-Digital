@@ -34,6 +34,12 @@ class OperationalTask(models.Model):
         HIGH = "high", _("High")
         URGENT = "urgent", _("Urgent")
 
+    class Category(models.TextChoices):
+        CATALOGUE = "catalogue", _("Catalogue")
+        INVENTORY = "inventory", _("Inventory")
+        COMPLIANCE = "compliance", _("Compliance")
+        GENERAL = "general", _("General")
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(
         Product,
@@ -44,6 +50,12 @@ class OperationalTask(models.Model):
     )
     title = models.CharField(max_length=180)
     description = models.TextField(blank=True)
+    category = models.CharField(
+        max_length=24,
+        choices=Category.choices,
+        default=Category.GENERAL,
+        db_index=True,
+    )
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.TODO)
     priority = models.CharField(max_length=20, choices=Priority.choices, default=Priority.NORMAL)
     assigned_to = models.ForeignKey(
@@ -85,3 +97,29 @@ class OperationalTask(models.Model):
         if not self.due_date or self.status in {self.Status.DONE, self.Status.CANCELLED}:
             return False
         return self.due_date < timezone.localdate()
+
+
+class TaskComment(models.Model):
+    """Collaborative comment entry attached to an operational task."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    task = models.ForeignKey(
+        OperationalTask,
+        on_delete=models.CASCADE,
+        related_name="comments",
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="task_comments",
+    )
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self) -> str:
+        return f"Comment on {self.task.title}"

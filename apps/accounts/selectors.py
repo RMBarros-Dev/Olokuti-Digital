@@ -3,6 +3,8 @@ from django.db.models import Count, Q
 
 from apps.audit.models import AuditLog
 from apps.catalog.models import Product
+from apps.inventory.models import StockItem
+from apps.inventory.selectors import get_low_stock_items
 from apps.operations.models import OperationalTask
 
 
@@ -11,15 +13,22 @@ def get_dashboard_context(user) -> dict:
     can_view_products = user.has_perm("catalog.view_product")
     can_view_tasks = user.has_perm("operations.view_operationaltask")
     can_view_audit = user.has_perm("audit.view_auditlog")
+    can_view_stock = user.has_perm("inventory.view_stockitem")
 
     context = {
         "product_count": Product.objects.count() if can_view_products else None,
         "pending_count": None,
         "completed_count": None,
         "overdue_count": None,
+        "stock_item_count": StockItem.objects.active().count() if can_view_stock else None,
+        "low_stock_count": (
+            StockItem.objects.active().low_stock().count() if can_view_stock else None
+        ),
+        "low_stock_items": list(get_low_stock_items(limit=5)) if can_view_stock else [],
         "recent_activity": AuditLog.objects.select_related("user")[:8] if can_view_audit else [],
         "can_view_products": can_view_products,
         "can_view_tasks": can_view_tasks,
+        "can_view_stock": can_view_stock,
     }
     if can_view_tasks:
         tasks = OperationalTask.objects.all()

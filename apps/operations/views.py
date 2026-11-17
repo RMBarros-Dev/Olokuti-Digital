@@ -1,28 +1,32 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_POST
 
 from apps.audit.services import record_event
 
-from .forms import OperationalTaskForm
+from .forms import OperationalTaskForm, TaskCommentForm
 from .models import OperationalTask
-from .selectors import filter_operational_tasks
+from .selectors import filter_operational_tasks, get_task_history
 
 
 @permission_required("operations.view_operationaltask", raise_exception=True)
 def task_list(request):
     status = request.GET.get("status", "")
     priority = request.GET.get("priority", "")
+    category = request.GET.get("category", "")
     scope = request.GET.get("scope", "")
     query = request.GET.get("q", "").strip()
     tasks = filter_operational_tasks(
         request.user,
         status=status,
         priority=priority,
+        category=category,
         scope=scope,
         query=query,
     )
@@ -39,11 +43,75 @@ def task_list(request):
             "tasks": page,
             "status_choices": OperationalTask.Status.choices,
             "priority_choices": OperationalTask.Priority.choices,
+            "category_choices": OperationalTask.Category.choices,
             "selected_status": status,
             "selected_priority": priority,
+            "selected_category": category,
             "selected_scope": scope,
             "query": query,
         },
+    )
+
+
+def _user_can_comment(user) -> bool:
+    return user.has_perm("operations.add_taskcomment") or user.has_perm(
+        "operations.change_operationaltask"
+    )
+
+
+def _task_detail_context(request, task: OperationalTask, comment_form=None) -> dict:
+    can_comment = _user_can_comment(request.user)
+    return {
+        "task": task,
+        "comments": task.comments.select_related("author"),
+        "history": get_task_history(task) if request.user.has_perm("audit.view_auditlog") else [],
+        "comment_form": comment_form or TaskCommentForm(),
+        "can_comment": can_comment,
+    }
+
+
+@permission_required("operations.view_operationaltask", raise_exception=True)
+def task_detail(request, pk):
+    task = get_object_or_404(
+        OperationalTask.objects.select_related(
+            "assigned_to", "product", "created_by", "updated_by"
+        ),
+        pk=pk,
+    )
+    return render(request, "operations/task_detail.html", _task_detail_context(request, task))
+
+
+@require_POST
+@permission_required("operations.view_operationaltask", raise_exception=True)
+def task_comment_create(request, pk):
+    if not _user_can_comment(request.user):
+        raise PermissionDenied
+    task = get_object_or_404(
+        OperationalTask.objects.select_related(
+            "assigned_to", "product", "created_by", "updated_by"
+        ),
+        pk=pk,
+    )
+    form = TaskCommentForm(request.POST)
+    if form.is_valid():
+        with transaction.atomic():
+            comment = form.save(commit=False)
+            comment.task = task
+            comment.author = request.user
+            comment.save()
+            record_event(
+                user=request.user,
+                action="comment_added",
+                entity="operations.OperationalTask",
+                entity_id=task.pk,
+                details={"comment_id": str(comment.pk)},
+            )
+        messages.success(request, _("Comment added."))
+        return redirect("operations:task-detail", pk=task.pk)
+    return render(
+        request,
+        "operations/task_detail.html",
+        _task_detail_context(request, task, comment_form=form),
     )
 
 

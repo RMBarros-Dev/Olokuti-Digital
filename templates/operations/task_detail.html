@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ task.title }} · Olokuti Digital{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{% trans "Operational coordination" %} · {{ task.get_category_display }}</p>
+    <h1>{{ task.title }}</h1>
+    <div class="d-flex flex-wrap align-items-center gap-2 mt-1">
+      <span class="state-pill state-{{ task.status }}">{{ task.get_status_display }}</span>
+      <span class="priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
+      {% if task.is_overdue %}<span class="badge text-bg-danger">{% trans "Overdue" %}</span>{% endif %}
+    </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'operations:task-list' %}">← {% trans "Back to tasks" %}</a>
+    {% if perms.operations.change_operationaltask %}
+      <a class="btn btn-primary" href="{% url 'operations:task-update' task.pk %}">{% trans "Edit task" %}</a>
+    {% endif %}
+  </div>
+</header>
+
+<div class="row g-4">
+  <div class="col-12 col-lg-7">
+    <section class="form-card w-100 mb-4">
+      <div class="row g-3 mb-3">
+        <div class="col-sm-4">
+          <span class="eyebrow d-block">{% trans "Assigned to" %}</span>
+          <strong>{{ task.assigned_to.get_username|default:"—" }}</strong>
+        </div>
+        <div class="col-sm-4">
+          <span class="eyebrow d-block">{% trans "Due date" %}</span>
+          <strong>{{ task.due_date|date:"SHORT_DATE_FORMAT"|default:"—" }}</strong>
+        </div>
+        <div class="col-sm-4">
+          <span class="eyebrow d-block">{% trans "Product" %}</span>
+          {% if task.product %}
+            <a class="fw-semibold" href="{% url 'catalog:product-detail' task.product.pk %}">{{ task.product.name }}</a>
+          {% else %}
+            <strong>—</strong>
+          {% endif %}
+        </div>
+      </div>
+      <hr>
+      <div>
+        <span class="eyebrow d-block mb-1">{% trans "Description" %}</span>
+        <p class="mb-0">{{ task.description|default:"—" }}</p>
+      </div>
+    </section>
+
+    <section class="form-card w-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">{% trans "Team notes & comments" %}</h2>
+        <span class="badge text-bg-light">{{ comments|length }}</span>
+      </div>
+      {% for comment in comments %}
+        <article class="border-bottom pb-3 mb-3">
+          <div class="d-flex justify-content-between align-items-center small text-secondary mb-1">
+            <strong class="text-body">{{ comment.author.get_username|default:"system" }}</strong>
+            <time datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"SHORT_DATETIME_FORMAT" }}</time>
+          </div>
+          <p class="mb-0">{{ comment.body|linebreaksbr }}</p>
+        </article>
+      {% empty %}
+        <p class="text-secondary small mb-3">{% trans "No comments recorded yet." %}</p>
+      {% endfor %}
+
+      {% if can_comment %}
+      <form method="post" action="{% url 'operations:task-comment' task.pk %}" novalidate>
+        {% csrf_token %}
+        {% for field in comment_form %}
+          <div class="mb-2">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+          </div>
+        {% endfor %}
+        <button class="btn btn-outline-primary btn-sm" type="submit">{% trans "Post comment" %}</button>
+      </form>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <section class="form-card w-100 mb-4">
+      <h2 class="h5 mb-3">{% trans "Metadata" %}</h2>
+      <dl class="row mb-0 small">
+        <dt class="col-5 text-secondary">{% trans "Created by" %}</dt>
+        <dd class="col-7">{{ task.created_by.get_username|default:"—" }}</dd>
+        <dt class="col-5 text-secondary">{% trans "Last updated by" %}</dt>
+        <dd class="col-7">{{ task.updated_by.get_username|default:"—" }}</dd>
+        <dt class="col-5 text-secondary">{% trans "Updated" %}</dt>
+        <dd class="col-7 mb-0">{{ task.updated_at|date:"SHORT_DATETIME_FORMAT" }}</dd>
+      </dl>
+    </section>
+
+    {% if perms.audit.view_auditlog %}
+    <section class="form-card w-100">
+      <h2 class="h5 mb-3">{% trans "Change history" %}</h2>
+      {% for event in history %}
+        <div class="activity-row">
+          <span class="activity-mark" aria-hidden="true"></span>
+          <div>
+            <strong>{{ event.action_label }}</strong>
+            <span>{{ event.user.get_username|default:"system" }}</span>
+          </div>
+          <time datetime="{{ event.timestamp|date:'c' }}">{{ event.timestamp|date:"SHORT_DATETIME_FORMAT" }}</time>
+        </div>
+      {% empty %}
+        <p class="text-secondary small mb-0">{% trans "No changes recorded yet." %}</p>
+      {% endfor %}
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
