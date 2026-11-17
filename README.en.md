@@ -8,8 +8,10 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python 3.12" />
   <img src="https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white" alt="Django 5.2" />
-  <img src="https://img.shields.io/badge/PostgreSQL-Supabase-3ECF8E?logo=supabase&logoColor=white" alt="PostgreSQL" />
+  <a href="https://olokuti-web-production.up.railway.app/"><img src="https://img.shields.io/badge/Demo%20URL-Railway-0B0D0E?logo=railway&logoColor=white" alt="Demo URL on Railway" /></a>
   <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status" /></a>
+  <a href="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml"><img src="https://github.com/RMBarros-Dev/Olokuti-Digital/actions/workflows/keepalive.yml/badge.svg?branch=main" alt="Health check workflow" /></a>
+  <img src="https://img.shields.io/badge/PostgreSQL-Supabase-3ECF8E?logo=supabase&logoColor=white" alt="PostgreSQL" />
 </p>
 
 > **Project status:** academic and experimental MVP. This repository is not an official Olokuti system, has no declared institutional affiliation or approval, and does not connect to company systems. Operational needs and value hypotheses require field validation.
@@ -213,17 +215,16 @@ Product translations are stored separately from original product data. Regional 
 
 ## 14 · Deployment and Operations
 
-The repository includes deployment configuration for Railway and references to Render and Vercel:
+The repository contains deployment descriptors for Railway, Render and Vercel. Their presence does not prove that all three providers are active or configured.
 
-- `render.yaml` describes a Render Blueprint web service using Gunicorn, static collection, migrations and the `/health` endpoint.
-- `vercel.json` configures a serverless WSGI entry point through `config/wsgi.py`. Serverless deployment does not eliminate cold starts or prove operational suitability without provider testing.
-- `.github/workflows/keepalive.yml` sends `GET /health?db=1` every six hours; this endpoint checks PostgreSQL with `SELECT 1`. The target can be changed through the `APP_HEALTHCHECK_URL` Actions variable. A successful request confirms connectivity at that moment; it does not guarantee continuous availability or prevent a provider from suspending a service.
+- `railway.json` defines Railpack, static collection, a pre-deploy migration command, Gunicorn, `/health` and restart behavior.
+- `render.yaml` describes a Render Blueprint web service. Its build command installs production dependencies, collects static files and runs migrations; the start command uses Gunicorn.
+- `vercel.json` defines a serverless WSGI entry point through `config/wsgi.py`. Serverless execution has provider-specific constraints and must be tested before being treated as a supported production target.
+- `.github/workflows/keepalive.yml` sends `GET /health?db=1` every six hours. The endpoint checks PostgreSQL with `SELECT 1`; the URL can be changed through the `APP_HEALTHCHECK_URL` Actions variable. A successful request proves connectivity only at that moment, not continuous availability.
 
-Configuration files do not create hosting projects, databases, domains or secrets, and do not prove that a deployment is currently active.
+**Railway migration notice (November 2026):** Railway has deprecated Config as Code. Existing services using `railway.json` / `railway.toml` can continue using those files only until **December 1, 2026**; new services cannot opt into Config as Code. Railway recommends migrating to Infrastructure as Code (`.railway/railway.ts`). See the [official deprecation notice](https://docs.railway.com/config-as-code) and [migration guide](https://docs.railway.com/infrastructure-as-code). Do not delete or replace the current file until the active Railway service and its settings have been verified.
 
-**Railway configuration notice:** the repository's `railway.json` is a legacy Config-as-Code configuration. Check the current [Railway documentation](https://docs.railway.com/config-as-code) before creating or changing a service; do not assume this legacy file is suitable for a new service. The configured runtime uses Gunicorn, static collection, migrations and the `/health` endpoint.
-
-Production variables must be configured as protected provider variables. Set the real assigned hostname in `DJANGO_ALLOWED_HOSTS` and the full HTTPS origin in `DJANGO_CSRF_TRUSTED_ORIGINS`. Provision PostgreSQL separately and validate migrations, backups and restore procedures.
+Production variables must be configured as protected provider variables. Set the actual assigned hostname in `DJANGO_ALLOWED_HOSTS` and the full HTTPS origin in `DJANGO_CSRF_TRUSTED_ORIGINS`. Provision PostgreSQL separately and validate migrations, backups and restore procedures.
 
 ## 15 · Security, Data and Known Limitations
 
