@@ -16,6 +16,7 @@
 | [Metodologia de desenvolvimento](development-methodology.md) | Ciclo de trabalho, critérios de aceite e Definition of Done |
 | [Qualidade e testes](quality/README.md) | Ruff, pytest, CI, CodeQL, Dependabot e política de badges |
 | [Roadmap de evolução](roadmap.md) | Estado documentado, fases recomendadas e critérios de priorização |
+| [Repositórios de referência](reference-projects.md) | Projetos Django e padrões de documentação consultados |
 
 ## Organização de novos documentos
 
