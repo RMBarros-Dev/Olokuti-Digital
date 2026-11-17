@@ -192,10 +192,12 @@ Run the repository checks:
 
 ```powershell
 python -m ruff check .
+python manage.py check --settings=config.settings.test
+python manage.py makemigrations --check --dry-run --settings=config.settings.test
 python -m pytest -q
 ```
 
-The GitHub Actions CI workflow runs Ruff and pytest on Python 3.12 for pushes to `main` and pull requests. Tests use the test settings and in-memory SQLite. They cover authentication, permissions, catalogue, translations, tasks, reports, audit events, accounts and CSV export protection.
+The GitHub Actions CI workflow runs Ruff, Django system checks, pending-migration detection and pytest on Python 3.12 for pushes to `main` and pull requests. Tests use the test settings and in-memory SQLite. They cover authentication, permissions, catalogue, translations, tasks, reports, audit events, accounts and CSV export protection.
 
 These tests do not validate connectivity to the hosted PostgreSQL service or replace production-environment checks.
 
@@ -264,6 +266,7 @@ pyproject.toml
 ## 17 · Documentation and Contribution
 
 - [Contribution guide](CONTRIBUTING.md).
+- [Security policy](SECURITY.md).
 - [Project structure](docs/project-structure.md).
 - [Technology stack](docs/technology-stack.md).
 - [Development methodology](docs/development-methodology.md).
