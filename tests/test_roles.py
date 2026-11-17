@@ -20,6 +20,17 @@ def test_default_role_group_setup_preserves_custom_permissions():
 
 
 @pytest.mark.django_db
+def test_setup_groups_management_command_creates_default_groups():
+    call_command("setup_groups")
+    assert Group.objects.filter(name="Operations Team").exists()
+    assert (
+        Group.objects.get(name="Operations Team")
+        .permissions.filter(codename="add_stockmovement")
+        .exists()
+    )
+
+
+@pytest.mark.django_db
 def test_demo_seed_is_blocked_when_debug_is_disabled(settings):
     settings.DEBUG = False
 

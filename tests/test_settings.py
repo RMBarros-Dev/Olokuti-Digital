@@ -132,6 +132,22 @@ def test_production_module_import_enforces_validation(monkeypatch):
     importlib.reload(prod_mod)
 
 
+def test_production_validator_allows_console_email_only_with_explicit_opt_in():
+    env = _valid_prod_env()
+    env["DJANGO_EMAIL_BACKEND"] = "django.core.mail.backends.console.EmailBackend"
+    env["DJANGO_ALLOW_CONSOLE_EMAIL"] = "true"
+    env.pop("EMAIL_HOST")
+    env.pop("DEFAULT_FROM_EMAIL")
+
+    cfg = validate_production_configuration(env)
+    assert cfg["EMAIL_BACKEND"] == "django.core.mail.backends.console.EmailBackend"
+
+    # Dummy/locmem backends remain rejected even if DJANGO_ALLOW_CONSOLE_EMAIL is set
+    env["DJANGO_EMAIL_BACKEND"] = "django.core.mail.backends.dummy.EmailBackend"
+    with pytest.raises(ValueError, match="console, dummy"):
+        validate_production_configuration(env)
+
+
 def test_health_check_with_db_query(client, db):
     response = client.get("/health?db=1")
     assert response.status_code == 200

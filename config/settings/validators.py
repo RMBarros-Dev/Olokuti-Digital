@@ -61,7 +61,12 @@ def validate_production_configuration(environ) -> dict:
     email_backend = environ.get(
         "DJANGO_EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend"
     ).strip()
-    if not email_backend or email_backend in INSECURE_EMAIL_BACKENDS:
+    allow_console_email = (
+        environ.get("DJANGO_ALLOW_CONSOLE_EMAIL", "false").strip().lower() == "true"
+    )
+    if email_backend == "django.core.mail.backends.console.EmailBackend" and allow_console_email:
+        pass
+    elif not email_backend or email_backend in INSECURE_EMAIL_BACKENDS:
         raise ValueError("Production cannot use a console, dummy, locmem, or file email backend")
 
     email_host = environ.get("EMAIL_HOST", "").strip()
