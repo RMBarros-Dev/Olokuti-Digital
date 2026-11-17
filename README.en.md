@@ -1,10 +1,10 @@
 <p align="right"><strong>Language:</strong> <a href="README.md">Português (Brasil)</a> · <a href="README.en.md">English</a></p>
 
-<p align="center"><img src="assets/brand/banner.svg" alt="Olokuti Digital visual identity" width="100%" /></p>
+<p align="center"><img src="assets/brand/banner.svg" alt="Olokuti Digital — catalogue, tasks and operational organization" width="100%" /></p>
 <p align="center"><img src="assets/brand/logo.svg" alt="Olokuti Digital logo" width="76" /></p>
 
 <h1 align="center">Olokuti Digital</h1>
-<p align="center"><strong>Academic and experimental MVP for product catalogue and operational workflows.</strong></p>
+<p align="center"><strong>Academic and experimental MVP for product catalogue and operational workflows.</strong><br>Organized information. Connected operations.</p>
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python 3.12" />
   <img src="https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white" alt="Django 5.2" />
