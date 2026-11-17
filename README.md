@@ -1,3 +1,11 @@
+<p align="right"><strong>Idioma:</strong> <a href="README.md">Português (Brasil)</a> · <a href="README.en.md">English</a></p>
+
+<p align="center">
+  <img src="assets/brand/banner.svg" alt="Identidade visual do projeto" width="100%" />
+</p>
+
+<p align="center"><img src="assets/brand/logo.svg" alt="Olokuti Digital logo" width="76" /></p>
+
 <h1 align="center">Olokuti Digital</h1>
 
 <p align="center">
@@ -19,27 +27,32 @@
 
 ## Índice
 
-- [Contexto e objetivo](#contexto-e-objetivo)
-- [Escopo funcional](#escopo-funcional)
-- [Arquitetura](#arquitetura)
-- [Tecnologias](#tecnologias)
-- [Começar localmente](#começar-localmente)
-- [Configuração](#configuração)
-- [Contas, grupos e permissões](#contas-grupos-e-permissões)
-- [Testes e integração contínua](#testes-e-integração-contínua)
-- [Idiomas e traduções](#idiomas-e-traduções)
-- [Deploy e operação](#deploy-e-operação)
-- [Segurança, dados e limitações](#segurança-dados-e-limitações)
-- [Estrutura do repositório](#estrutura-do-repositório)
-- [Contribuição e licença](#contribuição-e-licença)
+- [01 · Contexto e objetivo](#01--contexto-e-objetivo)
+- [02 · Escopo funcional](#02--escopo-funcional)
+- [03 · Fora do escopo](#03--fora-do-escopo)
+- [04 · Área de aplicação e metodologia de desenvolvimento](#04--área-de-aplicação-e-metodologia-de-desenvolvimento)
+- [05 · Arquitetura](#05--arquitetura)
+- [06 · Tecnologias](#06--tecnologias)
+- [07 · Começar localmente](#07--começar-localmente)
+- [08 · Configuração](#08--configuração)
+- [09 · Contas, grupos e permissões](#09--contas-grupos-e-permissões)
+- [10 · Testes e integração contínua](#10--testes-e-integração-contínua)
+- [11 · Idiomas e traduções](#11--idiomas-e-traduções)
+- [12 · Deploy e operação](#12--deploy-e-operação)
+- [13 · Arquivos estáticos, logs e backups](#13--arquivos-estáticos-logs-e-backups)
+- [14 · Documentação do projeto](#14--documentação-do-projeto)
+- [15 · Princípios de engenharia](#15--princípios-de-engenharia)
+- [16 · Segurança, dados e limitações](#16--segurança-dados-e-limitações)
+- [17 · Estrutura do repositório](#17--estrutura-do-repositório)
+- [18 · Contribuição e licença](#18--contribuição-e-licença)
 
-## Contexto e objetivo
+## 01 · Contexto e objetivo
 
 O projeto foi concebido no contexto da investigação **“Da identidade à inovação: memória, diagnóstico operacional e transformação digital do comércio sustentável em Barcelona — estudo de caso da Olokuti”**. A aplicação oferece um ambiente de prototipagem para avaliar conceitos de catálogo, tarefas e relatórios; ela não pressupõe que a empresa precise dessas funcionalidades.
 
 O princípio de trabalho é separar fatos observados de hipóteses. Integrações, dados, requisitos, processos e identidade institucional só devem ser incorporados após evidência, autorização e validação adequadas.
 
-## Escopo funcional
+## 02 · Escopo funcional
 
 | Área | O que o MVP oferece |
 | --- | --- |
@@ -56,13 +69,17 @@ O princípio de trabalho é separar fatos observados de hipóteses. Integraçõe
 | Idiomas | Prefixos de URL e seletor para 11 idiomas/variantes, incluindo `en-in` (`English (India)`), com suporte a compilação via GNU gettext ou comando integrado `compile_locales`. |
 | Saúde e segurança | `GET /health`, `GET /health?db=1` (rate-limited), cabeçalhos CSP com `nonce`, `Permissions-Policy`, rate limiting de autenticação e validação rígida de produção. |
 
-### Fora do escopo
+## 03 · Fora do escopo
 
 Este MVP não implementa pagamentos, vendas, faturamento, gestão financeira, emissão fiscal ou conexão direta com sistemas legados da Olokuti. Não é uma API pública nem substitui um ERP completo.
 
 O comando `seed_demo` é opcional, só executa com `DEBUG=True` e cria registros sintéticos identificados como demonstração. Origens, certificações, fornecedores e afirmações de sustentabilidade desses registros não são verificadas.
 
-## Arquitetura
+## 04 · Área de aplicação e metodologia de desenvolvimento
+
+O MVP explora fluxos de informação de catálogo e coordenação de tarefas para um contexto de operação comercial. O desenvolvimento é incremental e acadêmico: requisitos e hipóteses são documentados, implementações são divididas por módulos Django e comportamentos relevantes são cobertos por testes automatizados. O valor operacional e a adequação dos fluxos dependem de validação de campo; o protótipo não declara representar processos reais da empresa citada.
+
+## 05 · Arquitetura
 
 Aplicação monolítica modular em Django 5.2 com separação explícita entre **Models / QuerySets**, **Services** (regras transacionais e auditoria), **Selectors** (consultas otimizadas sem N+1) e **Views/Templates**:
 
@@ -99,7 +116,7 @@ Os módulos têm responsabilidades delimitadas:
 | `config/` | Settings modulares, validador de produção, middleware CSP/segurança, CSV e gerador PDF. |
 | `docs/` | Documentação arquitetural ([`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)) e runbook operacional ([`docs/OPERATIONS_RUNBOOK.md`](docs/OPERATIONS_RUNBOOK.md)). |
 
-## Tecnologias
+## 06 · Tecnologias
 
 | Camada | Tecnologia |
 | --- | --- |
@@ -110,11 +127,11 @@ Os módulos têm responsabilidades delimitadas:
 | Arquivos estáticos | WhiteNoise |
 | Servidor WSGI | Gunicorn |
 | Qualidade | pytest, pytest-django e Ruff |
-| Deploy configurado | Railpack/Railway; consulte a seção [Deploy e operação](#deploy-e-operação) sobre o formato atual de configuração |
+| Deploy configurado | Railpack/Railway; consulte a seção [Deploy e operação](#12--deploy-e-operação) sobre o formato atual de configuração |
 
 Django 5.2 requer PostgreSQL 14 ou superior ([notas oficiais da versão 5.2](https://docs.djangoproject.com/en/5.2/releases/5.2/)). Docker, Node.js, Redis e microserviços não são requisitos para desenvolvimento local.
 
-## Começar localmente
+## 07 · Começar localmente
 
 ### Pré-requisitos
 
@@ -160,7 +177,7 @@ Acesse [http://127.0.0.1:8000/](http://127.0.0.1:8000/). A raiz redireciona para
 
 Para criar dados sintéticos para uma demonstração local, execute `python manage.py seed_demo` com `DEBUG=True`. O comando avisa que os registros são fictícios e recusa execução fora do modo de depuração.
 
-## Configuração
+## 08 · Configuração
 
 As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em produção, defina-as como variáveis protegidas no provedor; não publique segredos no GitHub.
 
@@ -179,13 +196,13 @@ As configurações locais são carregadas de `.env` pelo `python-dotenv`. Em pro
 
 `config.settings.production` mantém `DEBUG=False`, exige chave, PostgreSQL, hosts explícitos e origens CSRF confiáveis. HTTPS, cookies seguros e HSTS são configurados nessa camada.
 
-## Contas, grupos e permissões
+## 09 · Contas, grupos e permissões
 
-Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`). Seguindo o princípio do menor privilégio, o cadastro público cria uma conta básica: o usuário não recebe grupos automaticamente e não recebe permissões operacionais ou administrativas automaticamente; a atribuição de grupos e permissões é feita por administradores autorizados.
+Na tela de login (`/accounts/login/`), novos usuários podem se cadastrar diretamente clicando em **Criar conta** (`/accounts/register/`). Seguindo o princípio do menor privilégio, o cadastro público cria uma conta básica, sem grupos ou permissões operacionais automáticos. A atribuição de grupos e permissões é uma ação administrativa explícita, realizada após análise da conta.
 
-Para avaliação rápida, consulte o ambiente de demonstração online ([https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/)). **Não são publicadas credenciais administrativas neste repositório.** O acesso administrativo deve ser provisionado pelo responsável pelo ambiente, por canal seguro e com credenciais exclusivas; não reutilize credenciais de demonstração.
+O acesso administrativo é reservado a usuários autorizados com `is_staff`. Não publique usuários, senhas ou credenciais de demonstração neste README. Para avaliação do ambiente online, solicite um acesso temporário por canal privado e revogue-o após o uso.
 
-Usuários com acesso administrativo autorizado podem acessar o Django Admin e a gestão de contas pela interface em `/en/accounts/users/`. Na própria página, a ação de configurar grupos cria os grupos padrão e acrescenta as permissões-base sem remover permissões personalizadas existentes.
+O superusuário acessa o Django Admin e a gestão de contas pela interface em `/en/accounts/users/`. Na própria página, a ação de configurar grupos cria os grupos padrão e acrescenta as permissões-base sem remover permissões personalizadas existentes.
 
 | Grupo padrão | Permissões incluídas |
 | --- | --- |
@@ -205,7 +222,7 @@ Permissões usadas pelas áreas:
 
 A exclusão de categorias é bloqueada enquanto houver produtos relacionados. O dashboard oculta métricas sem permissão correspondente.
 
-## Testes e integração contínua
+## 10 · Testes e integração contínua
 
 Execute os mesmos verificadores usados no workflow do GitHub:
 
@@ -217,13 +234,13 @@ python -m pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-un
 
 O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda Ruff (`check` + `format --check`), verificação de dependências (`pip check`), `manage.py check`, `makemigrations --check --dry-run`, `check --deploy --fail-level WARNING` e pytest com meta mínima de 90% de cobertura em Python 3.12.
 
-## Idiomas e traduções
+## 11 · Idiomas e traduções
 
 Os prefixos configurados são `es-419`, `es-es`, `ca`, `gl`, `eu`, `en-us`, `en-gb`, `en-in`, `en`, `pt-br` e `pt-pt`. Todos os `.po` possuem catálogos compilados `.mo` versionados; execute `python manage.py compile_locales` para recompilar (com fallback puro em Python quando GNU gettext não estiver disponível no sistema).
 
 Consulte também [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) e [`docs/OPERATIONS_RUNBOOK.md`](docs/OPERATIONS_RUNBOOK.md) para detalhes operacionais, cache, pooler Supabase e procedimentos de backup/rollback.
 
-## Deploy e operação
+## 12 · Deploy e operação
 
 - **Ambiente de demonstração online (24/7):** [https://olokuti-web-production.up.railway.app/](https://olokuti-web-production.up.railway.app/)
 - **Verificação de saúde e banco (Supabase PostgreSQL):** [https://olokuti-web-production.up.railway.app/health?db=1](https://olokuti-web-production.up.railway.app/health?db=1)
@@ -261,16 +278,30 @@ Para configurar os comandos manualmente no painel:
 Além do `railway.json`, o repositório inclui configurações prontas para hospedagem gratuita permanente conectada ao **Supabase PostgreSQL**:
 
 - **`render.yaml` (Render Blueprint):** configura o serviço web Python gratuito (`gunicorn` + `collectstatic` + `migrate`) com healthcheck em `/health`.
-- **`vercel.json` (Vercel Serverless WSGI):** expõe `config/wsgi.py` (`app = application`) para execução serverless sem hibernação de container.
-- **`.github/workflows/keepalive.yml` (Monitoramento & Keep-Alive 24/7):** executa automaticamente a cada 6 horas um `GET /health?db=1` (que realiza `SELECT 1` no PostgreSQL), mantendo o serviço web aquecido e impedindo a pausa automática de 7 dias por inatividade no plano gratuito do Supabase. Para apontar para um novo domínio (como Render ou Vercel), basta definir a variável de repositório `APP_HEALTHCHECK_URL` em *Settings → Secrets and variables → Actions → Variables*.
+- **`vercel.json` (Vercel Serverless WSGI):** configura a entrada WSGI `config/wsgi.py` (`app = application`) para uma implantação baseada em funções serverless. Isso não elimina cold starts nem comprova adequação operacional sem testes no provedor.
+- **`.github/workflows/keepalive.yml` (verificação periódica):** executa a cada 6 horas um `GET /health?db=1`, que valida a conexão PostgreSQL com `SELECT 1`. A URL pode ser alterada pela variável `APP_HEALTHCHECK_URL` em *Settings → Secrets and variables → Actions → Variables*. Essa chamada confirma conectividade no momento da execução; não deve ser tratada como garantia de disponibilidade contínua nem como garantia de que um provedor não suspenderá um serviço.
 
-### Arquivos estáticos, logs e backups
+## 13 · Arquivos estáticos, logs e backups
 
 WhiteNoise serve os arquivos recolhidos em `STATIC_ROOT`; o build de produção precisa executar `collectstatic`. Os logs são enviados a stdout/stderr em formato JSON. Não inclua dados pessoais ou conteúdo de tarefas em mensagens de log.
 
 Para PostgreSQL, defina backups periódicos em destino protegido e criptografado, com credencial de menor privilégio. Retenha cópias de acordo com a política aplicável e teste uma restauração antes de depender do backup. Não coloque senhas em comandos, histórico do terminal, documentação ou arquivos versionados.
 
-## Segurança, dados e limitações
+## 14 · Documentação do projeto
+
+- [Guia de contribuição](CONTRIBUTING.md).
+- [Organização dos diretórios](docs/project-structure.md).
+- [Identidade visual](docs/brand/README.md).
+- [Configuração de exemplo](.env.example), sem segredos reais.
+- [Configuração de qualidade](pyproject.toml).
+- [Guia de traduções](locale/README.md).
+- [Workflow de integração contínua](.github/workflows/ci.yml).
+
+## 15 · Princípios de engenharia
+
+O projeto procura manter separação por domínio, permissões explícitas, configurações distintas por ambiente, testes automatizados e documentação que diferencia dados sintéticos de informações observadas. A auditoria registrada pela aplicação não deve ser interpretada como trilha imutável ou certificação independente.
+
+## 16 · Segurança, dados e limitações
 
 - Não use dados pessoais ou operacionais reais sem autorização e salvaguardas apropriadas.
 - Não trate exemplos, hipóteses, origens ou certificações como fatos sobre a Olokuti.
@@ -283,7 +314,7 @@ Para PostgreSQL, defina backups periódicos em destino protegido e criptografado
 
 Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e tratamento de dados de demonstração. Não publique credenciais ou detalhes exploráveis em issues públicas.
 
-## Estrutura do repositório
+## 17 · Estrutura do repositório
 
 ```text
 .
@@ -315,7 +346,7 @@ Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e
 └── pyproject.toml      # configuração do pytest e Ruff
 ```
 
-## Contribuição e licença
+## 18 · Contribuição e licença
 
 Leia [`CONTRIBUTING.md`](CONTRIBUTING.md) antes de enviar alterações. Toda contribuição deve manter explícita a natureza experimental do MVP e evitar dados ou afirmações não verificadas.
 

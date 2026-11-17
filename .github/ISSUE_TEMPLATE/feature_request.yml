@@ -1,0 +1,21 @@
+name: "Sugestão de melhoria"
+description: "Registro uma ideia para o MVP."
+title: "[IDEA] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: "Qual necessidade identifiquei?"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "O que proponho?"
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: "Qual impacto espero para catálogo, inventário ou operações?"

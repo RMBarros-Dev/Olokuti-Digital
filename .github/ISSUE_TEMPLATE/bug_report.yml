@@ -1,0 +1,35 @@
+name: "Relato de problema"
+description: "Registro um comportamento inesperado para investigação."
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Uso dados sintéticos e removo credenciais e dados pessoais dos relatos."
+  - type: textarea
+    id: observed
+    attributes:
+      label: "O que observei?"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "O que eu esperava?"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: "Como reproduzo o problema?"
+      description: "Informo passos mínimos e dados fictícios."
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: "Ambiente e versão"
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs sem segredos ou dados pessoais"
