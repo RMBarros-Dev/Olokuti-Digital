@@ -1,37 +1,52 @@
 # Identidade visual — Olokuti Digital
 
+**Versão:** 2.0  
+**Natureza:** identidade visual independente para um MVP acadêmico e experimental.
+
 ## Conceito
 
-Identidade eco-tech para um MVP acadêmico e experimental de catálogo, tarefas, relatórios e organização operacional. O símbolo combina folha e circuitos para representar o tema do projeto, sem afirmar certificação ambiental ou vínculo institucional.
+A identidade representa organização de informação e conexão entre fluxos de catálogo e tarefas. O símbolo parte de uma forma aberta inspirada na letra **O**, atravessada por três módulos horizontais que remetem a registros, categorias e etapas de trabalho.
 
-## Paleta oficial
+A linguagem é editorial, acolhedora e funcional. Não utiliza folha, broto ou selo ambiental como atalho visual e não sugere certificação, impacto sustentável comprovado ou endosso institucional.
 
-| Token | HEX | Aplicação |
+**Importante:** esta é a identidade do projeto acadêmico Olokuti Digital, não uma reprodução ou extensão da identidade visual da empresa Olokuti. O projeto não declara afiliação, aprovação ou integração institucional.
+
+## Paleta
+
+| Token | HEX | Uso |
 |---|---|---|
-| Verde-floresta | `#08271F` | Fundo principal |
-| Verde profundo | `#0D382D` | Superfícies e profundidade |
-| Areia | `#E5D9BB` | Moldura, linhas e texto de apoio |
-| Turquesa | `#00BFA5` | Circuitos e destaques |
-| Verde-folha | `#9EDB69` | Símbolo e elementos naturais |
+| Verde oliva | `#344A35` | Cor estrutural e superfícies |
+| Verde profundo | `#1D3025` | Profundidade e contraste |
+| Marfim | `#F7F2E8` | Fundo principal |
+| Terracota | `#D17A57` | Destaques e ação |
+| Terracota escuro | `#A94F35` | Contraste e tipografia de destaque |
+| Areia | `#C7A66D` | Elementos secundários |
+| Cinza quente | `#7A705E` | Texto auxiliar |
+
+## Tipografia
+
+- Títulos: Georgia ou serif equivalente, para uma presença editorial.
+- Interface e textos: Inter, Segoe UI ou Arial como fallback.
+- Evitar letras excessivamente condensadas e tracking alto em textos longos.
 
 ## Ativos
 
-- `logo.svg`: emblema quadrado para avatar, favicon ou assinatura compacta.
-- `banner.svg`: banner horizontal para READMEs e apresentações; descreve o projeto como MVP experimental e lista seus domínios funcionais.
-- `project-mark.svg`: marca horizontal alinhada à paleta atual.
-
-Os três ativos compartilham cores, tipografia de sistema, linguagem do símbolo e nomenclatura. O SVG deve continuar vetorial, sem texto convertido em raster.
+- `logo.svg`: símbolo quadrado para avatar e favicon.
+- `logo-light.svg`: símbolo para fundos claros.
+- `banner.svg`: banner horizontal para README.
+- `project-mark.svg`: assinatura horizontal compacta.
+- `brand-guidelines.md`: este documento.
 
 ## Regras de aplicação
 
-- Preservar proporções, área de respiro e contraste.
-- Não adicionar sombras ou filtros externos sem necessidade.
-- Não recolorir elementos individualmente nem misturar paletas antigas.
-- Utilizar texto alternativo descritivo nos READMEs.
-- Não utilizar a folha como evidência de certificação, origem sustentável ou impacto ambiental.
-- Não apresentar o protótipo como produto oficial ou aprovado pela empresa estudada.
-- Verificar legibilidade em tamanhos reduzidos e em fundos claros/escuros antes de criar novos usos.
+1. Preservar proporções e área de respiro.
+2. Usar a versão principal em fundo verde; usar `logo-light.svg` em superfícies claras.
+3. Não adicionar folhas, brotos, certificações ou ícones ecológicos sem fundamento.
+4. Não utilizar a marca do projeto como se fosse identidade oficial da empresa estudada.
+5. Evitar efeitos 3D, sombras pesadas e gradientes decorativos sem função.
+6. Garantir contraste e legibilidade em tamanhos pequenos.
+7. Manter a linguagem visual distinta da marca pessoal RMBarros-Dev.
 
-## Paleta de interface versus identidade
+## Relação com a interface
 
-A paleta de marca é aplicada aos ativos SVG. A interface pode ter tokens próprios, desde que preserve contraste, consistência e não descaracterize a identidade nos pontos de contato institucionais.
+A paleta de marca orienta os pontos de contato institucionais e a documentação. Componentes de interface podem usar tons neutros adicionais, desde que respeitem contraste, hierarquia e consistência.
