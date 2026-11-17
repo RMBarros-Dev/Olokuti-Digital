@@ -168,3 +168,68 @@ def test_product_detail_and_csv_export(client, user):
     csv_resp = client.get(reverse("catalog:product-export-csv"))
     assert csv_resp.status_code == 200
     assert "'=Cork Bottle" in csv_resp.content.decode("utf-8-sig")
+
+
+@pytest.mark.django_db
+def test_product_sku_price_attributes_toggle_active_and_history(client, user):
+    from django.db import IntegrityError
+
+    user.user_permissions.add(
+        *Permission.objects.filter(
+            codename__in=["view_product", "add_product", "change_product", "view_auditlog"]
+        )
+    )
+    client.force_login(user)
+
+    resp = client.post(
+        reverse("catalog:product-create"),
+        {
+            "name": "Hemp Pouch",
+            "sku": "OLK-HEMP-01",
+            "barcode": "8412345678901",
+            "price": "19.90",
+            "currency": "EUR",
+            "image_url": "https://example.com/hemp.jpg",
+            "attributes": '{"material": "hemp"}',
+        },
+    )
+    assert resp.status_code == 302
+    product = Product.objects.get(sku="OLK-HEMP-01")
+    assert product.is_active is True
+    assert product.attributes == {"material": "hemp"}
+
+    # Duplicate SKU via form is rejected; empty SKU allows multiple products
+    dup_form = client.post(
+        reverse("catalog:product-create"),
+        {"name": "Duplicate SKU", "sku": "OLK-HEMP-01"},
+    )
+    assert dup_form.status_code == 200
+
+    # Negative price blocked by DB CheckConstraint
+    from django.db import transaction
+
+    with pytest.raises(IntegrityError):
+        with transaction.atomic():
+            Product.objects.create(name="Negative Price", price="-5.00")
+
+    # Deactivate and reactivate safely
+    toggle_url = reverse("catalog:product-toggle-active", args=[product.pk])
+    assert client.post(toggle_url).status_code == 302
+    product.refresh_from_db()
+    assert product.is_active is False
+
+    # Filter inactive vs active list
+    inactive_list = client.get(reverse("catalog:product-list"), {"status": "inactive"})
+    assert "Hemp Pouch" in inactive_list.content.decode()
+    active_list = client.get(reverse("catalog:product-list"), {"status": "active"})
+    assert "Hemp Pouch" not in active_list.content.decode()
+
+    assert client.post(toggle_url).status_code == 302
+    product.refresh_from_db()
+    assert product.is_active is True
+
+    # Detail page renders history from AuditLog
+    detail = client.get(reverse("catalog:product-detail", args=[product.pk]))
+    assert detail.status_code == 200
+    assert "OLK-HEMP-01" in detail.content.decode()
+    assert "Status changed" in detail.content.decode()

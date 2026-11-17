@@ -55,7 +55,14 @@ def test_operational_task_queryset_open_and_overdue_filters():
 
 @pytest.mark.django_db
 def test_iter_products_for_csv_streams_localized_rows():
-    product = Product.objects.create(name="Olive Soap", description="Orig desc")
+    product = Product.objects.create(
+        name="Olive Soap",
+        sku="SKU-SOAP-01",
+        barcode="8400001112223",
+        price="12.50",
+        currency="EUR",
+        description="Orig desc",
+    )
     ProductTranslation.objects.create(
         product=product,
         locale="pt-br",
@@ -67,6 +74,11 @@ def test_iter_products_for_csv_streams_localized_rows():
     rows = list(iter_products_for_csv(query="Olive", language_code="pt-br"))
     assert len(rows) == 1
     assert rows[0][0] == "Olive Soap"
-    assert rows[0][1] == "Sabonete de Oliva"
-    assert rows[0][4] == "Desc PT-BR"
-    assert rows[0][5] == "Sem palma"
+    assert rows[0][1] == "SKU-SOAP-01"
+    assert rows[0][2] == "8400001112223"
+    assert rows[0][3] == "active"
+    assert str(rows[0][4]) == "12.50"
+    assert rows[0][5] == "EUR"
+    assert rows[0][6] == "Sabonete de Oliva"
+    assert rows[0][9] == "Desc PT-BR"
+    assert rows[0][10] == "Sem palma"

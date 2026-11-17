@@ -36,7 +36,7 @@
                   data-description="{{ item.description }}"
                   data-sustainability="{{ item.sustainability_info }}"
                 >{% trans "Edit" %}</button>
-                <form method="post" action="{% url 'catalog:product-translation-delete' product.pk item.pk %}" class="d-inline">
+                <form method="post" action="{% url 'catalog:product-translation-delete' product.pk item.pk %}" class="d-inline" data-confirm="{% trans 'Remove this translation?' %}">
                   {% csrf_token %}
                   <button class="btn btn-sm btn-link text-danger p-0" type="submit">{% trans "Delete" %}</button>
                 </form>

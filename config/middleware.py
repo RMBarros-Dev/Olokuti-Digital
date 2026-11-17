@@ -40,7 +40,7 @@ class SecurityHeadersMiddleware:
                 "frame-ancestors 'none'; "
                 "object-src 'none'; "
                 "connect-src 'self'; "
-                "img-src 'self' data:; "
+                "img-src 'self' data: https:; "
                 "font-src 'self' https://cdn.jsdelivr.net; "
                 "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
                 f"script-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net"

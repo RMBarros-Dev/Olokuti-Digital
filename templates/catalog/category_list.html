@@ -26,7 +26,7 @@
               <a class="btn btn-sm btn-link p-0 me-2" href="{% url 'catalog:category-update' category.pk %}">{% trans "Edit" %}</a>
               {% endif %}
               {% if perms.catalog.delete_category and category.product_count == 0 %}
-              <form method="post" action="{% url 'catalog:category-delete' category.pk %}" class="d-inline">
+              <form method="post" action="{% url 'catalog:category-delete' category.pk %}" class="d-inline" data-confirm="{% trans 'Delete this category?' %}">
                 {% csrf_token %}
                 <button class="btn btn-sm btn-link text-danger p-0" type="submit">{% trans "Delete" %}</button>
               </form>

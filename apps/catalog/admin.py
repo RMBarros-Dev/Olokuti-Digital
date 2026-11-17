@@ -12,9 +12,9 @@ class CategoryAdmin(AuditedAdminMixin, admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(AuditedAdminMixin, admin.ModelAdmin):
-    list_display = ("name", "category", "origin", "updated_at")
-    list_filter = ("category",)
-    search_fields = ("name", "origin")
+    list_display = ("name", "sku", "category", "price", "currency", "is_active", "updated_at")
+    list_filter = ("is_active", "category", "currency")
+    search_fields = ("name", "sku", "barcode", "origin")
     readonly_fields = ("id", "created_by", "created_at", "updated_at")
 
 

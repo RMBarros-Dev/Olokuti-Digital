@@ -127,12 +127,14 @@ LANGUAGES = [
     ("eu", "Euskara"),
     ("en-us", "English (US)"),
     ("en-gb", "English (UK)"),
+    ("en-in", "English (India)"),
     ("en", "English"),
     ("pt-br", "Português (Brasil)"),
     ("pt-pt", "Português (Portugal)"),
 ]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 USE_I18N = True
+USE_THOUSAND_SEPARATOR = True
 USE_TZ = True
 TIME_ZONE = "Europe/Madrid"
 

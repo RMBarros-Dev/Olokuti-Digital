@@ -5,14 +5,20 @@
 <header class="page-header">
   <div>
     <p class="eyebrow">{% trans "Catalogue" %}{% if product.category %} · {{ product.category.name }}{% endif %}</p>
-    <h1>{{ product.active_translation.name|default:product.name }}</h1>
+    <h1>{{ product.active_translation.name|default:product.name }} {% if not product.is_active %}<span class="state-pill state-muted ms-2">{% trans "Inactive" %}</span>{% endif %}</h1>
     {% if product.active_translation and product.active_translation.name != product.name %}
       <p class="text-secondary mb-0">{% trans "Original name" %}: <strong>{{ product.name }}</strong> <span class="badge text-bg-light ms-1">{{ product.active_translation.locale }}</span></p>
     {% endif %}
   </div>
   <div class="d-flex flex-wrap gap-2">
     <a class="btn btn-outline-secondary" href="{% url 'catalog:product-list' %}">← {% trans "Back to catalogue" %}</a>
-    {% if perms.catalog.change_product %}<a class="btn btn-primary" href="{% url 'catalog:product-update' product.pk %}">{% trans "Edit product" %}</a>{% endif %}
+    {% if perms.catalog.change_product %}
+      <form method="post" action="{% url 'catalog:product-toggle-active' product.pk %}" class="d-inline" {% if product.is_active %}data-confirm="{% trans 'Archive this product without deleting historical records?' %}"{% endif %}>
+        {% csrf_token %}
+        <button class="btn btn-outline-secondary" type="submit">{% if product.is_active %}{% trans "Deactivate" %}{% else %}{% trans "Reactivate" %}{% endif %}</button>
+      </form>
+      <a class="btn btn-primary" href="{% url 'catalog:product-update' product.pk %}">{% trans "Edit product" %}</a>
+    {% endif %}
   </div>
 </header>
 
@@ -20,6 +26,18 @@
   <div class="col-12 col-lg-7">
     <section class="form-card w-100 mb-4">
       <div class="row g-3 mb-3">
+        <div class="col-sm-4">
+          <span class="eyebrow d-block">{% trans "SKU" %}</span>
+          <strong><code>{{ product.sku|default:"—" }}</code></strong>
+        </div>
+        <div class="col-sm-4">
+          <span class="eyebrow d-block">{% trans "Barcode" %}</span>
+          <strong>{{ product.barcode|default:"—" }}</strong>
+        </div>
+        <div class="col-sm-4">
+          <span class="eyebrow d-block">{% trans "Price" %}</span>
+          <strong>{% if product.price is not None %}{{ product.price|floatformat:2 }} {{ product.currency }}{% else %}—{% endif %}</strong>
+        </div>
         <div class="col-sm-6">
           <span class="eyebrow d-block">{% trans "Category" %}</span>
           <strong>{{ product.category|default:"—" }}</strong>
@@ -29,15 +47,34 @@
           <strong>{{ product.origin|default:"—" }}</strong>
         </div>
       </div>
+      {% if product.image_url %}
+      <hr>
+      <div class="mb-3">
+        <span class="eyebrow d-block mb-2">{% trans "Image" %}</span>
+        <img src="{{ product.image_url }}" alt="{{ product.active_translation.name|default:product.name }}" class="img-thumbnail" referrerpolicy="no-referrer" style="max-height: 180px;">
+      </div>
+      {% endif %}
       <hr>
       <div class="mb-3">
         <span class="eyebrow d-block">{% trans "Description" %}</span>
         <p class="mb-0">{{ product.active_translation.description|default:product.description|default:"—" }}</p>
       </div>
-      <div>
+      <div class="mb-3">
         <span class="eyebrow d-block">{% trans "Sustainability information" %}</span>
         <p class="mb-0">{{ product.active_translation.sustainability_info|default:product.sustainability_info|default:"—" }}</p>
       </div>
+      {% if product.attributes %}
+      <hr>
+      <div>
+        <span class="eyebrow d-block mb-2">{% trans "Attributes" %}</span>
+        <dl class="row mb-0 small">
+          {% for key, value in product.attributes.items %}
+            <dt class="col-sm-4 text-secondary">{{ key }}</dt>
+            <dd class="col-sm-8 mb-1">{{ value }}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+      {% endif %}
     </section>
 
     {% if can_view_tasks %}
@@ -73,7 +110,7 @@
   </div>
 
   <div class="col-12 col-lg-5">
-    <section class="form-card w-100">
+    <section class="form-card w-100 mb-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h5 mb-0">{% trans "Translations" %}</h2>
         <span class="badge text-bg-light">{{ translations|length }}</span>
@@ -99,7 +136,24 @@
       <p class="text-secondary small mb-0">{% trans "No translations recorded yet for this product." %}</p>
       {% endif %}
     </section>
+
+    {% if perms.audit.view_auditlog %}
+    <section class="form-card w-100">
+      <h2 class="h5 mb-3">{% trans "Change history" %}</h2>
+      {% for event in history %}
+        <div class="activity-row">
+          <span class="activity-mark" aria-hidden="true"></span>
+          <div>
+            <strong>{{ event.action_label }}</strong>
+            <span>{{ event.user.get_username|default:"system" }}</span>
+          </div>
+          <time datetime="{{ event.timestamp|date:'c' }}">{{ event.timestamp|date:"SHORT_DATETIME_FORMAT" }}</time>
+        </div>
+      {% empty %}
+        <p class="text-secondary small mb-0">{% trans "No changes recorded yet." %}</p>
+      {% endfor %}
+    </section>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
-

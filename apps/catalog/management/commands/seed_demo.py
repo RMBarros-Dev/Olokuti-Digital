@@ -40,6 +40,9 @@ class Command(BaseCommand):
         products_data = [
             {
                 "name": "Organic Cotton Market Tote",
+                "sku": "DEMO-BAG-01",
+                "barcode": "8400000000011",
+                "price": "18.50",
                 "category": categories["Textiles & Fashion"],
                 "origin": "Barcelona, Spain",
                 "description": "Heavyweight GOTS-certified unbleached organic cotton bag.",
@@ -84,6 +87,9 @@ class Command(BaseCommand):
             },
             {
                 "name": "Recycled Glass Carafe",
+                "sku": "DEMO-CAR-02",
+                "barcode": "8400000000028",
+                "price": "24.00",
                 "category": categories["Home & Living"],
                 "origin": "Valencia, Spain",
                 "description": "Hand-blown carafe crafted from 100% post-consumer recycled glass.",
@@ -128,6 +134,9 @@ class Command(BaseCommand):
             },
             {
                 "name": "Cold-Pressed Olive Oil Soap Bar",
+                "sku": "DEMO-SOAP-03",
+                "barcode": "8400000000035",
+                "price": "7.90",
                 "category": categories["Natural Care"],
                 "origin": "Girona, Spain",
                 "description": "Gentle botanical soap bar made with organic extra-virgin olive oil and lavender.",
@@ -177,6 +186,11 @@ class Command(BaseCommand):
             product, created = Product.objects.get_or_create(
                 name=f"[DEMO] {pdata['name']}",
                 defaults={
+                    "sku": pdata["sku"],
+                    "barcode": pdata["barcode"],
+                    "price": pdata["price"],
+                    "currency": Product.Currency.EUR,
+                    "attributes": {"demo": True},
                     "category": pdata["category"],
                     "origin": "Fictional demo location — not a real product origin.",
                     "description": (
