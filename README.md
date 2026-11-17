@@ -1,7 +1,7 @@
 <p align="right"><strong>Idioma:</strong> <a href="README.md">Português (Brasil)</a> · <a href="README.en.md">English</a></p>
 
 <p align="center">
-  <img src="assets/brand/banner.svg" alt="Identidade visual do projeto" width="100%" />
+  <img src="assets/brand/banner.svg" alt="Olokuti Digital — catálogo, tarefas e organização operacional" width="100%" />
 </p>
 
 <p align="center"><img src="assets/brand/logo.svg" alt="Olokuti Digital logo" width="76" /></p>
@@ -9,7 +9,7 @@
 <h1 align="center">Olokuti Digital</h1>
 
 <p align="center">
-  MVP acadêmico e experimental para explorar fluxos de catálogo, tarefas e organização operacional.<br>
+  MVP acadêmico e experimental para explorar fluxos de catálogo, tarefas e organização operacional.<br><strong>Informação organizada. Operações conectadas.</strong><br>
   <strong>URL do ambiente de demonstração:</strong> <a href="https://olokuti-web-production.up.railway.app/">https://olokuti-web-production.up.railway.app/</a>
 </p>
 
