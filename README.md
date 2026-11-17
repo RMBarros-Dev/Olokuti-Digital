@@ -298,6 +298,7 @@ Para PostgreSQL, defina backups periódicos em destino protegido e criptografado
 - [Metodologia de desenvolvimento](docs/development-methodology.md).
 - [Qualidade, testes e badges](docs/quality/README.md).
 - [Roadmap de evolução](docs/roadmap.md).
+- [Repositórios de referência](docs/reference-projects.md).
 - [Identidade visual](docs/brand/README.md).
 - [Guia de contribuição](CONTRIBUTING.md).
 - [Política de segurança](SECURITY.md).
