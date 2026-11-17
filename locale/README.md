@@ -1,7 +1,17 @@
 # Translation catalogues
 
-The ten locale directories are the Django gettext catalogues for this prototype. Their `.po` and `.mo` files currently contain headers only: interface strings still fall back to their English source text. The compiled headers let Django recognize each configured language prefix; they do not provide translations. No catalogue is represented as reviewed or complete. A qualified reviewer should translate the extracted `msgid` values, check regional conventions, and then recompile the catalogues before release.
+The eleven locale directories (`ca`, `en`, `en_GB`, `en_IN`, `en_US`, `es_419`, `es_ES`, `eu`, `gl`, `pt_BR`, `pt_PT`) are the Django gettext catalogues for Olokuti Digital.
 
-Use `django-admin makemessages -a` to extract interface strings after installing the development requirements and GNU gettext tools. Review every `.po` file, then run `django-admin compilemessages` to create the corresponding `.mo` files. Keep both the `.po` sources and compiled `.mo` files available to the runtime.
+## Updating and compiling
+
+On environments with GNU gettext tools installed, run `django-admin makemessages -a` to extract updated `msgid` entries and `django-admin compilemessages` to rebuild binary `.mo` files.
+
+On developer environments without GNU `msgfmt`, run:
+
+```bash
+python manage.py compile_locales
+```
+
+This management command calls `compilemessages` when GNU gettext is available and falls back to a built-in pure-Python GNU `.mo` compiler when `msgfmt` is not on `PATH`. Keep both `.po` source files and compiled `.mo` files committed.
 
 Product originals and their optional `ProductTranslation` records are stored separately. Selecting an interface language never overwrites source product content.

@@ -12,7 +12,7 @@ def test_dashboard_requires_login(client):
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     "language",
-    ["es-419", "es-es", "ca", "gl", "eu", "en-us", "en-gb", "en", "pt-br", "pt-pt"],
+    ["es-419", "es-es", "ca", "gl", "eu", "en-us", "en-gb", "en-in", "en", "pt-br", "pt-pt"],
 )
 def test_all_configured_language_prefixes_resolve(client, language):
     response = client.get(f"/{language}/accounts/login/")

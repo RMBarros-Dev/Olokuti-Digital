@@ -43,41 +43,45 @@ O princípio de trabalho é separar fatos observados de hipóteses. Integraçõe
 
 | Área | O que o MVP oferece |
 | --- | --- |
-| Acesso | Login, criação de conta (`/accounts/register/`), logout, sessões e fluxo de redefinição de senha do Django. |
-| Dashboard | Resumo de produtos, tarefas e atividade recente, condicionado às permissões do usuário. |
-| Catálogo | Produtos, categorias, pesquisa, filtros, origem, informações de sustentabilidade e exportação CSV. |
+| Acesso e IAM | Login, cadastro básico de menor privilégio (`/accounts/register/`), logout, controle RBAC por grupos/permissões, invalidação de sessão em alterações críticas e redefinição de senha. |
+| Acessibilidade | Alternador global de **Alto Contraste (WCAG 2.2 AA/AAA)** no cabeçalho (`#high-contrast-toggle`), persistência em `localStorage`, atalho Skip to content, foco visível reforçado, suporte a `prefers-reduced-motion` e região `aria-live`. |
+| Dashboard | Resumo de produtos, estoque baixo, tarefas e atividade recente, condicionado às permissões do usuário. |
+| Catálogo | Produtos com SKU único parcial, código de barras, preço/moeda (`EUR`, `BRL`, `USD`, `GBP`, `INR`), atributos JSON, ativação/inativação, pesquisa HTMX, histórico e exportação CSV segura. |
 | Traduções de produtos | Registros localizados separados do texto original, sem substituir os dados-fonte. |
-| Operações | Tarefas com produto opcional, responsável, prioridade, prazo e estados; filtros e atualização rápida de status com HTMX. |
-| Relatórios | Resumo de tarefas por período e status, com exportação CSV protegida contra fórmulas de planilha. |
-| Auditoria | Eventos mínimos de criação, atualização, mudança de status, exclusão e configuração. |
-| Administração | Listagem, pesquisa, criação e edição de contas por usuários `is_staff`; grupos com permissões do Django. |
-| Idiomas | Prefixos de URL e seletor para dez idiomas; os catálogos de interface são parciais. |
-| Saúde da aplicação | `GET /health` retorna `200 OK`; `GET /health?db=1` valida também a conexão SQL ativa com o PostgreSQL. |
+| Inventário | Locais de estoque (`StockLocation`), saldos com bloqueio transacional (`select_for_update`), movimentações imutáveis (`StockMovement`: entrada, saída e ajuste), alertas de estoque mínimo e CSV. |
+| Operações | Tarefas com categoria, produto opcional, responsável, prioridade, prazo, página de detalhes, comentários colaborativos (`TaskComment`), histórico e filtros/status com HTMX. |
+| Relatórios | Resumo por período, status, atividade por colaborador e estoque por localização, com exportação CSV protegida contra fórmulas e geração nativa de relatório **PDF** (`%PDF-1.4`). |
+| Auditoria | Eventos de criação, atualização, mudança de status, exclusão, movimentações de estoque, comentários e alterações administrativas (`AuditedAdminMixin`). |
+| Administração | Gestão de contas e grupos (`is_staff`, com proteção de escalonamento de superusuário e invalidação automática de sessões). |
+| Idiomas | Prefixos de URL e seletor para 11 idiomas/variantes, incluindo `en-in` (`English (India)`), com suporte a compilação via GNU gettext ou comando integrado `compile_locales`. |
+| Saúde e segurança | `GET /health`, `GET /health?db=1` (rate-limited), cabeçalhos CSP com `nonce`, `Permissions-Policy`, rate limiting de autenticação e validação rígida de produção. |
 
 ### Fora do escopo
 
-Este MVP não implementa pagamentos, vendas, faturamento, gestão financeira, sincronização de inventário, integração omnicanal ou conexão com sistemas da Olokuti. Não é uma API pública nem um sistema pronto para uso operacional.
+Este MVP não implementa pagamentos, vendas, faturamento, gestão financeira, emissão fiscal ou conexão direta com sistemas legados da Olokuti. Não é uma API pública nem substitui um ERP completo.
 
 O comando `seed_demo` é opcional, só executa com `DEBUG=True` e cria registros sintéticos identificados como demonstração. Origens, certificações, fornecedores e afirmações de sustentabilidade desses registros não são verificadas.
 
 ## Arquitetura
 
-Aplicação monolítica modular: o navegador acessa rotas Django; os módulos usam o ORM e a mesma base PostgreSQL; templates renderizam a interface e HTMX atualiza partes das listas. WhiteNoise publica os arquivos estáticos recolhidos no build.
+Aplicação monolítica modular em Django 5.2 com separação explícita entre **Models / QuerySets**, **Services** (regras transacionais e auditoria), **Selectors** (consultas otimizadas sem N+1) e **Views/Templates**:
 
 ```mermaid
 flowchart LR
-    Browser[Navegador<br/>Templates, Bootstrap e HTMX] --> Django[Django<br/>URLs, Forms e autenticação]
+    Browser[Navegador<br/>Templates, Bootstrap, Alto Contraste e HTMX] --> Middleware[SecurityHeadersMiddleware CSP Nonce + ActiveUser]
+    Middleware --> Django[Django Urls / Views / Forms]
     Django --> Accounts[accounts]
     Django --> Catalog[catalog]
+    Django --> Inventory[inventory]
     Django --> Operations[operations]
     Django --> Reports[reports]
     Django --> Audit[audit]
-    Accounts --> ORM[Django ORM]
-    Catalog --> ORM
-    Operations --> ORM
-    Reports --> ORM
-    Audit --> ORM
-    ORM --> PostgreSQL[(PostgreSQL)]
+    Inventory --> Services[Services & Selectors<br/>select_for_update + atomic]
+    Catalog --> Services
+    Operations --> Services
+    Reports --> PDF[config/csv.py & config/pdf.py]
+    Services --> ORM[Django ORM]
+    ORM --> PostgreSQL[(PostgreSQL / Supabase)]
     Django --> WhiteNoise[WhiteNoise<br/>arquivos estáticos]
     WhiteNoise --> Browser
 ```
@@ -86,12 +90,14 @@ Os módulos têm responsabilidades delimitadas:
 
 | Módulo | Responsabilidade |
 | --- | --- |
-| `apps/accounts` | Dashboard, autenticação, grupos, permissões e administração de usuários. |
-| `apps/catalog` | Categorias, produtos, traduções localizadas e CSV do catálogo. |
-| `apps/operations` | Tarefas, filtros, mudanças de status e eventos operacionais. |
-| `apps/reports` | Agregações e exportação de relatórios de tarefas. |
-| `apps/audit` | Modelo, serviço e visualização dos eventos de auditoria. |
-| `config/settings` | Configurações compartilhadas, local, de testes e produção. |
+| `apps/accounts` | Dashboard, autenticação, rate limiting, RBAC, grupos e gestão segura de usuários. |
+| `apps/catalog` | Categorias, produtos (SKU, preço, atributos JSON, ativação), traduções, histórico e CSV. |
+| `apps/inventory` | Locais de estoque, saldos por local, movimentações atômicas/imutáveis, alertas mínimos e CSV. |
+| `apps/operations` | Tarefas, categorias, filtros HTMX, atualização rápida de status e comentários colaborativos. |
+| `apps/reports` | Indicadores operacionais/colaboradores/estoque, exportação CSV e relatório PDF puro em Python. |
+| `apps/audit` | Modelo de trilha de auditoria, serviço `record_event`, `AuditedAdminMixin` e visualização. |
+| `config/` | Settings modulares, validador de produção, middleware CSP/segurança, CSV e gerador PDF. |
+| `docs/` | Documentação arquitetural ([`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)) e runbook operacional ([`docs/OPERATIONS_RUNBOOK.md`](docs/OPERATIONS_RUNBOOK.md)). |
 
 ## Tecnologias
 
@@ -183,18 +189,19 @@ Usuários com acesso administrativo autorizado podem acessar o Django Admin e a 
 
 | Grupo padrão | Permissões incluídas |
 | --- | --- |
-| `Catalogue Team` | Visualizar, criar, editar e excluir produtos e categorias. |
-| `Operations Team` | Visualizar produtos e visualizar, criar, editar e excluir tarefas. |
-| `Auditors & Managers` | Visualizar e administrar produtos e tarefas, além de visualizar eventos de auditoria. **Esse grupo não é somente leitura.** |
+| `Catalogue Team` | Visualizar, criar, editar e excluir produtos e categorias; visualizar locais e saldos de estoque. |
+| `Operations Team` | Visualizar produtos, tarefas, comentários, locais/saldos de estoque; criar/editar/excluir tarefas e comentários; registrar movimentações de estoque (`add_stockmovement`). |
+| `Auditors & Managers` | Administrar produtos, tarefas, comentários, locais/limites de estoque, movimentações e visualizar eventos de auditoria. |
 
 Permissões usadas pelas áreas:
 
 - Produtos: `catalog.view_product`, `catalog.add_product`, `catalog.change_product`, `catalog.delete_product`.
 - Categorias: `catalog.view_category`, `catalog.add_category`, `catalog.change_category`, `catalog.delete_category`.
-- Tarefas: `operations.view_operationaltask`, `operations.add_operationaltask`, `operations.change_operationaltask`, `operations.delete_operationaltask`.
+- Inventário: `inventory.view_stocklocation`, `inventory.add_stocklocation`, `inventory.change_stocklocation`, `inventory.view_stockitem`, `inventory.change_stockitem`, `inventory.view_stockmovement`, `inventory.add_stockmovement`.
+- Tarefas e comentários: `operations.view_operationaltask`, `operations.add_operationaltask`, `operations.change_operationaltask`, `operations.delete_operationaltask`, `operations.view_taskcomment`, `operations.add_taskcomment`.
 - Auditoria: `audit.view_auditlog`.
-- Relatórios: requerem visualização de produtos **e** tarefas.
-- Gestão de usuários: requer `is_staff`.
+- Relatórios: `operations.view_operationaltask` **e** `catalog.view_product` (exportação CSV de estoque requer adicionalmente `inventory.view_stockitem`).
+- Gestão de usuários: requer `is_staff` (edição de `is_superuser` e atribuição do grupo de auditoria restritas a superusuários).
 
 A exclusão de categorias é bloqueada enquanto houver produtos relacionados. O dashboard oculta métricas sem permissão correspondente.
 
@@ -204,26 +211,17 @@ Execute os mesmos verificadores usados no workflow do GitHub:
 
 ```powershell
 python -m ruff check .
-python -m pytest -q
+python -m ruff format --check .
+python -m pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-under=90
 ```
 
-O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda Ruff e pytest em Python 3.12 para pushes em `main` e pull requests. O Dependabot verifica semanalmente dependências Python e GitHub Actions.
-
-Os testes usam `config.settings.test` e SQLite em memória. Eles cobrem autenticação, permissões, catálogo, traduções de produtos, tarefas, relatórios, auditoria, contas e segurança da exportação CSV. A suíte não valida conectividade com o PostgreSQL do provedor nem substitui uma verificação do ambiente de produção.
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda Ruff (`check` + `format --check`), verificação de dependências (`pip check`), `manage.py check`, `makemigrations --check --dry-run`, `check --deploy --fail-level WARNING` e pytest com meta mínima de 90% de cobertura em Python 3.12.
 
 ## Idiomas e traduções
 
-Os prefixos configurados são `es-419`, `es-es`, `ca`, `gl`, `eu`, `en-us`, `en-gb`, `en`, `pt-br` e `pt-pt`. Os catálogos contêm traduções parciais e ainda precisam de revisão linguística humana; a interface pode exibir texto em inglês quando não houver tradução.
+Os prefixos configurados são `es-419`, `es-es`, `ca`, `gl`, `eu`, `en-us`, `en-gb`, `en-in`, `en`, `pt-br` e `pt-pt`. Todos os `.po` possuem catálogos compilados `.mo` versionados; execute `python manage.py compile_locales` para recompilar (com fallback puro em Python quando GNU gettext não estiver disponível no sistema).
 
-Os arquivos `.po` são a fonte editável e os `.mo` compilados estão versionados. O comando `python manage.py compile_locales` delega ao `compilemessages` do Django e não reescreve os `.po`. Para extrair novas strings e compilar, instale GNU gettext e execute:
-
-```powershell
-python manage.py makemessages -a
-# Revise os arquivos locale/<idioma>/LC_MESSAGES/django.po.
-python manage.py compile_locales
-```
-
-`ProductTranslation` mantém nome, descrição e informação de sustentabilidade separados do produto original. A aplicação só seleciona uma tradução da mesma variante regional; por exemplo, `pt-BR` não usa automaticamente uma tradução `pt-PT`.
+Consulte também [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) e [`docs/OPERATIONS_RUNBOOK.md`](docs/OPERATIONS_RUNBOOK.md) para detalhes operacionais, cache, pooler Supabase e procedimentos de backup/rollback.
 
 ## Deploy e operação
 
@@ -290,14 +288,19 @@ Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e
 ```text
 .
 ├── apps/
-│   ├── accounts/       # autenticação, grupos e usuários
-│   ├── audit/          # eventos de auditoria
-│   ├── catalog/        # produtos, categorias e traduções
-│   ├── operations/     # tarefas e status
-│   └── reports/        # resumos e CSV
+│   ├── accounts/       # autenticação, grupos, dashboard e usuários
+│   ├── audit/          # eventos de auditoria e AuditedAdminMixin
+│   ├── catalog/        # produtos (SKU, preço, atributos), categorias, traduções
+│   ├── inventory/      # locais, saldos, movimentações atômicas e alertas
+│   ├── operations/     # tarefas, categorias, comentários e status
+│   └── reports/        # resumos, produtividade, CSV e PDF
 ├── config/
-│   └── settings/       # base, local, test e production
-├── locale/             # catálogos gettext .po/.mo
+│   ├── csv.py          # exportação CSV protegida contra injeção de fórmulas
+│   ├── middleware.py   # CSP com nonce, Permissions-Policy e usuário ativo
+│   ├── pdf.py          # gerador PDF multi-página sem dependências externas
+│   └── settings/       # base, local, test, production e validators
+├── docs/               # arquitetura e runbook de operação/backup/rollback
+├── locale/             # catálogos gettext .po/.mo (11 idiomas incl. en_IN)
 ├── static/             # CSS e JavaScript
 ├── templates/          # templates Django
 ├── tests/              # testes automatizados

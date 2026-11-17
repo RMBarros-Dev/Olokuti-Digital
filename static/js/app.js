@@ -1,14 +1,55 @@
-document.body.addEventListener("htmx:responseError", (event) => {
-  const target = event.detail.target;
-  if (!target) return;
-  const notice = document.createElement("p");
-  notice.className = "empty-note";
-  notice.setAttribute("role", "alert");
-  notice.textContent = document.body.dataset.requestError || "The list could not be refreshed.";
-  target.replaceChildren(notice);
-});
+const CONTRAST_STORAGE_KEY = "olokuti_high_contrast";
+
+function isHighContrastStored() {
+  try {
+    return window.localStorage && localStorage.getItem(CONTRAST_STORAGE_KEY) === "true";
+  } catch (e) {
+    return document.documentElement.getAttribute("data-contrast") === "high";
+  }
+}
+
+function applyHighContrastState(enabled, announce = false) {
+  if (enabled) {
+    document.documentElement.setAttribute("data-contrast", "high");
+  } else {
+    document.documentElement.removeAttribute("data-contrast");
+  }
+
+  try {
+    if (window.localStorage) {
+      localStorage.setItem(CONTRAST_STORAGE_KEY, enabled ? "true" : "false");
+    }
+  } catch (e) {}
+
+  document.querySelectorAll("[data-contrast-toggle]").forEach((btn) => {
+    btn.setAttribute("aria-pressed", enabled ? "true" : "false");
+    btn.classList.toggle("is-active", enabled);
+    const stateBadge = btn.querySelector("[data-contrast-state]");
+    if (stateBadge) {
+      stateBadge.textContent = enabled ? "✓ ON" : "OFF";
+    }
+  });
+
+  if (announce) {
+    const liveRegion = document.getElementById("a11y-contrast-status");
+    if (liveRegion) {
+      liveRegion.textContent = enabled
+        ? liveRegion.dataset.msgOn || "High contrast mode enabled."
+        : liveRegion.dataset.msgOff || "High contrast mode disabled.";
+    }
+  }
+}
+
+applyHighContrastState(isHighContrastStored(), false);
 
 document.addEventListener("click", (event) => {
+  const toggleBtn = event.target.closest("[data-contrast-toggle]");
+  if (toggleBtn) {
+    const currentlyEnabled = document.documentElement.getAttribute("data-contrast") === "high";
+    applyHighContrastState(!currentlyEnabled, true);
+    return;
+  }
+
   const button = event.target.closest(".js-load-translation");
   if (!button) return;
   const form = document.getElementById("translation-editor-form");
@@ -31,4 +72,43 @@ document.addEventListener("change", (event) => {
   if (select && select.form) {
     select.form.submit();
   }
+});
+
+document.addEventListener("submit", (event) => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement)) return;
+  const promptText = form.dataset.confirm;
+  if (promptText && !window.confirm(promptText)) {
+    event.preventDefault();
+  }
+});
+
+window.addEventListener("storage", (event) => {
+  if (event.key === CONTRAST_STORAGE_KEY) {
+    applyHighContrastState(event.newValue === "true", false);
+  }
+});
+
+document.body.addEventListener("htmx:beforeRequest", (event) => {
+  const target = event.detail.target;
+  if (target) {
+    target.setAttribute("aria-busy", "true");
+  }
+});
+
+document.body.addEventListener("htmx:afterRequest", (event) => {
+  const target = event.detail.target;
+  if (target) {
+    target.removeAttribute("aria-busy");
+  }
+});
+
+document.body.addEventListener("htmx:responseError", (event) => {
+  const target = event.detail.target;
+  if (!target) return;
+  const notice = document.createElement("p");
+  notice.className = "empty-note";
+  notice.setAttribute("role", "alert");
+  notice.textContent = document.body.dataset.requestError || "The list could not be refreshed.";
+  target.replaceChildren(notice);
 });

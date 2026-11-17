@@ -353,3 +353,84 @@ msgstr "Ongi etorri berriro"
 
 msgid "Workspace"
 msgstr "Lan-eremua"
+
+msgid "High contrast"
+msgstr "Kontraste handia"
+
+msgid "Accessibility: High contrast"
+msgstr "Irisgarritasuna: Kontraste handia"
+
+msgid "High contrast mode enabled."
+msgstr "Kontraste handiko modua gaituta."
+
+msgid "High contrast mode disabled."
+msgstr "Kontraste handiko modua desgaituta."
+
+msgid "Inventory"
+msgstr "Inbentarioa"
+
+msgid "Stock movements"
+msgstr "Stock mugimenduak"
+
+msgid "Stock locations"
+msgstr "Stock kokalekuak"
+
+msgid "Record movement"
+msgstr "Mugimendua erregistratu"
+
+msgid "Low stock"
+msgstr "Stock baxua"
+
+msgid "Low stock only"
+msgstr "Stock baxua soilik"
+
+msgid "Healthy"
+msgstr "Egokia"
+
+msgid "Low-stock alerts"
+msgstr "Stock baxuaren alertak"
+
+msgid "Low-stock watchlist"
+msgstr "Stock baxuaren jarraipena"
+
+msgid "Inventory levels"
+msgstr "Inbentario mailak"
+
+msgid "On hand"
+msgstr "Eskura"
+
+msgid "Team notes & comments"
+msgstr "Taldeko oharrak eta iruzkinak"
+
+msgid "Post comment"
+msgstr "Iruzkina argitaratu"
+
+msgid "Change history"
+msgstr "Aldaketen historia"
+
+msgid "Collaborator activity"
+msgstr "Kolaboratzaileen jarduera"
+
+msgid "Export PDF"
+msgstr "Esportatu PDF"
+
+msgid "Export inventory CSV"
+msgstr "Esportatu inbentario CSV"
+
+msgid "Deactivate"
+msgstr "Desaktibatu"
+
+msgid "Reactivate"
+msgstr "Berraktibatu"
+
+msgid "Price"
+msgstr "Prezioa"
+
+msgid "Barcode"
+msgstr "Barra-kodea"
+
+msgid "Attributes"
+msgstr "Atributuak"
+
+msgid "Updating…"
+msgstr "Eguneratzen…"

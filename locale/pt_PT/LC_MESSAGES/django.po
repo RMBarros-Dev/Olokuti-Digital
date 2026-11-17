@@ -632,3 +632,84 @@ msgstr "Seu espaço de trabalho está pronto"
 
 msgid "“%(title)s” will be removed. This cannot be undone."
 msgstr "“%(title)s” será removida. Esta ação não pode ser anulada."
+
+msgid "High contrast"
+msgstr "Alto contraste"
+
+msgid "Accessibility: High contrast"
+msgstr "Acessibilidade: Alto contraste"
+
+msgid "High contrast mode enabled."
+msgstr "Modo de alto contraste ativado."
+
+msgid "High contrast mode disabled."
+msgstr "Modo de alto contraste desativado."
+
+msgid "Inventory"
+msgstr "Inventário"
+
+msgid "Stock movements"
+msgstr "Movimentos de stock"
+
+msgid "Stock locations"
+msgstr "Localizações de stock"
+
+msgid "Record movement"
+msgstr "Registar movimento"
+
+msgid "Low stock"
+msgstr "Stock baixo"
+
+msgid "Low stock only"
+msgstr "Apenas stock baixo"
+
+msgid "Healthy"
+msgstr "Normal"
+
+msgid "Low-stock alerts"
+msgstr "Alertas de stock baixo"
+
+msgid "Low-stock watchlist"
+msgstr "Lista de alerta de stock baixo"
+
+msgid "Inventory levels"
+msgstr "Níveis de inventário"
+
+msgid "On hand"
+msgstr "Disponível"
+
+msgid "Team notes & comments"
+msgstr "Notas e comentários da equipa"
+
+msgid "Post comment"
+msgstr "Publicar comentário"
+
+msgid "Change history"
+msgstr "Histórico de alterações"
+
+msgid "Collaborator activity"
+msgstr "Atividade dos colaboradores"
+
+msgid "Export PDF"
+msgstr "Exportar PDF"
+
+msgid "Export inventory CSV"
+msgstr "Exportar CSV de inventário"
+
+msgid "Deactivate"
+msgstr "Desativar"
+
+msgid "Reactivate"
+msgstr "Reativar"
+
+msgid "Price"
+msgstr "Preço"
+
+msgid "Barcode"
+msgstr "Código de barras"
+
+msgid "Attributes"
+msgstr "Atributos"
+
+msgid "Updating…"
+msgstr "A atualizar…"

@@ -15,8 +15,10 @@ Follow the local setup in [README.md](README.md). Use Python 3.12 and install
 Run the checks from the project root:
 
 ```powershell
-ruff check .
-pytest
+python -m ruff check .
+python -m ruff format --check .
+python -m pytest --cov=apps --cov=config --cov-fail-under=90
+python manage.py makemigrations --check --dry-run --settings=config.settings.test
 ```
 
 Include focused tests for behavior changes, permissions, and security-sensitive

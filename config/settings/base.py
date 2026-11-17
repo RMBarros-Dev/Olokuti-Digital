@@ -112,6 +112,36 @@ DATABASE_URL = os.environ.get(
 )
 DATABASES = {"default": database_from_url(DATABASE_URL)}
 
+
+def caches_from_env(environ: dict[str, str] | os._Environ[str] | None = None) -> dict:
+    """Resolve Django cache backend: Redis -> FileBasedCache (multi-worker safe) -> LocMemCache."""
+    env = os.environ if environ is None else environ
+    redis_url = env.get("REDIS_URL", "").strip()
+    if redis_url:
+        return {
+            "default": {
+                "BACKEND": "django.core.cache.backends.redis.RedisCache",
+                "LOCATION": redis_url,
+            }
+        }
+    cache_dir = env.get("DJANGO_CACHE_DIR", "").strip()
+    if cache_dir:
+        return {
+            "default": {
+                "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+                "LOCATION": cache_dir,
+            }
+        }
+    return {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "olokuti-default",
+        }
+    }
+
+
+CACHES = caches_from_env()
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},

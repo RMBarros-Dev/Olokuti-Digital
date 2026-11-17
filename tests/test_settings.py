@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from config.settings.base import BASE_DIR, database_from_url
+from config.settings.base import BASE_DIR, caches_from_env, database_from_url
 from config.settings.validators import validate_production_configuration
 
 
@@ -136,3 +136,13 @@ def test_health_check_with_db_query(client, db):
     response = client.get("/health?db=1")
     assert response.status_code == 200
     assert response.content == b"ok"
+
+
+def test_caches_from_env_selects_redis_filebased_or_locmem():
+    assert caches_from_env({})["default"]["BACKEND"].endswith("LocMemCache")
+    file_cfg = caches_from_env({"DJANGO_CACHE_DIR": "/tmp/olokuti-cache"})["default"]
+    assert file_cfg["BACKEND"].endswith("FileBasedCache")
+    assert file_cfg["LOCATION"] == "/tmp/olokuti-cache"
+    redis_cfg = caches_from_env({"REDIS_URL": "redis://cache.internal:6379/1"})["default"]
+    assert redis_cfg["BACKEND"].endswith("RedisCache")
+    assert redis_cfg["LOCATION"] == "redis://cache.internal:6379/1"

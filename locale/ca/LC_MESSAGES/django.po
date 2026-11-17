@@ -632,3 +632,84 @@ msgstr "Su espacio de trabajo está listo"
 
 msgid "“%(title)s” will be removed. This cannot be undone."
 msgstr "“%(title)s” será eliminada. Esta acción no se puede deshacer."
+
+msgid "High contrast"
+msgstr "Alt contrast"
+
+msgid "Accessibility: High contrast"
+msgstr "Accessibilitat: Alt contrast"
+
+msgid "High contrast mode enabled."
+msgstr "Mode d'alt contrast activat."
+
+msgid "High contrast mode disabled."
+msgstr "Mode d'alt contrast desactivat."
+
+msgid "Inventory"
+msgstr "Inventari"
+
+msgid "Stock movements"
+msgstr "Moviments d'estoc"
+
+msgid "Stock locations"
+msgstr "Ubicacions d'estoc"
+
+msgid "Record movement"
+msgstr "Registrar moviment"
+
+msgid "Low stock"
+msgstr "Estoc baix"
+
+msgid "Low stock only"
+msgstr "Només estoc baix"
+
+msgid "Healthy"
+msgstr "Normal"
+
+msgid "Low-stock alerts"
+msgstr "Alertes d'estoc baix"
+
+msgid "Low-stock watchlist"
+msgstr "Seguiment d'estoc baix"
+
+msgid "Inventory levels"
+msgstr "Nivells d'inventari"
+
+msgid "On hand"
+msgstr "Disponible"
+
+msgid "Team notes & comments"
+msgstr "Notes i comentaris de l'equip"
+
+msgid "Post comment"
+msgstr "Publicar comentari"
+
+msgid "Change history"
+msgstr "Historial de canvis"
+
+msgid "Collaborator activity"
+msgstr "Activitat dels col·laboradors"
+
+msgid "Export PDF"
+msgstr "Exportar PDF"
+
+msgid "Export inventory CSV"
+msgstr "Exportar CSV d'inventari"
+
+msgid "Deactivate"
+msgstr "Desactivar"
+
+msgid "Reactivate"
+msgstr "Reactivar"
+
+msgid "Price"
+msgstr "Preu"
+
+msgid "Barcode"
+msgstr "Codi de barres"
+
+msgid "Attributes"
+msgstr "Atributs"
+
+msgid "Updating…"
+msgstr "Actualitzant…"

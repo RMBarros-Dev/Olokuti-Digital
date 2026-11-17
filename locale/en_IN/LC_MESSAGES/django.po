@@ -1,0 +1,28 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Olokuti Digital MVP\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_IN\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Ask an administrator to assign the catalogue or task permissions you need."
+msgstr "Ask an administrator to assign the catalogue or task permissions you need."
+
+msgid "Back to catalogue"
+msgstr "Back to catalogue"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "Catalogue"
+msgstr "Catalogue"
+
+msgid "Open catalogue"
+msgstr "Open catalogue"
+
+msgid "High contrast"
+msgstr "High contrast"
+
+msgid "Inventory"
+msgstr "Inventory"
