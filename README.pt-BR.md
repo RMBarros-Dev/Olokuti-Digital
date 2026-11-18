@@ -358,3 +358,31 @@ Consulte [`CONTRIBUTING.md`](CONTRIBUTING.md) para as regras de contribuição e
 Leia [`CONTRIBUTING.md`](CONTRIBUTING.md) antes de enviar alterações. Toda contribuição deve manter explícita a natureza experimental do MVP e evitar dados ou afirmações não verificadas.
 
 O código original e a documentação deste repositório estão sob a [licença MIT](LICENSE). Ela não concede direitos sobre marcas, nomes, logotipos, dados ou materiais de terceiros. O nome “Olokuti” identifica o contexto acadêmico e não implica afiliação ou aprovação institucional.
+
+
+## Métricas de Engenharia
+
+<div align="center">
+  <img src="https://img.shields.io/github/stars/RMBarros-Dev/Olokuti-Digital?style=flat-square&label=stars" alt="Estrelas no GitHub" />
+  <img src="https://img.shields.io/github/forks/RMBarros-Dev/Olokuti-Digital?style=flat-square&label=forks" alt="Forks no GitHub" />
+  <img src="https://img.shields.io/github/issues/RMBarros-Dev/Olokuti-Digital?style=flat-square&label=issues%20abertas" alt="Issues abertas" />
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12" />
+  <img src="https://img.shields.io/badge/Django-5.2-092E20?style=flat-square&logo=django&logoColor=white" alt="Django 5.2" />
+</div>
+
+<!-- REPOSITORY_METRICS_START -->
+_As métricas de linguagens serão geradas pelo GitHub Actions após a primeira execução bem-sucedida._
+<!-- REPOSITORY_METRICS_END -->
+
+### Verificação técnica
+
+| Dimensão | Evidência implementada | Limite da medição |
+|---|---|---|
+| Runtime / backend | Python 3.12, Django 5.2 | MVP acadêmico e experimental, não software de produção. |
+| Arquitetura | Monólito Django modular: accounts, catalog, operations, reports e audit | Persistência compartilhada por Django ORM e PostgreSQL. |
+| Banco de dados | PostgreSQL 14+; SQLite em memória para testes | Não se declara resiliência ou disponibilidade de nível produtivo. |
+| Interface | Templates Django, Bootstrap 5.3.9, HTMX 2.0.11 e JavaScript nativo | Aplicação renderizada no servidor com atualizações pontuais por HTMX. |
+| Qualidade | pytest, pytest-django e Ruff | Percentual de cobertura não informado aqui. |
+| CI | [Workflow de CI](.github/workflows/ci.yml) | Resultado atual indicado pelo badge acima. |
+| Verificação operacional | [Workflow Keepalive](.github/workflows/keepalive.yml) e endpoint de saúde | Verificações de disponibilidade não comprovam correção ou prontidão para produção. |
+| Segurança / dados | Autenticação Django e grupos de permissões documentados; segredos devem ficar em variáveis de ambiente | Respeitar limitações do MVP e dados sintéticos; não se declara integração com sistemas externos da empresa. |
