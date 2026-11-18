@@ -1,0 +1,76 @@
+name: Repository engineering metrics
+
+on:
+  push:
+    branches: [main, master]
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repository-engineering-metrics
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate GitHub Linguist language statistics
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python - <<'PY'
+          import html, json, os, urllib.request
+          from datetime import datetime, timezone
+          from pathlib import Path
+          repository = os.environ["REPOSITORY"]
+          request = urllib.request.Request(f"https://api.github.com/repos/{repository}/languages", headers={"Accept":"application/vnd.github+json","Authorization":f"Bearer {os.environ['GITHUB_TOKEN']}","X-GitHub-Api-Version":"2022-11-28"})
+          with urllib.request.urlopen(request, timeout=30) as response:
+              languages = json.load(response)
+          total = sum(languages.values())
+          if total <= 0:
+              raise SystemExit("No measurable source bytes returned; existing metrics were not replaced.")
+          ordered = sorted(languages.items(), key=lambda item:item[1], reverse=True)
+          palette = ["#2563EB","#0F766E","#D97706","#7C3AED","#DB2777","#475569","#0891B2","#65A30D"]
+          x, rects, legend, rows = 0.0, [], [], []
+          for index,(name,size) in enumerate(ordered):
+              share = size/total*100
+              segment = 1000-x if index == len(ordered)-1 else 1000*size/total
+              color = palette[index%len(palette)]
+              rects.append(f'<rect x="{x:.2f}" y="8" width="{segment:.2f}" height="22" fill="{color}"><title>{html.escape(name)}: {share:.2f}% ({size:,} bytes)</title></rect>')
+              legend.append(f'<text x="{(index%4)*250+8}" y="{48+(index//4)*18}" font-family="Arial,sans-serif" font-size="12" fill="#334155"><tspan fill="{color}">●</tspan> {html.escape(name)} {share:.1f}%</text>')
+              rows.append(f"| {name} | {size:,} | {share:.2f}% |")
+              x += segment
+          h=max(74,54+((len(ordered)+3)//4)*18)
+          svg=f'<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="{h}" viewBox="0 0 1000 {h}"><rect width="100%" height="100%" rx="10" fill="#F8FAFC"/>{"".join(rects)}{"".join(legend)}</svg>'
+          Path("assets/metrics").mkdir(parents=True,exist_ok=True)
+          Path("assets/metrics/repository-languages.svg").write_text(svg,encoding="utf-8")
+          updated=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+          en="### Language distribution (GitHub Linguist)\n\n![Repository language distribution](assets/metrics/repository-languages.svg)\n\n| Language | Source bytes | Share |\n|---|---:|---:|\n"+"\n".join(rows)+f"\n\n_Total measured source bytes: {total:,}. Refreshed: {updated}._\n"
+          pt="### Distribuição de linguagens (GitHub Linguist)\n\n![Distribuição de linguagens do repositório](assets/metrics/repository-languages.svg)\n\n| Linguagem | Bytes de código | Participação |\n|---|---:|---:|\n"+"\n".join(rows)+f"\n\n_Total de bytes de código contabilizados: {total:,}. Atualizado em: {updated}._\n"
+          start,end="<!-- REPOSITORY_METRICS_START -->","<!-- REPOSITORY_METRICS_END -->"
+          for filename,generated in (("README.md",en),("README.pt-BR.md",pt)):
+              path=Path(filename)
+              if not path.exists(): continue
+              content=path.read_text(encoding="utf-8")
+              if start not in content or end not in content: raise SystemExit(f"Metrics markers missing from {filename}; refusing to overwrite.")
+              before,remainder=content.split(start,1)
+              _,after=remainder.split(end,1)
+              path.write_text(before+start+"\n"+generated+"\n"+end+after,encoding="utf-8")
+          PY
+      - name: Commit updated metrics
+        run: |
+          if git diff --quiet; then echo "Metrics are already current."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md README.pt-BR.md assets/metrics/repository-languages.svg
+          git commit -m "chore: refresh repository engineering metrics"
+          git push
