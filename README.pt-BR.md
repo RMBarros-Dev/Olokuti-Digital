@@ -371,7 +371,20 @@ O código original e a documentação deste repositório estão sob a [licença 
 </div>
 
 <!-- REPOSITORY_METRICS_START -->
-_As métricas de linguagens serão geradas pelo GitHub Actions após a primeira execução bem-sucedida._
+### Distribuição de linguagens (GitHub Linguist)
+
+![Distribuição de linguagens do repositório](assets/metrics/repository-languages.svg)
+
+| Linguagem | Bytes de código | Participação |
+|---|---:|---:|
+| Python | 109,893 | 62.63% |
+| HTML | 53,751 | 30.63% |
+| CSS | 10,548 | 6.01% |
+| JavaScript | 1,168 | 0.67% |
+| Procfile | 97 | 0.06% |
+
+_Total de bytes de código contabilizados: 175,457. Atualizado em: 2026-11-18 21:13 UTC._
+
 <!-- REPOSITORY_METRICS_END -->
 
 ### Verificação técnica
